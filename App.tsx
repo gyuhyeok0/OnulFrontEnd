@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import 'intl-pluralrules';
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from 'react-native-splash-screen';
@@ -15,22 +17,29 @@ import SignupStep2 from './src/screens/start/SignupStep2';
 import SignupStep3 from './src/screens/start/SignupStep3';
 import { DefaultHeaderStyles } from './src/screens/common/DefaultHeaderStyles.module';
 import MenuTranslation from './src/screens/menu/MenuTranslation';
+import initializeI18n from './src/locales/i18n';  // i18n 초기화 함수 가져오기
 
 const Stack = createNativeStackNavigator();
 
 function App() {
-  
-  useEffect(() => {
+  const [isInitialized, setIsInitialized] = useState(false);
 
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 1000);
+  useEffect(() => {
+    const initialize = async () => {
+      await initializeI18n();  // i18n 초기화가 완료될 때까지 대기
+      setIsInitialized(true);  // 초기화 완료 후 렌더링을 허용
+      SplashScreen.hide();  // 스플래시 화면 숨기기
+    };
+    initialize();
   }, []);
+
+  if (!isInitialized) {
+    return null;  // 초기화가 완료되지 않은 상태에서는 아무것도 렌더링하지 않음
+  }
 
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        
         {/* 로그인 페이지 */}
         <Stack.Screen 
           name="Login" 
@@ -115,8 +124,6 @@ function App() {
             ...DefaultHeaderStyles, // 스타일 적용
           }}
         />
-
-
       </Stack.Navigator>
     </NavigationContainer>
   );

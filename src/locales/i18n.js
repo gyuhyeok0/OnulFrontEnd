@@ -1,12 +1,13 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'react-native-localize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import translationEN from './en/translation.json';
 import translationKO from './ko/translation.json';
 
 // 기기 언어를 감지합니다.
 const locales = Localization.getLocales();
-const languageTag = locales[0].languageTag;
+const deviceLanguageTag = locales[0].languageTag;
 
 const resources = {
     en: {
@@ -17,17 +18,34 @@ const resources = {
     }
 };
 
-i18n
-    .use(initReactI18next)
-    .init({
-        resources,
-        lng: languageTag, // 감지된 기기 언어로 설정
-        fallbackLng: 'en', // 번역 파일에서 찾을 수 없는 경우 기본 언어
-        interpolation: {
-            escapeValue: false // react는 이미 XSS를 방지합니다.
+const initializeI18n = async () => {
+    const getStoredLanguage = async () => {
+        try {
+            const storedLanguage = await AsyncStorage.getItem('user-language');
+            return storedLanguage || deviceLanguageTag;
+        } catch (error) {
+            console.error('Failed to load language from storage:', error);
+            return deviceLanguageTag;
         }
-    });
+    };
 
-console.log(languageTag); // 감지된 기기 언어를 콘솔에 출력합니다.
+    const storedLanguage = await getStoredLanguage();
 
-export default i18n;
+    await i18n
+        .use(initReactI18next)
+        .init({
+            resources,
+            lng: storedLanguage,
+            fallbackLng: 'en',
+            interpolation: {
+                escapeValue: false,
+            },
+        });
+
+    console.log(locales)
+    console.log(storedLanguage); 
+    console.log(deviceLanguageTag)
+
+};
+
+export default initializeI18n;

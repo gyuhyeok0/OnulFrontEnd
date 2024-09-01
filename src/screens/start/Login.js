@@ -15,30 +15,33 @@ function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.BackgroundCircle}></View>
+      <View style={[styles.BackgroundCircle, { top: height * 0.25 }]}></View>
       <View style={styles.container2}>
         
         <Image
-          source={require('../../assets/WhiteLogo.png')} // 이미지 경로 지정
-          style={styles.logo} // 스타일 적용
+          source={require('../../assets/WhiteLogo.png')}
+          style={styles.logo}
         />
 
         <Text style={styles.LogoText}>{t('app_name')}</Text>
 
-        <TouchableOpacity style={styles.StartBox} onPress={handlePressSignUp}>
-          <Text style={styles.ButtonText}>{t('start_fresh')}</Text>
-        </TouchableOpacity>
+        {/* 아래 버튼들을 화면 하단에 배치 */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.StartBox} onPress={handlePressSignUp}>
+            <Text style={styles.ButtonText}>{t('start_fresh')}</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.LoginBox} onPress={handlePressSignIn}>
-          <Text style={styles.ButtonText}>{t('continue_with_account')}</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.LoginBox} onPress={handlePressSignIn}>
+            <Text style={styles.ButtonText}>{t('continue_with_account')}</Text>
+          </TouchableOpacity>
+        </View>
 
       </View>
     </View>
   );
 }
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -51,48 +54,55 @@ const styles = StyleSheet.create({
 
   BackgroundCircle: {
     position: 'absolute',
-    top: 150,
+    // top: 150,
     right: -110,
-    width: 300,
-    height: 300,
+    width: 320,
+    height: 320,
     backgroundColor: 'black',
-    borderRadius: 150,
+    borderRadius: 400,
   },
 
   container2: {
     width: '85%',
-    flex: 0.87,
+    flex: 1,  // 전체 높이를 차지하게 합니다.
     alignSelf: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 
   logo: {
-    width: 120, // 로고의 너비
-    height: 120, // 로고의 높이
-    marginTop: '50%',
+    width: 120,
+    height: 120,
+    marginTop: '-40%',
     marginLeft: '-3.5%',
     resizeMode: 'contain',
   },
 
   LogoText: {
-    fontSize: 13, // 텍스트 크기
-    color: '#ffffff', // 텍스트 색상
-    fontWeight: '150', // 텍스트 굵기
+    fontSize: 13,
+    color: '#ffffff',
+    fontWeight: '150',
     marginTop: '-4.5%'
   },
 
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 60,  // 하단에서부터의 거리
+    width: '100%',
+    alignItems: 'center',
+  },
+
   StartBox: {
-    marginTop: '58%',
     width: 260,
     height: 45,
     backgroundColor: '#5E56C3',
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 10,  // 버튼 간 간격 추가
   },
 
   LoginBox: {
-    marginTop: '4%',
     width: 260,
     height: 45,
     backgroundColor: '#303030',
