@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 function LoginScreen({ navigation }) {
+  const { t } = useTranslation();
 
   const handlePressSignIn = () => {
     navigation.navigate('SignIn');
@@ -17,18 +19,18 @@ function LoginScreen({ navigation }) {
       <View style={styles.container2}>
         
         <Image
-          source={require('../assets/WhiteLogo.png')} // 이미지 경로 지정
+          source={require('../../assets/WhiteLogo.png')} // 이미지 경로 지정
           style={styles.logo} // 스타일 적용
         />
 
-        <Text style={styles.LogoText}>ONE TOUCH FIT</Text>
+        <Text style={styles.LogoText}>{t('app_name')}</Text>
 
         <TouchableOpacity style={styles.StartBox} onPress={handlePressSignUp}>
-          <Text style={styles.ButtonText}>Start Fresh</Text>
+          <Text style={styles.ButtonText}>{t('start_fresh')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.LoginBox} onPress={handlePressSignIn}>
-          <Text style={styles.ButtonText}>Continue with Account</Text>
+          <Text style={styles.ButtonText}>{t('continue_with_account')}</Text>
         </TouchableOpacity>
 
       </View>
