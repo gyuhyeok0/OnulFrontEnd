@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
 function SignIn({ navigation }) {
+
+    useEffect(() => {
+        console.log("=====================회원 로그인 페이지 ========================")
+    }, []);
 
     const handleSignIn = () => {
         // 로그인 로직 구현 후, 성공하면 아래와 같이 페이지 이동
