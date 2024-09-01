@@ -23,6 +23,9 @@ target 'OnulFrontEnd' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # 최신 버전의 Masked View 모듈을 사용하도록 수정
+  pod 'RNCMaskedView', :path => '../node_modules/@react-native-masked-view/masked-view'
+
   target 'OnulFrontEndTests' do
     inherit! :complete
     # Pods for testing
