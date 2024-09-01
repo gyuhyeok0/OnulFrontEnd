@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 function LoginScreen({ navigation }) {
+
+  useEffect(() => {
+    console.log("=====================시작 페이지 ========================")
+  }, []);
+
   const { t } = useTranslation();
 
   const handlePressSignIn = () => {

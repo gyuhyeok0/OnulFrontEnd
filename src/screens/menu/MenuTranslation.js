@@ -1,10 +1,14 @@
 import 'intl-pluralrules';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Button } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MenuTranslation = () => {
+    useEffect(() => {
+        console.log("=====================번역 페이지 ========================")
+    }, []);
+
     const { t, i18n } = useTranslation();
 
     const changeLanguage = async (lng) => {

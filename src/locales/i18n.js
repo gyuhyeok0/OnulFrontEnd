@@ -42,10 +42,9 @@ const initializeI18n = async () => {
             },
         });
 
+    console.log("================= 언어 초기화 ==================")
     console.log(locales)
     console.log(storedLanguage); 
-    console.log(deviceLanguageTag)
-
 };
 
 export default initializeI18n;
