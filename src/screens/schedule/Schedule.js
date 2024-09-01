@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import Footer from './common/Footer'; 
-import Header from './common/Header'; // 커스텀 헤더 컴포넌트 임포트
+import Footer from '../common/Footer'; 
+import Header from '../common/Header'; // 커스텀 헤더 컴포넌트 임포트
 
 const Schedule = ({ navigation }) => {
     return (

@@ -28,4 +28,6 @@ i18n
         }
     });
 
+console.log(languageTag); // 감지된 기기 언어를 콘솔에 출력합니다.
+
 export default i18n;
