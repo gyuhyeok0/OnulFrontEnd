@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포넌트 임포트
 
 function Signup({ navigation }) {
 
@@ -12,9 +13,13 @@ function Signup({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
+        <>
+            <DefaultHeader title="회원가입" navigation={navigation} />
+        
+            <View style={styles.container}>
 
-        </View>
+            </View>
+        </>
     );
 }
 
