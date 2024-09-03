@@ -11,9 +11,9 @@ const Header = ({ title, navigation }) => {
                 color={headerStyles.headerTintColor}  // 버튼 색상 적용
             />
             
-            <Text style={[{ fontSize: 18, marginLeft: 10 }, { color: headerStyles.headerTintColor }]}>
+            {/* <Text style={[{ fontSize: 18, marginLeft: 10 }, { color: headerStyles.headerTintColor }]}>
                 {title}
-            </Text>
+            </Text> */}
 
             <Button
                 title="Menu"
