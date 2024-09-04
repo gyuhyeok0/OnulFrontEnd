@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포넌트 임포트
+
 
 function SignIn({ navigation }) {
 
@@ -13,12 +15,16 @@ function SignIn({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-        <Text style={styles.text}>Sign In</Text>
-        <TextInput style={styles.input} placeholder="Enter your email" />
-        <TextInput style={styles.input} placeholder="Enter your password" secureTextEntry={true} />
-        <Button title="Sign In" onPress={handleSignIn} />
-        </View>
+        <>
+            <DefaultHeader title="로그인" navigation={navigation} />
+            <View style={styles.container}>
+            <Text style={styles.text}>Sign In</Text>
+            <TextInput style={styles.input} placeholder="Enter your email" />
+            <TextInput style={styles.input} placeholder="Enter your password" secureTextEntry={true} />
+            <Button title="Sign In" onPress={handleSignIn} />
+            </View>
+
+        </>
     );
 }
 

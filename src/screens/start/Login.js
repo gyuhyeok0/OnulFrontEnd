@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     width: width, 
     flex: 1,
     justifyContent: 'center', 
-    backgroundColor: '#171717',
+    backgroundColor: '#191D22',
   },
 
   BackgroundCircle: {
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   LoginBox: {
     width: 260,
     height: 45,
-    backgroundColor: '#303030',
+    backgroundColor: '#222732',
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',

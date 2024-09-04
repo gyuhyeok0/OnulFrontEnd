@@ -1,22 +1,47 @@
 // src/screens/common/DefaultHeaderStyles.module.js
 
-import { Dimensions } from "react-native";
+import { Dimensions, Platform } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const { width, height } = Dimensions.get('window');
 
 export const DefaultHeaderStyles = {
     headerStyle: {
-      backgroundColor: '#1F1F1F', // 예시 색상
+      backgroundColor: '#191D22', // 예시 색상
       flexDirection: 'row', 
-      alignItems: 'center', 
-      padding: 10,
-      height: height * 0.115
+      alignItems: 'flex-end', // 여기 쉼표 추가
+
+
+      ...Platform.select({
+        android: {
+          height: height * 0.08,
+        },
+        ios: {
+          height: height * 0.12,
+        },
+      }),
     },
 
-    headerTintColor:{
-      color: 'white'
-    } 
+    headerContainer:{
+
+      flexDirection: 'row', 
+      alignItems: 'center',
+      // backgroundColor:'red'
+    },
+
+    icon:{
+      color: 'white',
+      paddingLeft: 10,
+      paddingBottom: 10
+
+    },
+
+    headerText: {
+      color: 'white',
+      fontSize: 22,
+      paddingLeft: 10,
+      paddingBottom: 10
+    }
 
 };
     
