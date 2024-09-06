@@ -71,7 +71,7 @@ function App() {
             <Stack.Screen
               name="SignupStep1"
               component={SignupStep1}
-              options={{ headerShown: true, title: 'Step 1', ...DefaultHeaderStyles }}
+              options={{ headerShown: false, }}
             />
             <Stack.Screen
               name="SignupStep2"

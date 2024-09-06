@@ -3,11 +3,11 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 
 import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포트 임포트
 
 function Signup({ navigation }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [memberId, setMemberId] = useState('');
+    const [memberPassword, setMemberPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [isUsernameValid, setIsUsernameValid] = useState(null); 
-    const [isPasswordValid, setIsPasswordValid] = useState(null); 
+    const [isMemberIdValid, setIsMemberIdValid] = useState(null); 
+    const [isMemberPasswordValid, setIsMemberPasswordValid] = useState(null); 
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null); 
 
     useEffect(() => {
@@ -16,11 +16,11 @@ function Signup({ navigation }) {
 
     const handleNextStep = () => {
         // 유효성 검증
-        if (!isUsernameValid) {
+        if (!isMemberIdValid) {
             alert('유효한 아이디를 입력해주세요.');
             return;
         }
-        if (!isPasswordValid) {
+        if (!isMemberPasswordValid) {
             alert('유효한 비밀번호를 입력해주세요.');
             return;
         }
@@ -29,26 +29,26 @@ function Signup({ navigation }) {
             return;
         }
         
-        // 유효성 검사가 완료되면 다음 페이지로 이동
-        navigation.navigate('SignupStep1');
+        // 유효성 검사가 완료되면 아이디와 비밀번호를 다음 페이지로 전달
+        navigation.navigate('SignupStep1', { memberId, memberPassword });
     };
 
-    const validateUsername = (text) => {
-        setUsername(text);
-        const usernameRegex = /^[a-zA-Z][a-zA-Z0-9]{3,11}$/; // 영문 소문자와 숫자만 허용, 4~12자
-        setIsUsernameValid(usernameRegex.test(text));
+    const validateMemberId = (text) => {
+        setMemberId(text);
+        const memberIdRegex = /^(?=[a-zA-Z0-9]{6,})(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]*$/; // 영문자와 숫자 모두 포함, 첫 자리는 숫자 또는 영문자 가능, 6자리 이상
+        setIsMemberIdValid(memberIdRegex.test(text));
     };
 
-    const validatePassword = (text) => {
-        setPassword(text);
+    const validateMemberPassword = (text) => {
+        setMemberPassword(text);
         // 특수문자를 선택적으로 허용하는 정규식: 영문자와 숫자만 필수
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{6,20}$/; // 영문자와 숫자를 필수로, 특수문자는 선택
-        setIsPasswordValid(passwordRegex.test(text));
+        setIsMemberPasswordValid(passwordRegex.test(text));
     };
 
     const validateConfirmPassword = (text) => {
         setConfirmPassword(text);
-        setIsConfirmPasswordValid(text === password);
+        setIsConfirmPasswordValid(text === memberPassword);
     };
 
     return (
@@ -58,14 +58,14 @@ function Signup({ navigation }) {
             <View style={styles.container}>
                 <Text style={[styles.label, { marginTop: 50 }]}>아이디</Text>
 
-                <View style={styles.IdContainer}>
+                <View style={styles.idContainer}>
                     {/* 아이디 입력 */}
                     <TextInput
-                        style={[styles.IdInput, isUsernameValid === false && styles.invalidInput]}
+                        style={[styles.idInput, isMemberIdValid === false && styles.invalidInput]}
                         placeholder="아이디를 입력하세요"
                         placeholderTextColor="#888"
-                        value={username}
-                        onChangeText={validateUsername}
+                        value={memberId}
+                        onChangeText={validateMemberId}
                     />
 
                     {/* 중복확인 버튼 */}
@@ -73,20 +73,20 @@ function Signup({ navigation }) {
                         <Text style={styles.checkButtonText}>중복확인</Text>
                     </TouchableOpacity>
                 </View>
-                {isUsernameValid === false && <Text style={styles.errorText}>영문 소문자와 숫자만 사용하여, 4~12자의 아이디를 입력해주세요.</Text>}
+                {isMemberIdValid === false && <Text style={styles.errorText}>영문자와 숫자가 모두 포함된 6자리 이상의 아이디를 입력해주세요.</Text>}
 
                 <View style={{ marginTop: 20 }}>
                     {/* 비밀번호 입력 */}
                     <Text style={styles.label}>비밀번호</Text>
                     <TextInput
-                        style={[styles.input, isPasswordValid === false && styles.invalidInput]}
+                        style={[styles.input, isMemberPasswordValid === false && styles.invalidInput]}
                         placeholder="비밀번호를 입력하세요"
                         placeholderTextColor="#888"
                         secureTextEntry
-                        value={password}
-                        onChangeText={validatePassword}
+                        value={memberPassword}
+                        onChangeText={validateMemberPassword}
                     />
-                    {isPasswordValid === false && <Text style={styles.errorText}>영문 대/소문자, 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
+                    {isMemberPasswordValid === false && <Text style={styles.errorText}>영문 대/소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
 
                     {/* 비밀번호 확인 입력 */}
                     <Text style={styles.label}>비밀번호 확인</Text>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#191D22',
     },
     
-    IdContainer: {
+    idContainer: {
         flexDirection: 'row', 
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     
-    IdInput: {
+    idInput: {
         flex: 1, // 입력 필드가 남은 공간을 차지하도록 설정
         borderWidth: 1.5,
         borderColor: '#3B404B',
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        height: 50, // 버튼 높이를 입력 필드 높이와 맞추기
+        height: 45, // 버튼 높이를 입력 필드 높이와 맞추기
     },
 
     checkButtonText: {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
 
     buttonContainer: {
         position: 'absolute',
-        bottom: 50,  // 하단에서부터의 거리
+        bottom: 20,  // 하단에서부터의 거리
         width: '100%',  // 부모 컨테이너가 가로 100% 유지
         alignItems: 'center',  // 자식 요소들을 가로 중앙에 정렬
         margin: 20,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         borderRadius: 25,
         alignItems: 'center',
-        width: '80%',  
+        width: '100%',  
     },
 
     nextButtonText: {
@@ -206,8 +206,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
-
-    
 });
 
 export default Signup;

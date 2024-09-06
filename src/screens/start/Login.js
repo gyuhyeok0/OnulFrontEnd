@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
   LoginBox: {
     width: 260,
     height: 45,
-    backgroundColor: '#222732',
+    borderWidth: 1.5,
+    borderColor: '#3B404B',
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
