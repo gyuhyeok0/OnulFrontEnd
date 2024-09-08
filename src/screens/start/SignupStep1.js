@@ -39,14 +39,15 @@ function SignupStep1({ navigation, route }) {
         }
     }, [memberId, memberPassword]);
 
+
     const handleNext = async () => {
         const isValid = phoneInput.current?.isValidNumber(formattedValue);
-
+    
         if (!isValid) {
             Alert.alert("유효하지 않은 전화번호", "올바른 전화번호를 입력해 주세요.");
             return;
         }
-
+    
         try {
             const response = await fetch('http://localhost:8080/sms/send', {
                 method: 'POST',
@@ -54,21 +55,28 @@ function SignupStep1({ navigation, route }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    phoneNumber: formattedValue,
+                    phoneNumber: formattedValue, // JSON 형식으로 서버에 전화번호 전송
                 }),
             });
-
-            const data = await response.text();
-
-            if (response.ok) {
-                Alert.alert("성공", "인증번호를 입력해주세요.");
-            } else {
-                Alert.alert("오류", data || "인증번호 전송 중 문제가 발생했습니다.");
+    
+            // 서버 응답을 JSON으로 처리
+            const data = await response.json();
+    
+            // 서버 응답의 state를 확인하여 메시지 출력
+            if (data.state === 'success') {
+                Alert.alert("성공", "인증번호를 입력해주세요.");  // 성공 메시지
+            } else if (data.state === 'alreadyPhoneNumber') {
+                Alert.alert("오류", "전화번호는 계정당 한번만 사용 가능합니다.");  // 오류 메시지
+            } else if (data.state === 'error') {
+                Alert.alert("오류", data.message || "인증번호 전송 중 문제가 발생했습니다.");  // 일반 오류 메시지
             }
         } catch (error) {
             Alert.alert("오류", "서버에 연결할 수 없습니다.");
+            console.error('Error:', error);
         }
     };
+    
+    
 
     // 인증번호 검증
     const handleVerification = async () => {
@@ -114,40 +122,66 @@ function SignupStep1({ navigation, route }) {
         setVerificationCode(text);
     };
 
-    // 회원가입 완료 처리 (아이디, 비밀번호, 국가코드, 동의 상태를 서버로 전송)
+    
+
+    // 회원가입
     const handleComplete = async () => {
-        if (isVerified && isAllAgreed) {
-            try {
-                // 서버로 회원가입 요청
-                const response = await fetch('http://localhost:8080/signup', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        memberId: memberId,           // 아이디
-                        memberPassword: memberPassword, // 비밀번호
-                        countryCode: defaultCountryCode, // 국가 코드
-                        agreed: isAllAgreed           // 동의 상태
-                    }),
-                });
-
+        // 인증 완료 여부 확인
+        if (!isVerified) {
+            Alert.alert('인증 필요', '휴대폰 번호 인증을 완료해주세요.');
+            return; // 인증이 완료되지 않으면 함수 종료
+        }
+    
+        // 약관 동의 여부 확인
+        if (!isAllAgreed) {
+            Alert.alert('동의 필요', '약관 동의를 완료해주세요.');
+            return; // 약관 동의가 완료되지 않으면 함수 종료
+        }
+    
+        try {
+            // 서버로 회원가입 요청 전송
+            const response = await fetch('http://localhost:8080/signup/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    memberId: memberId,             
+                    memberPassword: memberPassword, 
+                    memberCountryCode: defaultCountryCode, 
+                    agreed: isAllAgreed,            
+                    memberPhoneNumber: formattedValue 
+                }),
+            });
+    
+            // 서버 응답 처리
+            if (!response.ok) {
+                // 서버 응답이 성공하지 않았을 때 (상태 코드 200이 아님)
                 const data = await response.json();
-
-                if (response.ok) {
-                    Alert.alert('가입 완료', '회원가입이 완료되었습니다.');
-                    navigation.navigate('Exercise'); // 예시로 다음 화면으로 이동
-                } else {
-                    Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
-                }
-            } catch (error) {
-                Alert.alert('오류', '서버에 연결할 수 없습니다.');
-                console.error('Error:', error);
+                Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
+                return; // 실패 시 함수 종료, 다음 화면으로 넘어가지 않음
             }
-        } else {
-            Alert.alert('인증 필요', '휴대폰 번호 인증 및 약관 동의를 완료해주세요.');
+
+            // 서버 응답이 성공한 경우
+            const data = await response.json();
+
+            // 서버에서 success 값이 true일 때만 성공 처리
+            if (data.success === true) {
+                Alert.alert('가입 완료', '회원가입이 완료되었습니다.');
+                navigation.navigate('Exercise'); // 회원가입 성공 시에만 다음 화면으로 이동
+            } else {
+                // success가 true가 아닐 때는 오류 처리
+                Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
+            }
+    
+        } catch (error) {
+            // 네트워크 오류 또는 서버에 연결할 수 없을 때
+            Alert.alert('오류', '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.');
+            console.error('Error:', error);
         }
     };
+    
+
 
     return (
         <>

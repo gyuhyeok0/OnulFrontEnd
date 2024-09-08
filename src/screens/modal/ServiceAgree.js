@@ -7,12 +7,12 @@ const screenHeight = Dimensions.get('window').height;
 
 const CustomModal = ({ isVisible, onClose, modalY, title }) => {
     const [loading, setLoading] = useState(true);
-    const [htmlUri, setHtmlUri] = useState('http://192.168.0.4:8080/privacy-policy.html');  // 로컬 IP 사용
+    const [htmlUri, setHtmlUri] = useState('http://localhost:8080/privacy-policy.html');  // 로컬 IP 사용
 
     useEffect(() => {
         if (isVisible) {
             setLoading(true);
-            setHtmlUri('http://192.168.0.4:8080/privacy-policy.html');
+            setHtmlUri('http://localhost:8080/privacy-policy.html');
         }
     }, [isVisible]);
 
