@@ -9,6 +9,8 @@ function Signup({ navigation }) {
     const [isMemberIdValid, setIsMemberIdValid] = useState(null); 
     const [isMemberPasswordValid, setIsMemberPasswordValid] = useState(null); 
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null); 
+    const [isIdAvailable, setIsIdAvailable] = useState(false); // 아이디 사용 가능 여부 상태 추가
+    const [isIdChecked, setIsIdChecked] = useState(false); // 중복확인 버튼이 클릭되었는지 상태
 
     useEffect(() => {
         console.log("===================== 가입 페이지 ========================");
@@ -37,11 +39,12 @@ function Signup({ navigation }) {
         setMemberId(text);
         const memberIdRegex = /^(?=[a-zA-Z0-9]{6,})(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]*$/; // 영문자와 숫자 모두 포함, 첫 자리는 숫자 또는 영문자 가능, 6자리 이상
         setIsMemberIdValid(memberIdRegex.test(text));
+        setIsIdAvailable(false); // 새로운 아이디 입력 시 상태 초기화
+        setIsIdChecked(false); // 새로운 아이디 입력 시 중복확인 상태 초기화
     };
 
     const validateMemberPassword = (text) => {
         setMemberPassword(text);
-        // 특수문자를 선택적으로 허용하는 정규식: 영문자와 숫자만 필수
         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{6,20}$/; // 영문자와 숫자를 필수로, 특수문자는 선택
         setIsMemberPasswordValid(passwordRegex.test(text));
     };
@@ -49,6 +52,50 @@ function Signup({ navigation }) {
     const validateConfirmPassword = (text) => {
         setConfirmPassword(text);
         setIsConfirmPasswordValid(text === memberPassword);
+    };
+
+    // 아이디 중복확인
+    const checkMemberIdDuplicate = async () => {
+        if (!memberId) {
+            alert('아이디를 입력해주세요.');
+            return;
+        }
+    
+        try {
+            const response = await fetch('http://localhost:8080/signup/checkDuplicate', { // 서버의 중복확인 엔드포인트
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    memberId: memberId,
+                }),
+            });
+        
+            const result = await response.json();
+        
+            // 서버에서 반환된 state에 따라 처리
+            if (result.state === 'DUPLICATE') {
+                alert('이미 사용 중인 아이디입니다.');
+                setIsIdAvailable(false);
+            } else if (result.state === 'AVAILABLE') {
+                alert('사용 가능한 아이디입니다.');
+                setIsIdAvailable(true); // 아이디 사용 가능 상태로 업데이트
+            } else if (result.state === 'INVALID_ID') {
+                alert('아이디는 영문자와 숫자를 포함한 6자리 이상이어야 합니다.');
+                setIsIdAvailable(false);
+            } else {
+                alert('알 수 없는 상태입니다.');
+                setIsIdAvailable(false);
+            }
+            setIsIdChecked(true); // 중복확인 버튼이 클릭됨
+        } catch (error) {
+            console.error('Error checking ID duplication:', error);
+            alert('서버와 통신 중 오류가 발생했습니다.');
+            setIsIdAvailable(false);
+            setIsIdChecked(false); // 오류 발생 시 중복확인 상태 초기화
+        }
+        
     };
 
     return (
@@ -61,7 +108,11 @@ function Signup({ navigation }) {
                 <View style={styles.idContainer}>
                     {/* 아이디 입력 */}
                     <TextInput
-                        style={[styles.idInput, isMemberIdValid === false && styles.invalidInput]}
+                        style={[
+                            styles.idInput,
+                            isMemberIdValid === false && styles.invalidInput,
+                            isIdAvailable && styles.availableInput // 아이디 사용 가능 상태일 때 스타일 적용
+                        ]}
                         placeholder="아이디를 입력하세요"
                         placeholderTextColor="#888"
                         value={memberId}
@@ -69,8 +120,21 @@ function Signup({ navigation }) {
                     />
 
                     {/* 중복확인 버튼 */}
-                    <TouchableOpacity style={styles.checkButton} onPress={() => alert('아이디 중복 확인')}>
-                        <Text style={styles.checkButtonText}>중복확인</Text>
+                    <TouchableOpacity
+                        style={[
+                            styles.checkButton,
+                            isIdAvailable && styles.availableButton // 아이디 사용 가능 상태일 때 버튼 색상 변경
+                        ]}
+                        onPress={checkMemberIdDuplicate}
+                    >
+                        <Text
+                            style={[
+                                styles.checkButtonText,
+                                isIdAvailable && styles.availableButtonText // 아이디 사용 가능 상태일 때 텍스트 색상 변경
+                            ]}
+                        >
+                            중복확인
+                        </Text>
                     </TouchableOpacity>
                 </View>
                 {isMemberIdValid === false && <Text style={styles.errorText}>영문자와 숫자가 모두 포함된 6자리 이상의 아이디를 입력해주세요.</Text>}
@@ -102,12 +166,15 @@ function Signup({ navigation }) {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    {/* 다음 버튼 */}
-                    <TouchableOpacity style={styles.nextButton} onPress={handleNextStep}>
+                    {/* 다음 버튼 (모든 조건 충족 시에만 활성화) */}
+                    <TouchableOpacity
+                        style={[styles.nextButton, (!isIdAvailable || !isIdChecked || !isMemberPasswordValid || !isConfirmPasswordValid) && styles.disabledButton]}
+                        onPress={handleNextStep}
+                        disabled={!isIdAvailable || !isIdChecked || !isMemberPasswordValid || !isConfirmPasswordValid} // 조건 충족 여부에 따른 버튼 활성화/비활성화
+                    >
                         <Text style={styles.nextButtonText}>다음</Text>
                     </TouchableOpacity>
                 </View>
-                
             </View>
         </>
     );
@@ -148,6 +215,10 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#fff', // 텍스트 색상 흰색으로 설정
     },
+
+    availableInput: {
+        borderColor: 'green', // 사용 가능한 아이디일 때 테두리 색상 변경
+    },
     
     checkButton: {
         borderWidth: 0, // 보더를 없애는 설정
@@ -157,18 +228,27 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        height: 45, // 버튼 높이를 입력 필드 높이와 맞추기
+        height: 45
     },
-
+     
+    availableButton: {
+        backgroundColor: 'green', // 사용 가능한 아이디일 때 버튼 색상 변경
+    },
+    
     checkButtonText: {
         color: '#F1F4FA',
         fontWeight: '100',
     },
-
+    
+    availableButtonText: {
+        fontWeight: 22,
+        color: '#fff', 
+    },
+    
     invalidInput: {
         borderColor: 'red',
     },
-
+    
     input: {
         borderWidth: 1.5,
         borderColor: '#3B404B',
@@ -177,13 +257,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#fff', // 텍스트 색상 흰색으로 설정
     },
-
+    
     errorText: {
         color: 'red',
         marginTop: 10,
         fontSize: 12,
     },
-
+    
     buttonContainer: {
         position: 'absolute',
         bottom: 20,  // 하단에서부터의 거리
@@ -200,12 +280,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',  
     },
-
+    
+    disabledButton: {
+        backgroundColor: '#aaa', // 비활성화 시 버튼 색상 변경
+    },
+    
     nextButtonText: {
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },
+
 });
 
 export default Signup;
+

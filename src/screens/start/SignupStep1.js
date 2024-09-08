@@ -40,6 +40,7 @@ function SignupStep1({ navigation, route }) {
     }, [memberId, memberPassword]);
 
 
+    // 인증코드 전송
     const handleNext = async () => {
         const isValid = phoneInput.current?.isValidNumber(formattedValue);
     
