@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         alignItems: 'center',
         flexDirection: 'row',
+        position: 'relative',
     },
     requestButton: {
         borderWidth: 1.5,
@@ -37,6 +38,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: '2%',
     },
+    
     requestButtonText: {
         color: 'white',
         fontSize: 16,
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         textAlignVertical: 'center',
     },
+
     verificationInput: {
         backgroundColor: '#3B404B',
         width: '64%',
@@ -54,7 +57,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         borderWidth: 1.5,
         borderColor: '#3B404B',
-        textAlign: 'center',
+        textAlign: 'left',
     },
 
 
@@ -81,6 +84,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         backgroundColor: '#191D22', // 배경색
     },
+
+
 });
 
 export default styles;

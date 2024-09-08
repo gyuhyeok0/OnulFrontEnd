@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Alert, TextInput, ScrollView } from 'react-native';
 import DefaultHeader from '../common/DefaultHeader'; 
 import PhoneInput from 'react-native-phone-number-input';
 import * as Localize from 'react-native-localize'; 
 import styles from './Signupstep1.module';
 import Agree from './Agree';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 function SignupStep1({ navigation, route }) {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -12,13 +13,14 @@ function SignupStep1({ navigation, route }) {
     const [verificationCode, setVerificationCode] = useState('');
     const [isVerified, setIsVerified] = useState(false); 
     const [defaultCountryCode, setDefaultCountryCode] = useState('KR'); 
-    const [isAllAgreed, setIsAllAgreed] = useState(false);  // 상태 추가
+    const [isAllAgreed, setIsAllAgreed] = useState(false);  
+    const [isTimerRunning, setIsTimerRunning] = useState(false); 
+    const timerRef = useRef(null); 
     const phoneInput = React.createRef();
+    const [timeLeft, setTimeLeft] = useState(300); 
 
-    // 전 페이지에서 넘어온 props 확인 (아이디와 비밀번호)
     const { memberId, memberPassword } = route.params || {};
 
-    // 국가 코드 설정
     useEffect(() => {
         const locales = Localize.getLocales();
         if (locales.length > 0) {
@@ -27,28 +29,32 @@ function SignupStep1({ navigation, route }) {
         }
     }, []);
 
-    // 컴포넌트가 마운트될 때, props가 없으면 이전 페이지로 리다이렉트
     useEffect(() => {
-        if (!memberId || !memberPassword) {
-            Alert.alert("오류", "아이디와 비밀번호가 필요합니다.", [
-                {
-                    text: "확인",
-                    onPress: () => navigation.goBack(), // 전 페이지로 돌아감
-                },
-            ]);
+        if (timeLeft > 0 && !isVerified && isTimerRunning) {
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prev => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0) {
+            clearInterval(timerRef.current);
+            Alert.alert("시간 초과", "인증 시간이 초과되었습니다. 다시 요청해 주세요.");
         }
-    }, [memberId, memberPassword]);
+        return () => clearInterval(timerRef.current);
+    }, [timeLeft, isVerified, isTimerRunning]);
 
+    const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
 
-    // 인증코드 전송
     const handleNext = async () => {
         const isValid = phoneInput.current?.isValidNumber(formattedValue);
-    
+
         if (!isValid) {
             Alert.alert("유효하지 않은 전화번호", "올바른 전화번호를 입력해 주세요.");
             return;
         }
-    
+
         try {
             const response = await fetch('http://localhost:8080/sms/send', {
                 method: 'POST',
@@ -56,28 +62,30 @@ function SignupStep1({ navigation, route }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    phoneNumber: formattedValue, // JSON 형식으로 서버에 전화번호 전송
+                    phoneNumber: formattedValue,
                 }),
             });
-    
-            // 서버 응답을 JSON으로 처리
+
             const data = await response.json();
-    
-            // 서버 응답의 state를 확인하여 메시지 출력
-            if (data.state === 'success') {
-                Alert.alert("성공", "인증번호를 입력해주세요.");  // 성공 메시지
-            } else if (data.state === 'alreadyPhoneNumber') {
-                Alert.alert("오류", "전화번호는 계정당 한번만 사용 가능합니다.");  // 오류 메시지
-            } else if (data.state === 'error') {
-                Alert.alert("오류", data.message || "인증번호 전송 중 문제가 발생했습니다.");  // 일반 오류 메시지
+
+            if (data.status === 'success') {
+                Alert.alert("성공", "인증번호를 입력해주세요.");
+                setTimeLeft(300);
+                setIsTimerRunning(true);
+            } else if (data.status === 'alreadyPhoneNumber') {
+                Alert.alert("오류", "전화번호는 계정당 한번만 사용 가능합니다.");
+            } else if (data.status === 'LIMIT_EXCEEDED') {
+                Alert.alert("오류", "요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
+            } else if (data.status === 'DAILY_LIMIT_EXCEEDED') {
+                Alert.alert("오류", "일일 요청 횟수를 초과했습니다. 내일 다시 시도해 주세요.");
+            } else {
+                Alert.alert("오류", data.message || "인증번호 전송 중 문제가 발생했습니다.");
             }
         } catch (error) {
             Alert.alert("오류", "서버에 연결할 수 없습니다.");
             console.error('Error:', error);
         }
     };
-    
-    
 
     // 인증번호 검증
     const handleVerification = async () => {
@@ -99,6 +107,7 @@ function SignupStep1({ navigation, route }) {
                 if (data === "Verification successful") {
                     Alert.alert("성공", "인증이 완료되었습니다.");
                     setIsVerified(true); 
+                    clearInterval(timerRef.current);
                 } else if (data === "Invalid or expired code") {
                     Alert.alert("오류", "잘못 입력하셨습니다.");
                     setVerificationCode(''); 
@@ -123,24 +132,19 @@ function SignupStep1({ navigation, route }) {
         setVerificationCode(text);
     };
 
-    
-
     // 회원가입
     const handleComplete = async () => {
-        // 인증 완료 여부 확인
         if (!isVerified) {
             Alert.alert('인증 필요', '휴대폰 번호 인증을 완료해주세요.');
-            return; // 인증이 완료되지 않으면 함수 종료
+            return;
         }
-    
-        // 약관 동의 여부 확인
+
         if (!isAllAgreed) {
             Alert.alert('동의 필요', '약관 동의를 완료해주세요.');
-            return; // 약관 동의가 완료되지 않으면 함수 종료
+            return;
         }
-    
+
         try {
-            // 서버로 회원가입 요청 전송
             const response = await fetch('http://localhost:8080/signup/signup', {
                 method: 'POST',
                 headers: {
@@ -154,35 +158,29 @@ function SignupStep1({ navigation, route }) {
                     memberPhoneNumber: formattedValue 
                 }),
             });
-    
-            // 서버 응답 처리
+
             if (!response.ok) {
-                // 서버 응답이 성공하지 않았을 때 (상태 코드 200이 아님)
                 const data = await response.json();
                 Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
-                return; // 실패 시 함수 종료, 다음 화면으로 넘어가지 않음
+                return;
             }
 
-            // 서버 응답이 성공한 경우
             const data = await response.json();
 
-            // 서버에서 success 값이 true일 때만 성공 처리
             if (data.success === true) {
                 Alert.alert('가입 완료', '회원가입이 완료되었습니다.');
-                navigation.navigate('Exercise'); // 회원가입 성공 시에만 다음 화면으로 이동
+                navigation.navigate('Exercise');
             } else {
-                // success가 true가 아닐 때는 오류 처리
                 Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
             }
-    
+
         } catch (error) {
-            // 네트워크 오류 또는 서버에 연결할 수 없을 때
             Alert.alert('오류', '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.');
             console.error('Error:', error);
         }
     };
-    
 
+    const timerColor = isTimerRunning ? (timeLeft <= 60 ? 'red' : 'white') : '#6D6E6F';
 
     return (
         <>
@@ -240,7 +238,7 @@ function SignupStep1({ navigation, route }) {
                     <TextInput
                         style={[
                             styles.verificationInput,
-                            isVerified && { color: '#6D6E6F' } 
+                            isVerified && { color: '#6D6E6F' }
                         ]}
                         placeholder="인증번호 입력"
                         placeholderTextColor="#CCCCCC"
@@ -248,11 +246,26 @@ function SignupStep1({ navigation, route }) {
                         maxLength={6}
                         onChangeText={handleVerificationCodeChange}
                         value={verificationCode}
-                        editable={!isVerified} 
+                        editable={!isVerified}
                     />
+
+                    <View style={{position: 'absolute', top: 22, right: 15}}>
+                        <View style={{flexDirection: 'row', alignItems:'center'}}>
+                            <Icon 
+                                name="clock-o" 
+                                size={14} 
+                                color= {timerColor} 
+                                style={{ marginRight: 3 }} 
+                            />
+
+                            <Text style={[timerStyles.timerText, { color: timerColor }]}>
+                                {formatTime(timeLeft)} 
+                            </Text>
+                        </View>
+                    </View>
+
                 </View>
 
-                {/* setIsAllAgreed를 전달 */}
                 <Agree setIsAllAgreed={setIsAllAgreed} /> 
 
                 <TouchableOpacity
@@ -260,21 +273,27 @@ function SignupStep1({ navigation, route }) {
                     onPress={handleComplete}
                     disabled={!isVerified || !isAllAgreed} 
                 >
-                        <Text
-                            style={[
-                                styles.completeButtonText,
-                                (!isVerified || !isAllAgreed)
-                                    ? { color: '#303030' }  // 조건을 만족하지 않을 때의 폰트 색상
-                                    : { color: '#FFFFFF' }  // 조건을 만족할 때의 폰트 색상
-                            ]}
-                        >
-                            완료
-                        </Text>
-
+                    <Text
+                        style={[
+                            styles.completeButtonText,
+                            (!isVerified || !isAllAgreed)
+                                ? { color: '#303030' } 
+                                : { color: '#FFFFFF' } 
+                        ]}
+                    >
+                        완료
+                    </Text>
                 </TouchableOpacity>
             </ScrollView>
         </>
     );
+}
+
+const timerStyles = {
+    timerText: {
+        position: 'relative',
+        fontSize: 16,
+    },
 }
 
 export default SignupStep1;
