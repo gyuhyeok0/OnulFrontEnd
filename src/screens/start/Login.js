@@ -11,12 +11,13 @@ function LoginScreen({ navigation }) {
   const { t } = useTranslation();
 
   const handlePressSignIn = () => {
-    navigation.navigate('SignIn');
+    navigation.navigate('Signin');
   };
 
   const handlePressSignUp = () => {
     navigation.navigate('Signup');
   };
+
 
   return (
     <View style={styles.container}>

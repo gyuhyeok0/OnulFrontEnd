@@ -18,7 +18,7 @@ export const store = configureStore({
         getDefaultMiddleware({
         serializableCheck: {
             // 특정 액션의 직렬화 불가능 값을 무시하도록 설정
-            ignoredActions: ['persist/PERSIST'],
+            ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
         },
     }),
 });
