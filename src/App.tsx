@@ -7,7 +7,7 @@ import SplashScreen from 'react-native-splash-screen';
 // Redux 관련 import
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from './store'; // store.js에서 store와 persistor 가져오기
+import { store, persistor } from './store'; 
 
 // Screens
 import LoginScreen from './screens/start/Login';
