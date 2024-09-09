@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     
     buttonContainer: {
         position: 'absolute',
-        bottom: 20,  // 하단에서부터의 거리
+        bottom: 35,  // 하단에서부터의 거리
         width: '100%',  // 부모 컨테이너가 가로 100% 유지
         alignItems: 'center',  // 자식 요소들을 가로 중앙에 정렬
         margin: 20,
