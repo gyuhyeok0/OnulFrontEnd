@@ -11,7 +11,7 @@ import { store, persistor } from './store'; // store.js에서 store와 persistor
 
 // Screens
 import LoginScreen from './screens/start/Login';
-import SignIn from './screens/start/SignIn';
+import SignIn from './screens/start/Signin';
 import Signup from './screens/start/Signup';
 import SignupStep1 from './screens/start/SignupStep1';
 import SignupStep2 from './screens/start/SignupStep2';
@@ -66,7 +66,7 @@ function App() {
             <Stack.Screen
               name="Signup"
               component={Signup}
-              options={{ headerShown: false, animation: 'none' }}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="SignupStep1"
