@@ -21,5 +21,5 @@ const memberSlice = createSlice({
 });
 
 // 액션과 리듀서 export
-export const { postLogin, afterLogin } = memberSlice.actions;
+export const { postLogin, postLoginFailure } = memberSlice.actions;
 export const memberReducer = memberSlice.reducer;

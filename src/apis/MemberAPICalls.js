@@ -25,7 +25,6 @@ export const callLoginAPI = ({ form }) => {
 
                 // 로그인 성공 시 AsyncStorage에 토큰 저장
                 if (result.status === 200 && result.userInfo) {
-                    console.log("상태 200");
                     await AsyncStorage.setItem('accessToken', result.userInfo.accessToken);
                     dispatch(postLogin(result.userInfo));
                     return { status: 200, userInfo: result.userInfo }; // 성공 결과 반환
