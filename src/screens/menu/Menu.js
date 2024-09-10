@@ -13,10 +13,16 @@ const Menu = ({navigation}) => {
         navigation.navigate('MenuTranslation');
     };
 
+    const hadleAcountInfo = () => {
+
+        navigation.navigate('AcountInfo');
+    }
+
 
     return (
         <View>
             <Button title="번역" onPress={ handleTranslation } />
+            <Button title="계정정보" onPress={ hadleAcountInfo } />
 
         </View>
     );
