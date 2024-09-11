@@ -13,7 +13,7 @@ const Management = ({ navigation }) => {
     
 
     return (
-        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+        <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: '#1A1C22' }}>
             {/* 커스텀 헤더 컴포넌트 사용 */}
             <Header title="Management" navigation={navigation} />
             

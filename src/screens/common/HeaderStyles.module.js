@@ -6,6 +6,9 @@ export const headerStyles = {
     headerStyle: {
         height: 55,
         backgroundColor: '#1A1C22',
+        
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#FFFFFF',
 
     },
     headerText: {
