@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert, StyleSheet, Dimensions, Animated } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';  // @react-native-community/checkbox에서 임포트
-import CustomModal from '../modal/ServiceAgree';  // CustomModal 임포트
+import CustomModal from '../../src/screens/modal/ServiceAgree';  // CustomModal 임포트
 
 const screenHeight = Dimensions.get('window').height;
 

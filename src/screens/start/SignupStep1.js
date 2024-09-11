@@ -4,7 +4,7 @@ import DefaultHeader from '../common/DefaultHeader';
 import PhoneInput from 'react-native-phone-number-input';
 import * as Localize from 'react-native-localize'; 
 import styles from './Signupstep1.module';
-import Agree from './Agree';
+import Agree from '../../../components/signup/Agree';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 function SignupStep1({ navigation, route }) {

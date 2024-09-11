@@ -1,15 +1,23 @@
 import { StyleSheet } from 'react-native';
 
 const FooterStyles = StyleSheet.create({
+
     footer: {
-        height: 60,  // 푸터의 높이 설정
-        backgroundColor: '#000',  // 푸터 배경색
+        height: 70,  // 푸터의 높이 설정
+        backgroundColor: '#1A1C22',  // 푸터 배경색
         flexDirection: 'row',  // 버튼을 가로로 정렬
         justifyContent: 'space-around',  // 버튼 간 간격 조정
         alignItems: 'center',  // 수직 정렬
+        borderTopWidth: 1,  // 보더 탑 1px
+        borderBottomWidth: 1,  // 보더 탑 1px
+
+        borderTopColor: '#FFFFFF',  // 보더 탑 색상을 흰색으로 설정
+        borderBottomColor: '#FFFFFF',  // 보더 탑 색상을 흰색으로 설정
+
     },
+    
     safeArea: {
-        backgroundColor: '#000',  // SafeAreaView 배경색 설정
+        backgroundColor: '#1A1C22',  // SafeAreaView 배경색 설정
     },
     button: {
         padding: 10,  // 버튼 패딩 설정

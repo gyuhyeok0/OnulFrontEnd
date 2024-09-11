@@ -4,8 +4,13 @@ import { StyleSheet } from 'react-native';
 
 export const headerStyles = {
     headerStyle: {
-        height: 50,
-        backgroundColor: '#191919',
+        height: 55,
+        backgroundColor: '#1A1C22',
+
     },
-    headerTintColor: '#fff',
+    headerText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'white'
+    },
 };
