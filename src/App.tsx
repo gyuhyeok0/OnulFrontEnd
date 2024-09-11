@@ -30,6 +30,7 @@ import Schedule from './screens/schedule/Schedule';
 import Management from './screens/management/Management';
 import Record from './screens/record/Record';
 import Menu from './screens/menu/Menu';
+import Analysis from './screens/analysis/Analysis';
 
 //Subpage
 import MenuTranslation from './screens/menu/MenuTranslation';
@@ -125,6 +126,13 @@ function MainApp() {
         <Stack.Screen
           name="Record"
           component={Record}
+          options={{ headerShown: false, animation: 'none' }}
+        />
+
+        {/* 분석 페이지 */}
+        <Stack.Screen
+          name="Analysis"
+          component={Analysis}
           options={{ headerShown: false, animation: 'none' }}
         />
 

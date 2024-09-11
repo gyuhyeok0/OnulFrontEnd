@@ -92,7 +92,7 @@ function Signin({ navigation }) {
                     <Text style={styles.loginButtonText}>로그인</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Register')}>
+                <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Signup')}>
                     <Text style={styles.registerButtonText}>이메일 회원가입</Text>
                 </TouchableOpacity>
 
