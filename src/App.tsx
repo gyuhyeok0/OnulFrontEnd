@@ -35,6 +35,7 @@ import Analysis from './screens/analysis/Analysis';
 //Subpage
 import MenuTranslation from './screens/menu/MenuTranslation';
 import AcountInfo from './screens/menu/AcountInfo';
+import Onboarding from './screens/start/Onboarding';
 
 const Stack = createNativeStackNavigator();
 
@@ -106,6 +107,13 @@ function MainApp() {
             ),
             animation: 'none',
           })}
+        />
+
+        {/* 스케쥴 페이지 */}
+        <Stack.Screen
+          name="Onboarding"
+          component={Onboarding}
+          options={{ headerShown: false, animation: 'none' }}
         />
 
         {/* 스케쥴 페이지 */}

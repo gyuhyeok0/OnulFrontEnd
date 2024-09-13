@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import Management from '../management/Management';
 
 const FooterStyles = StyleSheet.create({
     footer: {
