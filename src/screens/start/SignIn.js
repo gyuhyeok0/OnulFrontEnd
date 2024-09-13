@@ -27,7 +27,6 @@ function Signin({ navigation }) {
         const result = await dispatch(callLoginAPI({ form })); // API 호출 및 결과 저장
 
         if (result && result.status === 200) {
-            console.log("안녕");
             navigation.navigate('Exercise');
         } else if (result && result.errorMessage) {
             console.error(result.errorMessage);
