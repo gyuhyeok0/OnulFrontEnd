@@ -18,11 +18,18 @@ const Menu = ({navigation}) => {
         navigation.navigate('AcountInfo');
     }
 
+    const hadleAsyncStorage = () => {
+
+        navigation.navigate('AsyncStorage2');
+    }
+
 
     return (
         <View>
             <Button title="번역" onPress={ handleTranslation } />
             <Button title="계정정보" onPress={ hadleAcountInfo } />
+            <Button title="스토리지" onPress={ hadleAsyncStorage } />
+
 
         </View>
     );

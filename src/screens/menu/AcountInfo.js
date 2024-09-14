@@ -1,7 +1,7 @@
 import 'intl-pluralrules';
 import React, { useEffect } from 'react';
 import { View, Button } from 'react-native';
-import { handlerLogOut } from '../../hooks/Logout';  // Logout.js에서 함수 임포트
+import { handlerLogOut } from '../../hooks/HandleLogout';  // Logout.js에서 함수 임포트
 
 const MenuAcountInfo = ({ navigation }) => {
     useEffect(() => {

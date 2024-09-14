@@ -35,7 +35,8 @@ import Analysis from './screens/analysis/Analysis';
 //Subpage
 import MenuTranslation from './screens/menu/MenuTranslation';
 import AcountInfo from './screens/menu/AcountInfo';
-import Onboarding from './screens/start/Onboarding';
+import Onboarding from './screens/start/onboarding/Onboarding';
+import AsyncStorage2 from './screens/menu/AsyncStorage2';
 
 const Stack = createNativeStackNavigator();
 
@@ -172,6 +173,17 @@ function MainApp() {
           component={AcountInfo}
           options={{
             title: 'AcountInfo',
+            headerShown: true, // 헤더 보이기 설정
+            ...DefaultHeaderStyles, // 스타일 적용
+          }}
+        />
+
+        {/* 메뉴 스토리지 페이지 */}
+        <Stack.Screen
+          name="AsyncStorage2"
+          component={AsyncStorage2}
+          options={{
+            title: 'AsyncStorage2',
             headerShown: true, // 헤더 보이기 설정
             ...DefaultHeaderStyles, // 스타일 적용
           }}

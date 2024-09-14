@@ -6,8 +6,13 @@ import * as Localize from 'react-native-localize';
 import styles from './Signupstep1.module';
 import Agree from '../../../components/signup/Agree';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { callLoginAPI } from '../../apis/MemberAPICalls';
+import { useDispatch } from 'react-redux';
+
 
 function SignupStep1({ navigation, route }) {
+    const dispatch = useDispatch();
+
     const [phoneNumber, setPhoneNumber] = useState('');
     const [formattedValue, setFormattedValue] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
@@ -168,8 +173,26 @@ function SignupStep1({ navigation, route }) {
             const data = await response.json();
 
             if (data.success === true) {
-                Alert.alert('가입 완료', '회원가입이 완료되었습니다.');
-                navigation.navigate('Exercise');
+                // Alert.alert('가입 완료', '회원가입이 완료되었습니다.');
+
+                const form = {
+                    memberId: memberId,
+                    memberPassword: memberPassword
+                };
+
+                const result = await dispatch(callLoginAPI({ form })); // API 호출 및 결과 저장
+
+                if (result && result.status === 200) {
+                    // 로그인 성공 시 Onboarding 페이지로 이동
+                    navigation.navigate('Onboarding');
+                } else if (result && result.errorMessage) {
+                    Alert.alert('로그인 오류', result.errorMessage || '로그인 중 문제가 발생했습니다.');
+                    console.error(result.errorMessage);
+                } else {
+                    Alert.alert('로그인 실패', '로그인에 실패했습니다.');
+                    console.error("로그인에 실패했습니다.");
+                }
+                
             } else {
                 Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
             }

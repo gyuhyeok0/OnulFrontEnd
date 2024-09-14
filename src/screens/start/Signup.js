@@ -45,9 +45,10 @@ function Signup({ navigation }) {
 
     const validateMemberPassword = (text) => {
         setMemberPassword(text);
-        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{6,20}$/; // 영문자와 숫자를 필수로, 특수문자는 선택
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{6,20}$/; // 특수문자 제외, 아이디와 동일한 형식
         setIsMemberPasswordValid(passwordRegex.test(text));
     };
+    
 
     const validateConfirmPassword = (text) => {
         setConfirmPassword(text);
@@ -103,6 +104,8 @@ function Signup({ navigation }) {
             <DefaultHeader title="간편가입" navigation={navigation} />
 
             <View style={styles.container}>
+                <View style={[styles.BackgroundCircle, { top: height * 0.14 }]}></View>
+
                 <Text style={[styles.label, { marginTop: 50 }]}>아이디</Text>
 
                 <View style={styles.idContainer}>
@@ -189,6 +192,15 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#191D22',
     },
+
+    BackgroundCircle: {
+        position: 'absolute',
+        right: -110,
+        width: 320,
+        height: 320,
+        backgroundColor: 'black',
+        borderRadius: 400,
+    },
     
     idContainer: {
         flexDirection: 'row', 
@@ -207,8 +219,8 @@ const styles = StyleSheet.create({
     
     idInput: {
         flex: 1, // 입력 필드가 남은 공간을 차지하도록 설정
-        borderWidth: 1.5,
-        borderColor: '#3B404B',
+        borderWidth: 1,
+        borderColor: '#777777',
         borderRadius: 10,
         paddingVertical: 12, // 위, 아래 패딩
         paddingLeft: 15, // 왼쪽 패딩
@@ -230,14 +242,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         height: 45
     },
-     
+    
     availableButton: {
         backgroundColor: 'green', // 사용 가능한 아이디일 때 버튼 색상 변경
     },
     
     checkButtonText: {
         color: '#F1F4FA',
-        fontWeight: '100',
+        fontSize: 14,
+        fontWeight: '300',
     },
     
     availableButtonText: {
@@ -250,8 +263,8 @@ const styles = StyleSheet.create({
     },
     
     input: {
-        borderWidth: 1.5,
-        borderColor: '#3B404B',
+        borderWidth: 1,
+        borderColor: '#777777',
         borderRadius: 10,
         padding: 10,
         fontSize: 16,
