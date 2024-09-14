@@ -19,8 +19,6 @@ function Signin({ navigation }) {
     const [isLoginAttempted, setIsLoginAttempted] = useState(false);
     const [loginError, setLoginError] = useState(null); // 에러 상태 추가
 
-    const loginResult = useSelector(state => state.member);
-
     const handleSignIn = async () => {
         setIsLoginAttempted(true); // 로그인 시도 상태 설정
         setLoginError(null); // 이전 에러 초기화
