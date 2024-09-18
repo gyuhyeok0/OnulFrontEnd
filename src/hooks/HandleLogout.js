@@ -3,8 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const handlerLogOut = async (navigation) => {
     try {
-        // 로컬 저장소 전체 삭제
-        await AsyncStorage.clear();
+        // 로컬 저장소 토큰 삭제
+        await AsyncStorage.removeItem('accessToken');
 
         // 타이머 관련 데이터 삭제
         await AsyncStorage.multiRemove(['timerTime', 'timerRunning', 'lastTime']);
