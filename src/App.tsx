@@ -37,6 +37,9 @@ import MenuTranslation from './screens/menu/MenuTranslation';
 import AcountInfo from './screens/menu/AcountInfo';
 import Onboarding from './screens/start/onboarding/Onboarding';
 import AsyncStorage2 from './screens/menu/AsyncStorage2';
+import Onboarding2 from './screens/start/onboarding/Onboarding2';
+import Onboarding3 from './screens/start/onboarding/Onboarding3';
+import Onboarding4 from './screens/start/onboarding/Onboarding4';
 
 const Stack = createNativeStackNavigator();
 
@@ -110,11 +113,32 @@ function MainApp() {
           })}
         />
 
-        {/* 스케쥴 페이지 */}
+        {/* 온보딩 페이지 */}
         <Stack.Screen
           name="Onboarding"
           component={Onboarding}
           options={{ headerShown: false, animation: 'none' }}
+        />
+
+        {/* 온보딩 페이지 */}
+        <Stack.Screen
+          name="Onboarding2"
+          component={Onboarding2}
+          options={{ headerShown: false}}
+        />
+
+        {/* 온보딩 페이지 */}
+        <Stack.Screen
+          name="Onboarding3"
+          component={Onboarding3}
+          options={{ headerShown: false }}
+        />
+
+        {/* 온보딩 페이지 */}
+        <Stack.Screen
+          name="Onboarding4"
+          component={Onboarding4}
+          options={{ headerShown: false }}
         />
 
         {/* 스케쥴 페이지 */}

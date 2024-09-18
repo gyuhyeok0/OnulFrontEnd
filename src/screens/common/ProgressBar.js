@@ -21,13 +21,13 @@ const ProgressBar = ({ currentStep, navigation }) => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <View style={currentStep >= 1 ? styles.circleActive : styles.circleInactive} />
+                    <View style={currentStep == 1 ? styles.circleActive : styles.circleInactive} />
                     <View style={styles.line} />
-                    <View style={currentStep >= 2 ? styles.circleActive : styles.circleInactive} />
+                    <View style={currentStep == 2 ? styles.circleActive : styles.circleInactive} />
                     <View style={styles.line} />
-                    <View style={currentStep >= 3 ? styles.circleActive : styles.circleInactive} />
+                    <View style={currentStep == 3 ? styles.circleActive : styles.circleInactive} />
                     <View style={styles.line} />
-                    <View style={currentStep >= 4 ? styles.circleActive : styles.circleInactive} />
+                    <View style={currentStep == 4 ? styles.circleActive : styles.circleInactive} />
                 </View>
             </View>
         </SafeAreaView>
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     },
     // currentStep이 1이 아닐 때 적용되는 기본 스타일
     containerDefault: {
-        height: 105,
+        height: 90,
     },
 
     header: {
