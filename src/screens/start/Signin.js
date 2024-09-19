@@ -90,11 +90,11 @@ function Signin({ navigation }) {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Signup')}>
-                    <Text style={styles.registerButtonText}>이메일 회원가입</Text>
+                    <Text style={styles.registerButtonText}>회원가입</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={openFindPasswordModal}>
-                    <Text style={styles.forgotText}>아이디 / 비밀번호 찾기</Text>
+                    <Text style={styles.forgotText}>비밀번호 찾기</Text>
                 </TouchableOpacity>
             </View>
 
