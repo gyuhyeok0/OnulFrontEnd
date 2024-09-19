@@ -1,71 +1,412 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, TouchableOpacity, StyleSheet, Dimensions, View, Text, Animated, Easing } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Modal, TouchableOpacity, StyleSheet, Dimensions, View, TextInput, Text, Animated } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import PhoneInput from 'react-native-phone-number-input';
+import * as Localize from 'react-native-localize'; 
+import Icon from 'react-native-vector-icons/FontAwesome';
+import styles from './FindPassword.module';
+import { handleVerification, fetchUserPhoneNumber } from '../../hooks/HandlePhone';
+import { Alert } from 'react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
 const FindPassword = ({ isVisible, onClose }) => {
-    const [modalY] = useState(new Animated.Value(screenHeight)); // 모달의 Y축 초기 위치
-    const [overlayOpacity] = useState(new Animated.Value(0)); // 배경 투명도를 위한 초기값
+    const [modalY] = useState(new Animated.Value(screenHeight));
+    const [overlayOpacity] = useState(new Animated.Value(0));
+    const [userId, setUserId] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [formattedValue, setFormattedValue] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
+    const [isVerified, setIsVerified] = useState(false);
+    const [defaultCountryCode, setDefaultCountryCode] = useState('KR');
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const timerRef = useRef(null);
+    const phoneInput = useRef(null);
+    const [timeLeft, setTimeLeft] = useState(300);
+    const [showInputFields, setShowInputFields] = useState(false);
+    const [isInputDisabled, setIsInputDisabled] = useState(false); // 아이디 입력 비활성화 상태
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isComplete, setIsComplete] = useState(false); // 본인 확인 완료 상태 추가
+
+    const [isMemberPasswordValid, setIsMemberPasswordValid] = useState(null); 
+    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null); 
+
+    const resetState = () => {
+        setUserId('');
+        setPhoneNumber('');
+        setFormattedValue('');
+        setVerificationCode('');
+        setIsVerified(false);
+        setIsTimerRunning(false);
+        setTimeLeft(300);
+        setShowInputFields(false);
+        setIsInputDisabled(false); // 상태 초기화
+        setNewPassword('');
+        setConfirmPassword('');
+        setIsComplete(false); // 상태 초기화 시 본인 확인 완료 상태도 리셋
+    };
 
     useEffect(() => {
         if (isVisible) {
-            // 모달이 열릴 때 애니메이션을 실행
-            modalY.setValue(screenHeight); // 모달 Y값을 초기 위치로 설정
+            modalY.setValue(screenHeight);
             Animated.parallel([
                 Animated.timing(modalY, {
-                    toValue: 0, // 화면에 나타날 위치
+                    toValue: 0,
                     duration: 500,
                     useNativeDriver: true,
                 }),
                 Animated.timing(overlayOpacity, {
-                    toValue: 1, // 배경을 완전히 어둡게
+                    toValue: 1,
                     duration: 500,
                     useNativeDriver: true,
                 }),
             ]).start();
+        } else {
+            resetState();
         }
     }, [isVisible]);
 
     const handleClose = () => {
-        // 모달이 닫힐 때 애니메이션 실행
+        resetState();
         Animated.parallel([
             Animated.timing(modalY, {
-                toValue: screenHeight, // 화면 밖으로 나감
+                toValue: screenHeight,
                 duration: 500,
                 useNativeDriver: true,
             }),
             Animated.timing(overlayOpacity, {
-                toValue: 0, // 배경 투명도를 원래 상태로
+                toValue: 0,
                 duration: 500,
                 useNativeDriver: true,
             }),
         ]).start(() => onClose());
     };
 
+    useEffect(() => {
+        const locales = Localize.getLocales();
+        if (locales.length > 0) {
+            const countryCode = locales[0].countryCode;
+            setDefaultCountryCode(countryCode); 
+        }
+    }, []);
+
+    useEffect(() => {
+        if (timeLeft > 0 && !isVerified && isTimerRunning) {
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prev => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0) {
+            clearInterval(timerRef.current);
+            Alert.alert("시간 초과", "인증 시간이 초과되었습니다. 다시 요청해 주세요.");
+        }
+        return () => clearInterval(timerRef.current);
+    }, [timeLeft, isVerified, isTimerRunning]);
+
+    const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    
+    useEffect(() => {
+        if (verificationCode.length === 6 && !isComplete) { // 본인 확인 완료 후 실행되지 않도록
+            handleVerification(formattedValue, verificationCode, setIsVerified, () => clearInterval(timerRef.current));
+        }
+    }, [verificationCode, isComplete]);
+
+    const handleVerificationCodeChange = (text) => {
+        setVerificationCode(text);
+    };
+
+    const timerColor = isTimerRunning ? (timeLeft <= 60 ? 'red' : 'white') : '#6D6E6F';
+
+    const handleComplete = async () => {
+        try {
+            const response = await fetchUserPhoneNumber(userId);
+            
+            if (response.exists) {
+                setShowInputFields(true);
+                setIsInputDisabled(true); // 아이디가 존재하면 비활성화
+            } else {
+                Alert.alert("아이디 오류", "입력하신 아이디가 존재하지 않습니다.");
+            }
+        } catch (error) {
+            console.error("Error fetching phone number:", error);
+            Alert.alert("오류", "서버에 접근할 수 없습니다. 다시 시도해 주세요.");
+        }
+    };
+
+    const handleNext = async (formattedValue, userId, setTimeLeft, setIsTimerRunning) => {
+        const isValid = phoneInput.current?.isValidNumber(formattedValue);
+
+        if (!isValid) {
+            Alert.alert("유효하지 않은 전화번호", "올바른 전화번호를 입력해 주세요.");
+            return;
+        }
+    
+        try {
+            const response = await fetch('http://localhost:8080/sms/verificationAndSend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    phoneNumber: formattedValue,
+                    memberId: userId,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            switch (data.status) {
+                case 'SUCCESS':
+                    Alert.alert("성공", "인증번호를 입력해주세요.");
+                    setTimeLeft(300);
+                    setIsTimerRunning(true);
+                    break;
+                case 'INVALID_USER_ID':
+                    Alert.alert("오류", "유효하지 않은 사용자 ID입니다.");
+                    break;
+                case 'PHONE_NOT_REGISTERED':
+                    Alert.alert("오류", "등록된 휴대전화가 아닙니다.");
+                    break;
+                case 'LIMIT_EXCEEDED':
+                    Alert.alert("오류", "요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
+                    break;
+                case 'DAILY_LIMIT_EXCEEDED':
+                    Alert.alert("오류", "일일 요청 횟수를 초과했습니다. 내일 다시 시도해 주세요.");
+                    break;
+                default:
+                    Alert.alert("오류", "인증번호 전송 중 문제가 발생했습니다.");
+                    break;
+            }
+        } catch (error) {
+            Alert.alert("오류", "서버에 연결할 수 없습니다.");
+            console.error('Error:', error);
+        }
+    };
+
+
+    // 인증번호 검증
+    const handleVerification = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/sms/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    phoneNumber: formattedValue,
+                    code: verificationCode,
+                }),
+            });
+
+            const data = await response.text();
+
+            if (response.ok) {
+                if (data === "Verification successful") {
+                    Alert.alert("성공", "인증이 완료되었습니다.");
+                    setIsVerified(true); 
+                    clearInterval(timerRef.current);
+                    setIsComplete(true);
+                } else if (data === "Invalid or expired code") {
+                    Alert.alert("오류", "잘못 입력하셨습니다.");
+                    setVerificationCode(''); 
+                } else {
+                    Alert.alert("오류", data);
+                }
+            } else {
+                Alert.alert("오류", data || "인증번호 검증 중 문제가 발생했습니다.");
+            }
+        } catch (error) {
+            Alert.alert("오류", "서버에 연결할 수 없습니다.");
+        }
+    };
+
+    const handlePasswordResetComplete = async () => {
+        if (newPassword === confirmPassword) {
+            try {
+                const response = await fetch('http://localhost:8080/signup/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        memberId: userId,  // 회원 ID
+                        memberPassword: newPassword,  // 새 비밀번호
+                    }),
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    Alert.alert("성공", "비밀번호가 성공적으로 변경되었습니다.");
+                    handleClose();  // 모달 닫기
+                } else {
+                    Alert.alert("오류", data.message || "비밀번호 변경 중 오류가 발생했습니다.");
+                }
+            } catch (error) {
+                Alert.alert("오류", "서버에 연결할 수 없습니다. 다시 시도해 주세요.");
+                console.error('Error:', error);
+            }
+        } else {
+            Alert.alert("오류", "비밀번호가 일치하지 않습니다.");
+        }
+    };
+    
+
+    
+    const validateMemberPassword = (text) => {
+        setNewPassword(text);
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{6,20}$/; 
+        setIsMemberPasswordValid(passwordRegex.test(text));
+    };
+
+    const validateConfirmPassword = (text) => {
+        setConfirmPassword(text);
+        setIsConfirmPasswordValid(text === newPassword);
+    };
+    
     return (
-        <Modal
-            transparent={true}
-            visible={isVisible}
-        >
-            <Animated.View style={[styles.modalOverlay, { opacity: overlayOpacity }]}>
-                <Animated.View style={[styles.modalContent, { transform: [{ translateY: modalY }] }]}>
-                    {/* 왼쪽 상단에 뒤로 가기 아이콘 */}
-                    <View style={styles.titleContainer}>
-                        <TouchableOpacity onPress={handleClose} style={styles.backIcon}>
-                            <Ionicons 
-                                name="chevron-back" 
-                                size={32} 
-                                style={styles.icon}
-                            />
+        <Modal transparent={true} visible={isVisible}>
+            <Animated.View style={[modalstyles.modalOverlay, { opacity: overlayOpacity }]}>
+                <Animated.View style={[modalstyles.modalContent, { transform: [{ translateY: modalY }] }]}>
+                    <View style={modalstyles.titleContainer}>
+                        <TouchableOpacity onPress={handleClose} style={modalstyles.backIcon}>
+                            <Ionicons name="chevron-back" size={32} style={modalstyles.icon} />
                         </TouchableOpacity>
-                        <Text style={styles.title}>아이디 / 비밀번호 찾기</Text>
+                        <Text style={modalstyles.title}>비밀번호 찾기</Text>
                     </View>
 
+                    <View style={styles.container}>
+                        {/* 아이디 입력과 본인 확인 영역 숨기기 */}
+                        {!isComplete && (
+                            <>
+                                <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginBottom: 10}}>아이디 입력</Text>
+                                <TextInput
+                                    style={[styles.idInput, isVerified && { color: '#6D6E6F' }, isInputDisabled && { backgroundColor: '#242732', color: '#AAAAAA' }]}
+                                    placeholder="아이디 입력"
+                                    placeholderTextColor="#CCCCCC"
+                                    keyboardType="default"
+                                    onChangeText={text => setUserId(text)}
+                                    editable={!isInputDisabled} 
+                                />
+                                <TouchableOpacity style={[styles.completeButton, isInputDisabled && { backgroundColor: '#242732' }]} onPress={handleComplete} disabled={isInputDisabled}>
+                                    <Text style={styles.completeButtonText}>완료</Text>
+                                </TouchableOpacity>
 
-                    {/* 모달 내용 */}
-                    <View>
+                                {showInputFields && (
+                                    <>
+                                        <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>본인 확인</Text>
+                                        <PhoneInput
+                                            key={defaultCountryCode}
+                                            ref={phoneInput}
+                                            defaultValue={phoneNumber}
+                                            defaultCode={defaultCountryCode}
+                                            layout="first"
+                                            onChangeText={(text) => setPhoneNumber(text)}
+                                            onChangeFormattedText={(text) => setFormattedValue(text)}
+                                            containerStyle={{
+                                                marginTop: 10,
+                                                width: '100%',
+                                                height: 55,
+                                                backgroundColor: '#3B404B',
+                                                borderRadius: 8,
+                                            }}
+                                            textInputStyle={{ 
+                                                color: 'white',  
+                                                fontSize: 16,    
+                                            }}
+                                            textContainerStyle={{ 
+                                                backgroundColor: '#3B404B', 
+                                                borderRadius: 8,
+                                                paddingVertical: 10, 
+                                            }}
+                                            codeTextStyle={{ color: 'white' }} 
+                                            countryPickerButtonStyle={{ backgroundColor: '#5E56C3', borderRadius: 12 }}
+                                            textInputProps={{
+                                                placeholderTextColor: '#CCCCCC', 
+                                                cursorColor: 'white',
+                                            }}
+                                            withDarkTheme={true}
+                                            withShadow={false}
+                                            autoFocus
+                                        />
 
+                                        <View style={styles.requestBox}>
+                                            <TouchableOpacity 
+                                                style={styles.requestButton} 
+                                                onPress={() => handleNext(formattedValue, userId, setTimeLeft, setIsTimerRunning)} 
+                                                disabled={isVerified}
+                                            >
+                                                <Text style={styles.requestButtonText}>인증번호 요청</Text>
+                                            </TouchableOpacity>
+
+                                            <TextInput
+                                                style={[styles.verificationInput, isVerified && { color: '#6D6E6F' }]}
+                                                placeholder="인증번호 입력"
+                                                placeholderTextColor="#CCCCCC"
+                                                keyboardType="numeric"
+                                                maxLength={6}
+                                                onChangeText={handleVerificationCodeChange}
+                                                value={verificationCode}
+                                                editable={!isVerified}
+                                            />
+
+                                            <View style={{ position: 'absolute', top: 18, right: 15 }}>
+                                                <View style={{ flexDirection: 'row', alignItems:'center' }}>
+                                                    <Icon name="clock-o" size={14} color={timerColor} style={{ marginRight: 3 }} />
+                                                    <Text style={[styles.timerText, { color: timerColor }]}>
+                                                        {formatTime(timeLeft)} 
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </>
+                                )}
+                            </>
+                        )}
+
+                        {/* 비밀번호 재설정 영역 */}
+                        {isComplete && (
+                            <View>
+                                <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>비밀번호 재설정</Text>
+
+                                <View>
+                                    {/* 새 비밀번호 입력 */}
+                                    <TextInput
+                                        style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white' }]}
+                                        placeholder="새 비밀번호 입력"
+                                        placeholderTextColor="#CCCCCC"
+                                        secureTextEntry={true}
+                                        onChangeText={validateMemberPassword} // validateMemberPassword로 변경
+                                    />
+                                    {isMemberPasswordValid === false && <Text style={styles.errorText}>영문자와 소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
+
+                                    
+                                    {/* 비밀번호 확인 입력 */}
+                                    <TextInput
+                                        style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white', marginTop: 10 }]}
+                                        placeholder="새 비밀번호 확인"
+                                        placeholderTextColor="#CCCCCC"
+                                        secureTextEntry={true}
+                                        onChangeText={validateConfirmPassword} // 여기서 validateConfirmPassword로 변경
+                                    />
+                                    {isConfirmPasswordValid === false && <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>}
+
+
+                                    {/* 완료 버튼 */}
+                                    <TouchableOpacity 
+                                        style={[styles.completeButton, { marginTop: 20 }]} 
+                                        onPress={handlePasswordResetComplete}
+                                    >
+                                        <Text style={styles.completeButtonText}>완료</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        )}
                     </View>
                 </Animated.View>
             </Animated.View>
@@ -73,16 +414,16 @@ const FindPassword = ({ isVisible, onClose }) => {
     );
 };
 
-const styles = StyleSheet.create({
+
+const modalstyles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        justifyContent: 'flex-end', // 모달이 아래에서 위로 올라오도록 설정
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // 모달 뒷배경의 어두운 영역 (투명도는 Animated로 제어)
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-
     modalContent: {
         width: '100%',
-        height: screenHeight * 0.85, // 모달 높이를 절반으로 설정
+        height: screenHeight * 0.91,
         backgroundColor: '#191D22',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
@@ -93,22 +434,19 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 5,
     },
-
     titleContainer: {
         flexDirection: 'row',
         height: 35,
         alignItems: 'center'
     },
-
     icon: {
-        color: '#fff',
-        marginRight: 8
+        color: 'gray',
     },
 
     title:{
         color: 'white',
         fontSize: 20
-    }
+    },
 });
 
 export default FindPassword;

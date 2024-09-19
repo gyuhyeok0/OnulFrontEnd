@@ -16,7 +16,7 @@ export const checkOnboardingStatus = async (userId, accessToken, navigation) => 
         console.log("Onboarding 필요 여부: ", needsOnboarding);
 
         if (needsOnboarding) {
-            console.log("온보딩이 필요합니다.");
+            // console.log("온보딩이 필요합니다.");
             // 온보딩 페이지로 이동
             navigation.navigate('Onboarding');
         } else {
