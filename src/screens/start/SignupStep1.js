@@ -247,6 +247,7 @@ function SignupStep1({ navigation, route }) {
                     textInputProps={{
                         placeholderTextColor: '#CCCCCC', 
                         cursorColor: 'white',
+                        keyboardType: 'numeric' // 숫자 키보드로 제한
                     }}
                     withDarkTheme={true}
                     withShadow={false}
@@ -267,7 +268,10 @@ function SignupStep1({ navigation, route }) {
                         placeholderTextColor="#CCCCCC"
                         keyboardType="numeric"
                         maxLength={6}
-                        onChangeText={handleVerificationCodeChange}
+                        onChangeText={(text) => {
+                            const filteredText = text.replace(/[^0-9]/g, ''); // 숫자만 허용
+                            handleVerificationCodeChange(filteredText);
+                        }}
                         value={verificationCode}
                         editable={!isVerified}
                     />

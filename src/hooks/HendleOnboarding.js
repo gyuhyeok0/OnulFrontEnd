@@ -1,31 +1,56 @@
+import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
+
 import axios from 'axios';
 
-// 온보딩 상태 확인 함수
+
 export const checkOnboardingStatus = async (userId, accessToken, navigation) => {
     try {
+
         const response = await axios.get(
             `http://localhost:8080/onboarding/check?memberId=${userId}`,
             {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`, // 토큰 추가
+                    Authorization: `Bearer ${accessToken}`,
                 },
             }
         );
-        const needsOnboarding = response.data;
 
-        console.log("Onboarding 필요 여부: ", needsOnboarding);
 
-        if (needsOnboarding) {
-            // console.log("온보딩이 필요합니다.");
-            // 온보딩 페이지로 이동
-            navigation.navigate('Onboarding');
-        } else {
-            console.log("온보딩이 필요하지 않습니다.");
+        // 응답 상태 코드가 200일 경우
+        if (response.status === 200) {
+            const needsOnboarding = response.data.needsOnboarding;
+
+            if (needsOnboarding) {
+                // 온보딩 페이지로 이동
+                navigation.navigate('Onboarding');
+            } else {
+
+                // console.log("온보딩이 필요하지 않습니다.");
+            }
         }
+
     } catch (error) {
-        console.error("온보딩 상태 확인 중 오류 발생: ", error);
+        // 상태 코드가 401일 경우
+        if (error.response && error.response.status === 401) {
+            
+            // 새로 발급된 토큰을 가져옴
+            const newAccessToken = await refreshAccessToken(navigation);
+            
+            // 새 토큰으로 다시 checkOnboardingStatus 호출
+            if (newAccessToken) {
+                await checkOnboardingStatus(userId, newAccessToken, navigation);
+            } else {
+                // console.error("새로운 토큰을 가져오지 못했습니다.");
+            }
+
+        } else {
+            console.error("상태 확인 중 오류 발생: ", error);
+        }
     }
 };
+
+
+
 
 // 무게 변환 함수
 const convertToKg = (weight) => {

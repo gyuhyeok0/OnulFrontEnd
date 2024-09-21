@@ -1,6 +1,7 @@
 // src/screens/Menu.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
+import DefaultHeader from '../common/DefaultHeader';
 
 const Menu = ({navigation}) => {
     
@@ -25,13 +26,18 @@ const Menu = ({navigation}) => {
 
 
     return (
-        <View>
-            <Button title="번역" onPress={ handleTranslation } />
-            <Button title="계정정보" onPress={ hadleAcountInfo } />
-            <Button title="스토리지" onPress={ hadleAsyncStorage } />
+        <>
+            <DefaultHeader title="메뉴" navigation={navigation} />
+
+            <View>
+                <Button title="번역" onPress={ handleTranslation } />
+                <Button title="계정정보" onPress={ hadleAcountInfo } />
+                <Button title="스토리지" onPress={ hadleAsyncStorage } />
 
 
-        </View>
+            </View>
+        
+        </>
     );
 };
 

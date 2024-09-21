@@ -2,6 +2,8 @@ import 'intl-pluralrules';
 import React, { useEffect } from 'react';
 import { View, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DefaultHeader from '../common/DefaultHeader';
+
 
 const AsyncStorage2 = ({ navigation }) => {
     // 모든 스토리지 데이터를 불러오는 함수
@@ -38,10 +40,17 @@ const AsyncStorage2 = ({ navigation }) => {
     }, []);
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Button title="스토리지 확인" onPress={getAllData} />
-            <Button title="스토리지 삭제" onPress={clearStorage} color="red" />
-        </View>
+        <>
+        
+            <DefaultHeader title="메뉴" navigation={navigation} />
+
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Button title="스토리지 확인" onPress={getAllData} />
+                <Button title="스토리지 삭제" onPress={clearStorage} color="red" />
+            </View>
+
+        </>
+
     );
 };
 

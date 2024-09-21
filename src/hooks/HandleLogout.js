@@ -3,6 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const handlerLogOut = async (navigation) => {
     try {
+        
+        if (!navigation) {
+            console.error("navigation 객체가 존재하지 않습니다.");
+            return;
+        }
+        
+
         // 로컬 저장소 토큰 삭제
         await AsyncStorage.removeItem('accessToken');
 

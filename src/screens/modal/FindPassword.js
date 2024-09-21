@@ -31,6 +31,8 @@ const FindPassword = ({ isVisible, onClose }) => {
 
     const [isMemberPasswordValid, setIsMemberPasswordValid] = useState(null); 
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null); 
+    const [isExpired, setIsExpired] = useState(false); // 타이머 만료 상태 추가
+
 
     const resetState = () => {
         setUserId('');
@@ -98,6 +100,7 @@ const FindPassword = ({ isVisible, onClose }) => {
             }, 1000);
         } else if (timeLeft === 0) {
             clearInterval(timerRef.current);
+            setIsExpired(true); // 타이머 만료 시 상태 설정
             Alert.alert("시간 초과", "인증 시간이 초과되었습니다. 다시 요청해 주세요.");
         }
         return () => clearInterval(timerRef.current);
@@ -116,9 +119,16 @@ const FindPassword = ({ isVisible, onClose }) => {
         }
     }, [verificationCode, isComplete]);
 
+
     const handleVerificationCodeChange = (text) => {
-        setVerificationCode(text);
+        const filteredText = text.replace(/[^0-9]/g, ''); // 숫자만 허용
+        if (isExpired) {
+            Alert.alert("오류", "인증 시간이 만료되었습니다. 다시 요청해 주세요.");
+            return; // 만료되었을 경우 입력을 막음
+        }
+        setVerificationCode(filteredText);
     };
+    
 
     const timerColor = isTimerRunning ? (timeLeft <= 60 ? 'red' : 'white') : '#6D6E6F';
 
@@ -165,6 +175,7 @@ const FindPassword = ({ isVisible, onClose }) => {
                     Alert.alert("성공", "인증번호를 입력해주세요.");
                     setTimeLeft(300);
                     setIsTimerRunning(true);
+                    setIsExpired(false); // 타이머 초기화 시 만료 상태 초기화
                     break;
                 case 'INVALID_USER_ID':
                     Alert.alert("오류", "유효하지 않은 사용자 ID입니다.");
@@ -242,10 +253,25 @@ const FindPassword = ({ isVisible, onClose }) => {
                 const data = await response.json();
     
                 if (response.ok) {
-                    Alert.alert("성공", "비밀번호가 성공적으로 변경되었습니다.");
-                    handleClose();  // 모달 닫기
+                    // 서버에서 반환된 상태에 따른 처리
+                    switch (data.state) {
+                        case 'SUCCESS':
+                            Alert.alert("성공", "비밀번호가 성공적으로 변경되었습니다.");
+                            // handleClose();  // 모달 닫기
+                            break;
+                        case 'INVALID_REQUEST':
+                            Alert.alert("오류", "모든 필드를 입력해 주세요.");
+                            break;
+                        case 'INVALID_PASSWORD':
+                            Alert.alert("오류", "비밀번호는 영문자와 숫자가 포함된 6~20자리여야 합니다.");
+                            break;
+                        case 'ERROR':
+                        default:
+                            Alert.alert("오류", "비밀번호 변경 중 오류가 발생했습니다.");
+                            break;
+                    }
                 } else {
-                    Alert.alert("오류", data.message || "비밀번호 변경 중 오류가 발생했습니다.");
+                    Alert.alert("오류", "비밀번호 변경 중 오류가 발생했습니다.");
                 }
             } catch (error) {
                 Alert.alert("오류", "서버에 연결할 수 없습니다. 다시 시도해 주세요.");
@@ -255,6 +281,8 @@ const FindPassword = ({ isVisible, onClose }) => {
             Alert.alert("오류", "비밀번호가 일치하지 않습니다.");
         }
     };
+    
+    
     
 
     
@@ -290,7 +318,11 @@ const FindPassword = ({ isVisible, onClose }) => {
                                     placeholder="아이디 입력"
                                     placeholderTextColor="#CCCCCC"
                                     keyboardType="default"
-                                    onChangeText={text => setUserId(text)}
+                                    onChangeText={text => {
+                                        const filteredText = text.replace(/[^a-zA-Z0-9]/g, ''); // 영문자와 숫자만 허용
+                                        setUserId(filteredText);
+                                    }}
+                                    value={userId} // 입력값 설정
                                     editable={!isInputDisabled} 
                                 />
                                 <TouchableOpacity style={[styles.completeButton, isInputDisabled && { backgroundColor: '#242732' }]} onPress={handleComplete} disabled={isInputDisabled}>
@@ -329,6 +361,7 @@ const FindPassword = ({ isVisible, onClose }) => {
                                             textInputProps={{
                                                 placeholderTextColor: '#CCCCCC', 
                                                 cursorColor: 'white',
+                                                keyboardType: 'numeric' // 숫자 키보드로 제한
                                             }}
                                             withDarkTheme={true}
                                             withShadow={false}
@@ -345,12 +378,22 @@ const FindPassword = ({ isVisible, onClose }) => {
                                             </TouchableOpacity>
 
                                             <TextInput
-                                                style={[styles.verificationInput, isVerified && { color: '#6D6E6F' }]}
+                                                style={[
+                                                    styles.verificationInput,
+                                                    isVerified && { color: '#6D6E6F' }
+                                                ]}
                                                 placeholder="인증번호 입력"
                                                 placeholderTextColor="#CCCCCC"
                                                 keyboardType="numeric"
                                                 maxLength={6}
-                                                onChangeText={handleVerificationCodeChange}
+                                                onChangeText={(text) => {
+                                                    const filteredText = text.replace(/[^0-9]/g, ''); // 숫자만 허용
+                                                    if (isExpired) {
+                                                        Alert.alert("오류", "인증 시간이 만료되었습니다. 다시 요청해 주세요.");
+                                                        return; // 만료되었을 경우 입력을 막음
+                                                    }
+                                                    handleVerificationCodeChange(filteredText);
+                                                }}
                                                 value={verificationCode}
                                                 editable={!isVerified}
                                             />
