@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
     forgotText: {
         color: 'gray',
-        textDecorationLine: 'underline',
+        // textDecorationLine: 'underline',
     },
 });
 

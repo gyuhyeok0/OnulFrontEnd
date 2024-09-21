@@ -13,7 +13,6 @@ import { View} from 'react-native';
 import Header from './screens/common/Header';
 import InitializationWrapper from './InitializationWrapper';  // 초기화 컴포넌트 가져오기
 
-
 //Screens
 // Common
 import { DefaultHeaderStyles } from './screens/common/DefaultHeaderStyles.module';
@@ -23,6 +22,7 @@ import LoginScreen from './screens/start/Login';
 import Signin from './screens/start/Signin';
 import Signup from './screens/start/Signup';
 import SignupStep1 from './screens/start/SignupStep1';
+import Inquiry from './screens/start/Inquiry';
 
 // Main
 import Exercise from './screens/exercise/Exercise';
@@ -69,6 +69,18 @@ function MainApp() {
           component={LoginScreen}
           options={{ headerShown: false, animation: 'none' }}
         />
+
+        {/* 문의 페이지 */}
+        <Stack.Screen
+          name="Inquiry"
+          component={Inquiry}
+          options={{
+            title: 'Inquiry',
+            headerShown: false, // 헤더 보이기 설정
+            ...DefaultHeaderStyles, // 스타일 적용
+          }}
+        />
+
 
         {/* 로그인 실행 페이지 */}
         <Stack.Screen
@@ -175,7 +187,7 @@ function MainApp() {
           component={Menu}
           options={{
             title: 'Menu',
-            headerShown: true, // 헤더 보이기 설정
+            headerShown: false, // 헤더 보이기 설정
             ...DefaultHeaderStyles, // 스타일 적용
           }}
         />
@@ -186,7 +198,7 @@ function MainApp() {
           component={MenuTranslation}
           options={{
             title: 'MenuTranslation',
-            headerShown: true, // 헤더 보이기 설정
+            headerShown: false, // 헤더 보이기 설정
             ...DefaultHeaderStyles, // 스타일 적용
           }}
         />
@@ -197,7 +209,7 @@ function MainApp() {
           component={AcountInfo}
           options={{
             title: 'AcountInfo',
-            headerShown: true, // 헤더 보이기 설정
+            headerShown: false, // 헤더 보이기 설정
             ...DefaultHeaderStyles, // 스타일 적용
           }}
         />
@@ -208,10 +220,11 @@ function MainApp() {
           component={AsyncStorage2}
           options={{
             title: 'AsyncStorage2',
-            headerShown: true, // 헤더 보이기 설정
+            headerShown: false, // 헤더 보이기 설정
             ...DefaultHeaderStyles, // 스타일 적용
           }}
         />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

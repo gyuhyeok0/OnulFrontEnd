@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 function LoginScreen({ navigation }) {
@@ -10,17 +10,24 @@ function LoginScreen({ navigation }) {
 
   const { t } = useTranslation();
 
-  const handlePressSignIn = () => {
+  const handlePressSignIn = async () => {
+    // 로그인 페이지로 이동
     navigation.navigate('Signin');
   };
 
-  const handlePressSignUp = () => {
-    navigation.navigate('Signup');
+  const handlePressSignUp = async () => {
+
+      // 회원가입 페이지로 이동
+      navigation.navigate('Signup');
+  };
+
+  const handleInquiry = () => {
+    navigation.navigate('Inquiry');
   };
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={[styles.BackgroundCircle, { top: height * 0.25 }]}></View>
       <View style={styles.container2}>
         
@@ -40,10 +47,14 @@ function LoginScreen({ navigation }) {
           <TouchableOpacity style={styles.LoginBox} onPress={handlePressSignIn}>
             <Text style={styles.ButtonText}>{t('continue_with_account')}</Text>
           </TouchableOpacity>
+          
+          <TouchableOpacity>
+            <Text style={styles.inquiry} onPress={handleInquiry} >문의하기</Text>
+          </TouchableOpacity>
         </View>
 
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -93,7 +104,7 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     position: 'absolute',
-    bottom: 60,  // 하단에서부터의 거리
+    bottom: 30,  // 하단에서부터의 거리
     width: '100%',
     alignItems: 'center',
   },
@@ -123,6 +134,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
   },
+
+  inquiry: {
+    marginTop: 10,
+    color: 'gray',
+    // textDecorationLine: 'underline',
+  },
+
 });
 
 export default LoginScreen;

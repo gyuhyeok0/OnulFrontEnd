@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
 import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포트 임포트
 
 function Signup({ navigation }) {
