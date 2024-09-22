@@ -3,6 +3,7 @@ import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가�
 import axios from 'axios';
 
 
+// 온보딩 체크
 export const checkOnboardingStatus = async (userId, accessToken, navigation) => {
     try {
 
@@ -18,14 +19,16 @@ export const checkOnboardingStatus = async (userId, accessToken, navigation) => 
 
         // 응답 상태 코드가 200일 경우
         if (response.status === 200) {
-            const needsOnboarding = response.data.needsOnboarding;
+            const needsOnboarding = response.data;
+
+            console.log(needsOnboarding)
 
             if (needsOnboarding) {
                 // 온보딩 페이지로 이동
                 navigation.navigate('Onboarding');
             } else {
 
-                // console.log("온보딩이 필요하지 않습니다.");
+                console.log("온보딩이 필요하지 않습니다.");
             }
         }
 
@@ -88,9 +91,6 @@ export const registrationOnboarding = async (onboardingData, navigation) => {
     const { cm: convertedHeight } = convertToCm(height);
     const { kg: convertedWeight } = convertToKg(weight);
 
-    console.log("변환된 높이:", convertedHeight);
-    console.log("변환된 무게:", convertedWeight);
-
     // 서버에 보낼 데이터 객체 생성
     const dataToSend = {
         memberId,
@@ -116,7 +116,24 @@ export const registrationOnboarding = async (onboardingData, navigation) => {
         // console.log("온보딩 등록 응답:", response.data);
 
         navigation.navigate('Exercise');
+
     } catch (error) {
-        console.error("온보딩 등록 중 오류 발생:", error);
+        // 상태 코드가 401일 경우
+        if (error.response && error.response.status === 401) {
+            
+            // 새로 발급된 토큰을 가져옴
+            const newAccessToken = await refreshAccessToken(navigation);
+            
+            if (newAccessToken) {
+                await registrationOnboarding({ ...onboardingData, accessToken: newAccessToken }, navigation);
+            } else {
+                console.error("새로운 토큰을 가져오지 못했습니다.");
+            }
+
+        } else {
+            console.error("상태 확인 중 오류 발생: ", error);
+        }
     }
+
+    
 };

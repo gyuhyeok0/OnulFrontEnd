@@ -7,8 +7,8 @@ const FooterStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        borderTopWidth: 1,
-        borderTopColor: '#FFFFFF',
+        // borderTopWidth: 1,
+        // borderTopColor: '#FFFFFF',
     },
     safeArea: {
         backgroundColor: '#000000',
