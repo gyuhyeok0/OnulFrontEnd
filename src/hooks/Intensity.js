@@ -16,23 +16,23 @@ export const sendIntensityToServer = async (userId, intensity, accessToken) => {
             }),
         });
 
-        if (response.ok) {
+
+        if (response.status === 200) {
             const data = await response.json();
             console.log('서버 응답:', data);
-        } else {
-            console.error('서버 요청 실패:', response.status);
-        }
-    } catch (error) {
-        console.error('서버 요청 중 오류 발생:', error);
-        // 상태 코드가 401일 경우 처리
-        if (error.response && error.response.status === 401) {
+        } else if (response.status === 401) {
+            // 상태 코드가 401일 경우 액세스 토큰 갱신
             const newAccessToken = await refreshAccessToken();
             if (newAccessToken) {
                 // 새 토큰으로 다시 시도
                 await sendIntensityToServer(userId, intensity, newAccessToken);
             } else {
-                console.error("새로운 토큰을 가져오지 못했습니다.");
+                console.error('새로운 토큰을 가져오지 못했습니다.');
             }
+        } else {
+            console.error('서버 요청 실패:', response.status);
         }
+    } catch (error) {
+        console.error('서버 요청 중 오류 발생:', error);
     }
 };

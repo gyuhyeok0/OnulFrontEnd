@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         marginVertical: 15,
     },
+    
     intensityButton: {
         paddingVertical: 9,
         paddingHorizontal: 25,
