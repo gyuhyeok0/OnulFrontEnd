@@ -1,0 +1,39 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchExercisesSuccess, fetchExercisesFailure } from '../modules/ExerciseSlice'; // 경로 확인
+
+// 운동 데이터를 서버에서 가져오는 API 호출 함수
+export const callFetchExercisesAPI = () => {
+    return async (dispatch) => {
+        try {
+            const requestURL = 'http://localhost:8080/exercises/selectList'; // 실제 API 주소로 변경
+            const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
+
+            console.log('Access Token:', accessToken); // 액세스 토큰 확인
+            console.log('Request URL:', requestURL);   // API URL 확인
+
+            const response = await fetch(requestURL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 헤더에 포함
+                },
+            });
+
+            console.log('Response status:', response.status); // 응답 상태 확인
+            if (response.ok) {
+                const result = await response.json();
+
+                console.log('[ExerciseAPICalls] callFetchExercisesAPI RESULT : ', result);
+
+                // 성공 시 데이터를 리듀서에 전달
+                dispatch(fetchExercisesSuccess(result));
+            } else {
+                throw new Error(`Failed to fetch exercises: ${response.statusText}`);
+            }
+
+        } catch (error) {
+            console.error('[ExerciseAPICalls] callFetchExercisesAPI ERROR : ', error.message);
+            dispatch(fetchExercisesFailure(error.message));
+        }
+    };
+};

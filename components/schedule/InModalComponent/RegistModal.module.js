@@ -134,4 +134,16 @@ export const styles = StyleSheet.create({
         height: height * 0.35,
         backgroundColor: 'blue',
     },
+
+    exerciseName:{
+        color: 'white'
+    },
+
+    exerciseDetails: {
+
+        color: 'gray'
+    },
+    noExerciseText:{
+        color: 'white'
+    }
 });

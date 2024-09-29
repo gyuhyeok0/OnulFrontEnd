@@ -64,10 +64,10 @@ const WorkoutRegistration = () => {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => openModal('유산소')} style={styles.reigstBox}>
+                    <TouchableOpacity onPress={() => openModal('기타')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
-                            <Image source={require('../../src/assets/regist/Aerobic.webp')} style={styles.aerobicIcon} />
-                            <Text style={styles.text}>유산소 운동</Text>
+                            <Image source={require('../../src/assets/regist/EtcRegist.webp')} style={styles.aerobicIcon} />
+                            <Text style={styles.text}>기타 운동</Text>
                         </View>
                     </TouchableOpacity>
 
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     aerobicIcon: {
-        width: 45,
+        width: 46,
         height: 50,
         marginBottom: 15,
     },

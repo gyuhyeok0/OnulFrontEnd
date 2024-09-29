@@ -10,8 +10,8 @@ import Custom from '../../../components/exercise/Custom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Exercise = ({ navigation }) => {
-    const userId = useSelector((state) => state.member.userInfo.memberId);
-    const accessToken = useSelector((state) => state.member.userInfo.accessToken);
+    const userId = useSelector((state) => state.member.userInfo?.memberId); // Optional chaining 사용
+    const accessToken = useSelector((state) => state.member.userInfo?.accessToken); // Optional chaining 사용
 
     const [selectedOption, setSelectedOption] = useState('AutoAdapt');
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });

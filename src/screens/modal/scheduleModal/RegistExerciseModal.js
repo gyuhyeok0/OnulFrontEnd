@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import RegistChest from '../../../../components/schedule/InModalComponent/RegistChest';
 import RegistBack from '../../../../components/schedule/InModalComponent/RegistBack';
 import RegistAbs from '../../../../components/schedule/InModalComponent/RegistAbs';
-import RegistAerobic from '../../../../components/schedule/InModalComponent/RegistAerobic';
+import RegistEtc from '../../../../components/schedule/InModalComponent/RegistEtc';
 import RegistArms from '../../../../components/schedule/InModalComponent/RegistArms';
 import RegistCustom from '../../../../components/schedule/InModalComponent/RegistCustom';
 import RegistLowerBody from '../../../../components/schedule/InModalComponent/RegistLowerBody';
@@ -60,8 +60,8 @@ const RegistExerciseModal = ({ isVisible, onClose, exercise }) => {
                 return <RegistBack />;
             case '복근':
                 return <RegistAbs />;
-            case '유산소':
-                return <RegistAerobic />;
+            case '기타':
+                return <RegistEtc />;
             case '팔':
                 return <RegistArms />;
             case '하체':
