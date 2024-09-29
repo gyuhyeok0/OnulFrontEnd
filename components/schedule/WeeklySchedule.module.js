@@ -33,9 +33,11 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
+
     saturdayText: {
         color: '#5393F8',
     },
+    
     sundayText: {
         color: '#ED2F2F',
     },

@@ -12,7 +12,8 @@ const WeeklySchedule = () => {
     const [selectedWeekType, setSelectedWeekType] = useState(null);  // 선택된 주차 (oneWeek인지 twoWeek인지)
     const [selectedDay, setSelectedDay] = useState(null);  // 선택된 요일
 
-    const days = ['Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa', 'Su'];  // 요일 리스트
+    // 요일 리스트를 일요일부터 시작하도록 변경
+    const days = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'];  // 요일 리스트
 
     // 요일 박스 클릭 시 실행되는 함수
     const handleBoxPress = useCallback((index, weekType) => {
@@ -32,14 +33,13 @@ const WeeklySchedule = () => {
         <View style={styles.dayRow}>
             {days.map((day, index) => (
                 <View key={index} style={styles.day}>
-                    <Text style={[styles.dayText, index === 5 && styles.saturdayText, index === 6 && styles.sundayText]}>
-                        {day}
+                    <Text style={[styles.dayText, index === 6 && styles.saturdayText, index === 0 && styles.sundayText]}>
+                    {day}
                     </Text>
                 </View>
             ))}
         </View>
     ), []);
-
 
     // 주차별 요일 박스 렌더링 함수
     const renderWeekBoxes = useCallback((style, weekType, animations) => (
@@ -112,7 +112,6 @@ const WeeklySchedule = () => {
                 ) : (
                     <ScheduleSelection selectedWeekType={selectedWeekType} selectedDay={selectedDay} />
                 )}
-
             </View>
         </View>
     );

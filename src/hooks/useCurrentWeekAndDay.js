@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-
-
 // 스케쥴 관련 주 별로 색 변화
 export const useCurrentWeekAndDay = () => {
   const [isSwapped, setIsSwapped] = useState(false);  // 색상이 바뀌었는지 여부
@@ -9,12 +7,11 @@ export const useCurrentWeekAndDay = () => {
 
   useEffect(() => {
     const currentWeek = getCurrentWeekNumber(new Date());
-    // const currentWeek = 40;
     setIsSwapped(currentWeek % 2 !== 0);  // 짝수 주라면 false, 홀수 주라면 true
 
-    // 오늘의 요일 인덱스 설정 (0: 월요일, 6: 일요일)
+    // 오늘의 요일 인덱스 설정 (0: 일요일, 6: 토요일)
     const today = new Date().getDay();
-    setTodayIndex(today === 0 ? 6 : today - 1);  // 일요일(0)을 마지막으로 맞춤
+    setTodayIndex(today);  // 일요일(0)을 첫 번째로 맞춤
   }, []);
 
   const getCurrentWeekNumber = (date) => {
