@@ -4,7 +4,6 @@ import SplashScreen from 'react-native-splash-screen';
 import { useDispatch } from 'react-redux';
 import { setToken, setIsLoggedIn } from './modules/AuthSlice';  // Redux 액션 가져오기
 import initializeI18n from './locales/i18n'; // i18n 초기화 함수 가져오기
-import { callFetchExercisesAPI } from '../src/apis/ExerciseAPICalls'; // API 호출 함수 가져오기
 
 const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTimerRunning }) => {
     const [isInitialized, setIsInitialized] = useState(false);
@@ -22,8 +21,6 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
                     dispatch(setToken(token)); // 토큰을 저장
                     dispatch(setIsLoggedIn(true)); // 로그인 상태로 설정
                     
-                    // 운동 데이터를 초기화 시 가져오기
-                    await dispatch(callFetchExercisesAPI()); // 데이터 요청
                 } else {
                     dispatch(setIsLoggedIn(false)); // 비로그인 상태로 설정
                     // 토큰이 없을 경우 API 요청을 생략
