@@ -252,5 +252,12 @@ export const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 8,
     },
+
+    noExerciseText: {
+
+        textAlign: 'center',
+        color: '#999999',
+        marginTop: 20
+    }
     
 });
