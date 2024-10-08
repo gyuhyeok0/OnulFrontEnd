@@ -5,14 +5,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { callFetchExercisesAPI, callToggleLikeAPI } from '../../../src/apis/ExerciseAPICalls'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { styles } from './RegistModal.module';
+import { fetchMyExercises, deleteExerciseFromServer, sendExerciseToServer } from '../../../src/apis/MyExerciseAPI';
 
 const RegistChest = () => {
     const dispatch = useDispatch();
-    const { exercises, status } = useSelector((state) => state.exercises);
+    const { exercises } = useSelector((state) => state.exercises);
 
-    const categories = useMemo(() => [
+    const categories = [
         '전체', '좋아요', '맨몸', '덤벨', '바벨', '스미스머신', '머신', '밴드', '케이블', '케틀벨', '이지바', '로프', '플레이트', '랜드마인', '폼롤러', '벨트', '짐볼'
-    ], []);
+    ];
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -21,29 +22,63 @@ const RegistChest = () => {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [displayCount, setDisplayCount] = useState(20);
     const [likedExercises, setLikedExercises] = useState({});
-    const [selectedExercises, setSelectedExercises] = useState([]); // 선택된 운동 ID 상태
-    const [scheduleExercises, setScheduleExercises] = useState([]); // 운동 스케줄 상태
+    const [selectedExercises, setSelectedExercises] = useState([]);
+    const [scheduleExercises, setScheduleExercises] = useState([]);
+    const [memberId, setMemberId] = useState(null);
+    const [myExercises, setMyExercises] = useState([]);
 
     useEffect(() => {
-        const loadLikedExercises = async () => {
-            const savedLikes = await AsyncStorage.getItem('likedExercises');
-            if (savedLikes) {
-                setLikedExercises(JSON.parse(savedLikes));
+        const fetchMyExerciseData = async () => {
+            if (!memberId) return;
+
+            try {
+                const muscleGroup = "가슴"; // 근육 그룹 설정
+                const exercisesData = await fetchMyExercises(memberId, muscleGroup);
+                const exerciseIds = exercisesData.map((exercise) => exercise.id);
+                setScheduleExercises(exerciseIds); // 내 운동 ID 목록을 상태에 저장
+                setMyExercises(exercisesData); // 내 운동 데이터를 상태에 저장
+
+                // 만약 운동 스케쥴이 있다면 chevron-up 상태로 설정
+                if (exerciseIds.length > 0) {
+                    setIsCollapsed(false);
+                    Animated.timing(heightAnimation, {
+                        toValue: height * 0.47,
+                        duration: 300,
+                        useNativeDriver: false,
+                    }).start();
+                }
+            } catch (error) {
+                // console.error('내 운동 데이터를 불러오는 중 오류 발생:', error);
             }
         };
 
-        loadLikedExercises();
+        fetchMyExerciseData();
+    }, [memberId, heightAnimation, height]);
 
-        if (exercises.length === 0) {
-            dispatch(callFetchExercisesAPI());
-        }
+    useEffect(() => {
+        const loadInitialData = async () => {
+            try {
+                const savedLikes = await AsyncStorage.getItem('likedExercises');
+                if (savedLikes) {
+                    setLikedExercises(JSON.parse(savedLikes));
+                }
+                const id = await AsyncStorage.getItem('memberId');
+                setMemberId(id);
+
+                if (exercises.length === 0) {
+                    dispatch(callFetchExercisesAPI());
+                }
+            } catch (error) {
+                console.error('초기 데이터를 로드하는 중 오류 발생:', error);
+            }
+        };
+
+        loadInitialData();
     }, [dispatch, exercises.length]);
 
-    const handleButtonPress = useCallback((index) => {
-        setSelectedIndex(index);
-    }, []);
+    const handleButtonPress = (index) => setSelectedIndex(index);
 
-    const toggleHeight = useCallback(() => {
+    const toggleHeight = () => {
         heightAnimation.stopAnimation((currentHeight) => {
             const newHeight = currentHeight === 80 ? height * 0.47 : 80;
             setIsCollapsed(newHeight === 80);
@@ -53,53 +88,49 @@ const RegistChest = () => {
                 useNativeDriver: false,
             }).start();
         });
-    }, [height, heightAnimation]);
+    };
 
-    const loadMoreExercises = useCallback(() => {
+    const loadMoreExercises = () => {
         if (displayCount < exercises.length) {
             setDisplayCount(prevCount => prevCount + 20);
         }
-    }, [displayCount, exercises.length]);
-
-    const toggleExerciseSelect = (exerciseId) => {
-        setSelectedExercises((prevSelected) => {
-            if (prevSelected.includes(exerciseId)) {
-                // 이미 선택된 운동이면 선택 해제
-                return prevSelected.filter(id => id !== exerciseId);
-            } else {
-                // 선택되지 않은 운동이면 선택 추가
-                return [...prevSelected, exerciseId];
-            }
-        });
     };
 
-    const addToSchedule = () => {
-        setScheduleExercises((prevSchedule) => {
-            // 선택된 운동들을 기존 스케줄에 추가 (중복 제거)
-            const newExercises = selectedExercises.filter(exerciseId => !prevSchedule.includes(exerciseId));
-            return [...prevSchedule, ...newExercises];
-        });
-        // 선택된 운동 초기화
-        setSelectedExercises([]);
+    const toggleExerciseSelect = (exerciseId) => {
+        setSelectedExercises((prevSelected) =>
+            prevSelected.includes(exerciseId)
+                ? prevSelected.filter(id => id !== exerciseId)
+                : [...prevSelected, exerciseId]
+        );
+    };
 
-        if (isCollapsed) {
-            toggleHeight(); // 애니메이션을 위해 toggleHeight 호출
+    const addToSchedule = async () => {
+        try {
+            const newExercises = selectedExercises.filter(exerciseId => !scheduleExercises.includes(exerciseId));
+            const muscleGroup = "가슴";
+            await sendExerciseToServer(newExercises, muscleGroup, memberId);
+
+            setScheduleExercises((prevSchedule) => [...prevSchedule, ...newExercises]);
+            setSelectedExercises([]);
+
+            if (isCollapsed) {
+                toggleHeight();
+            }
+        } catch (error) {
+            console.error('운동 전송 중 오류 발생:', error);
         }
     };
 
-    const toggleLike = useCallback(async (exerciseId) => {
+    const toggleLike = async (exerciseId) => {
         const currentLikeStatus = likedExercises[exerciseId] || false;
         const newLikeStatus = !currentLikeStatus;
 
         try {
             await callToggleLikeAPI(exerciseId, newLikeStatus);
-            setLikedExercises((prev) => {
-                if (prev[exerciseId] === newLikeStatus) return prev;
-                return {
-                    ...prev,
-                    [exerciseId]: newLikeStatus,
-                };
-            });
+            setLikedExercises((prev) => ({
+                ...prev,
+                [exerciseId]: newLikeStatus,
+            }));
 
             await AsyncStorage.setItem('likedExercises', JSON.stringify({
                 ...likedExercises,
@@ -108,47 +139,31 @@ const RegistChest = () => {
         } catch (error) {
             console.error('좋아요 상태 업데이트 실패:', error);
         }
-    }, [likedExercises]);
+    };
 
     const filteredExercises = useMemo(() => {
-        // 먼저 검색 조건을 적용한 다음, 보여줄 항목을 제한
-        const filteredData = exercises
+        return exercises
             .filter((exercise) => {
                 if (selectedIndex === 1) return likedExercises[exercise.id] === true;
                 if (selectedIndex === 0) return true;
                 return exercise.exerciseType === categories[selectedIndex];
             })
             .filter((exercise) => exercise.mainMuscleGroup === "가슴")
-            .filter((exercise) => 
-                exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()) // 검색어와 일치하는 운동 필터링
-            );
-        
-        // 그 다음에 제한된 개수만 보여줌
-        return filteredData.slice(0, displayCount).sort((a, b) => b.popularityGroup - a.popularityGroup);
+            .filter((exercise) => exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()))
+            .slice(0, displayCount)
+            .sort((a, b) => b.popularityGroup - a.popularityGroup);
     }, [exercises, likedExercises, selectedIndex, categories, displayCount, searchQuery]);
-    
-    const categoryButtons = useMemo(() => {
-        return categories.map((category, index) => (
-            <TouchableOpacity
-                key={index}
-                style={styles.categoryButton}
-                onPress={() => handleButtonPress(index)}
-            >
-                <Text style={[
-                    styles.categoryButtonText,
-                    selectedIndex === index && { color: '#4A7BF6' }
-                ]}>
-                    {category}
-                </Text>
-            </TouchableOpacity>
-        ));
-    }, [categories, selectedIndex, handleButtonPress]);
 
-    // 운동 삭제 함수
-    const handleDelete = (exerciseId) => {
-        setScheduleExercises((prevSchedule) => prevSchedule.filter(id => id !== exerciseId));
+    const handleDelete = async (exerciseId) => {
+        try {
+            const muscleGroup = "가슴";
+            await deleteExerciseFromServer(exerciseId, muscleGroup, memberId);
+            setScheduleExercises((prevSchedule) => prevSchedule.filter(id => id !== exerciseId));
+        } catch (error) {
+            console.error('운동 삭제 중 오류 발생:', error);
+        }
     };
-    
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.searchContainer}>
@@ -156,20 +171,33 @@ const RegistChest = () => {
                 <TextInput
                     style={styles.searchInput}
                     placeholder="운동 검색"
-                    placeholderTextColor={'gray'}
+                    placeholderTextColor="gray"
                     value={searchQuery}
-                    onChangeText={setSearchQuery} // 검색어 변경 시 searchQuery 상태값 변경
+                    onChangeText={setSearchQuery}
                 />
             </View>
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={styles.category}>
-                    {categoryButtons}
+                    {categories.map((category, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.categoryButton}
+                            onPress={() => handleButtonPress(index)}
+                        >
+                            <Text style={[
+                                styles.categoryButtonText,
+                                selectedIndex === index && { color: '#4A7BF6' }
+                            ]}>
+                                {category}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
                 </View>
             </ScrollView>
 
-            <ScrollView 
-                style={styles.exerciseList} 
+            <ScrollView
+                style={styles.exerciseList}
                 onScroll={({ nativeEvent }) => {
                     if (isCloseToBottom(nativeEvent)) loadMoreExercises();
                 }}
@@ -235,6 +263,7 @@ const RegistChest = () => {
                             <Text style={styles.toggleText}>되돌리기</Text>
                         </TouchableOpacity>
                     </View>
+
                     <View style={styles.myMainExercise}>
                         <Text style={styles.myExerciseText}>내 가슴 운동 스케쥴</Text>
                         {!isCollapsed && (
@@ -246,7 +275,6 @@ const RegistChest = () => {
                                                 const exercise = exercises.find(e => e.id === exerciseId);
                                                 return (
                                                     <View key={exerciseId} style={styles.exerciseItemBox}>
-                                                        {/* 운동 이름과 삭제 버튼 */}
                                                         <View style={styles.scheduleItem}>
                                                             <Text style={styles.exerciseNameOnly}>{exercise?.exerciseName}</Text>
                                                             <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
@@ -264,14 +292,12 @@ const RegistChest = () => {
                             </Animated.View>
                         )}
                     </View>
-
                 </Animated.View>
             </View>
         </SafeAreaView>
     );
 };
 
-// 스크롤 뷰의 하단에 가까워졌는지 확인하는 헬퍼 함수
 const isCloseToBottom = (nativeEvent) => {
     const paddingToBottom = 20; 
     const { contentOffset, layoutMeasurement, contentSize } = nativeEvent;
