@@ -7,6 +7,7 @@ export const useCurrentWeekAndDay = () => {
 
   useEffect(() => {
     const currentWeek = getCurrentWeekNumber(new Date());
+
     setIsSwapped(currentWeek % 2 !== 0);  // 짝수 주라면 false, 홀수 주라면 true
 
     // 오늘의 요일 인덱스 설정 (0: 일요일, 6: 토요일)
