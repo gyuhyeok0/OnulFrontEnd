@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect} from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import { styles } from './WeeklySchedule.module';
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
@@ -11,6 +11,8 @@ const WeeklySchedule = () => {
     const [selectedBox, setSelectedBox] = useState({ oneWeek: null, twoWeek: null });  // 선택된 박스 상태 관리
     const [selectedWeekType, setSelectedWeekType] = useState(null);  // 선택된 주차 (oneWeek인지 twoWeek인지)
     const [selectedDay, setSelectedDay] = useState(null);  // 선택된 요일
+    const [scheduleKey, setScheduleKey] = useState(0);  // ScheduleSelection 컴포넌트 리셋을 위한 키
+    const [weekInfo, setWeekInfo] = useState('');  // 주차 정보를 저장하는 상태
 
     // 요일 리스트를 일요일부터 시작하도록 변경
     const days = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'];  // 요일 리스트
@@ -24,9 +26,28 @@ const WeeklySchedule = () => {
         }));
         setSelectedWeekType(weekType);  // 선택된 주차 설정
         setSelectedDay(days[index]);  // 선택된 요일 설정
+        setScheduleKey(prevKey => prevKey + 1);  // ScheduleSelection을 리셋하기 위한 키 업데이트
+
+        // 주차 정보를 변수에 저장하고 상태로 설정
+        let info = '';
+        if (!isSwapped) {
+            if (weekType === 'oneWeek') {
+                info = '이번주';
+            } else {
+                info = '다음주';
+            }
+        } else {
+            if (weekType === 'oneWeek') {
+                info = '다음주';
+            } else {
+                info = '이번주';
+            }
+        }
+        setWeekInfo(info);
+
         const animations = weekType === 'oneWeek' ? oneWeekAnimations : twoWeekAnimations;
         startAnimating(animations[index], weekType);
-    }, [oneWeekAnimations, twoWeekAnimations, startAnimating, stopAnimating]);
+    }, [oneWeekAnimations, twoWeekAnimations, startAnimating, stopAnimating, isSwapped]);
 
     // 요일을 렌더링하는 함수
     const renderDays = useCallback(() => (
@@ -110,7 +131,13 @@ const WeeklySchedule = () => {
                         <Text style={styles.registrationText}>원하는 요일을 터치해 주세요</Text>
                     </View>
                 ) : (
-                    <ScheduleSelection selectedWeekType={selectedWeekType} selectedDay={selectedDay} />
+                    <ScheduleSelection
+                        key={scheduleKey}
+                        selectedWeekType={selectedWeekType}
+                        selectedDay={selectedDay}
+                        selectedDayIndex={selectedBox[selectedWeekType]}
+                        weekInfo={weekInfo}  // 주차 정보를 prop으로 전달
+                    />
                 )}
             </View>
         </View>
