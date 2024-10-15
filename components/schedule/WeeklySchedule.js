@@ -1,47 +1,64 @@
-import React, { useState, useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import { styles } from './WeeklySchedule.module';
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
 import { useBoxAnimations } from '../../src/hooks/useBoxAnimations';
 import ScheduleSelection from './ScheduleSelection';
+import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';
+import { useDispatch, useSelector } from 'react-redux';  // Redux 사용
 
 const WeeklySchedule = () => {
-    const { isSwapped, todayIndex } = useCurrentWeekAndDay();  // 주차와 요일 상태 관리
-    const { oneWeekAnimations, twoWeekAnimations, startAnimating, stopAnimating } = useBoxAnimations();  // 애니메이션 상태 관리
-    const [selectedBox, setSelectedBox] = useState({ oneWeek: null, twoWeek: null });  // 선택된 박스 상태 관리
-    const [selectedWeekType, setSelectedWeekType] = useState(null);  // 선택된 주차 (oneWeek인지 twoWeek인지)
-    const [selectedDay, setSelectedDay] = useState(null);  // 선택된 요일
-    const [scheduleKey, setScheduleKey] = useState(0);  // ScheduleSelection 컴포넌트 리셋을 위한 키
-    const [weekInfo, setWeekInfo] = useState('');  // 주차 정보를 저장하는 상태
+    const { isSwapped, todayIndex } = useCurrentWeekAndDay();
+    const { oneWeekAnimations, twoWeekAnimations, startAnimating, stopAnimating } = useBoxAnimations();
+    const [selectedBox, setSelectedBox] = useState({ oneWeek: null, twoWeek: null });
+    const [selectedWeekType, setSelectedWeekType] = useState(null);
+    const [selectedDay, setSelectedDay] = useState(null);
+    const [scheduleKey, setScheduleKey] = useState(0);
+    const [weekInfo, setWeekInfo] = useState('');
 
-    // 요일 리스트를 일요일부터 시작하도록 변경
-    const days = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'];  // 요일 리스트
+    const dispatch = useDispatch();
+    const scheduleData = useSelector((state) => state.schedule);  // 스케줄 데이터 가져오기
 
-    // 요일 박스 클릭 시 실행되는 함수
+    useEffect(() => {
+        if (!scheduleData || scheduleData.needsUpdate) {  // 데이터가 없거나 업데이트가 필요하면
+            dispatch(callFetchScheduleAPI());  // API 호출
+        }
+    }, [dispatch, scheduleData]);
+
+    useEffect(() => {
+        console.log(scheduleData);
+    }, []);
+
+    // 요일과 주차에 맞는 운동 부위 텍스트 가져오기
+    const getPartForDay = (day, weekType) => {
+        // scheduleData가 null이 아닌지 확인
+        if (!scheduleData || !scheduleData.schedule) {
+            return [];  // 빈 배열 반환
+        }
+        
+        // 현재 요일과 주차에 맞는 운동 부위를 필터링하여 배열로 반환
+        return scheduleData.schedule
+            .filter(item => item.day === day && item.weekType === weekType)
+            .map(item => item.part) || [];  // 해당 요일에 데이터가 없으면 빈 배열 반환
+    };
+
+    const days = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'];
+
     const handleBoxPress = useCallback((index, weekType) => {
         stopAnimating();
         setSelectedBox(prev => ({
             oneWeek: weekType === 'oneWeek' ? index : null,
             twoWeek: weekType === 'twoWeek' ? index : null,
         }));
-        setSelectedWeekType(weekType);  // 선택된 주차 설정
-        setSelectedDay(days[index]);  // 선택된 요일 설정
-        setScheduleKey(prevKey => prevKey + 1);  // ScheduleSelection을 리셋하기 위한 키 업데이트
+        setSelectedWeekType(weekType);
+        setSelectedDay(days[index]);
+        setScheduleKey(prevKey => prevKey + 1);
 
-        // 주차 정보를 변수에 저장하고 상태로 설정
         let info = '';
         if (!isSwapped) {
-            if (weekType === 'oneWeek') {
-                info = '이번주';
-            } else {
-                info = '다음주';
-            }
+            info = weekType === 'oneWeek' ? '이번주' : '다음주';
         } else {
-            if (weekType === 'oneWeek') {
-                info = '다음주';
-            } else {
-                info = '이번주';
-            }
+            info = weekType === 'oneWeek' ? '다음주' : '이번주';
         }
         setWeekInfo(info);
 
@@ -49,7 +66,6 @@ const WeeklySchedule = () => {
         startAnimating(animations[index], weekType);
     }, [oneWeekAnimations, twoWeekAnimations, startAnimating, stopAnimating, isSwapped]);
 
-    // 요일을 렌더링하는 함수
     const renderDays = useCallback(() => (
         <View style={styles.dayRow}>
             {days.map((day, index) => (
@@ -62,47 +78,62 @@ const WeeklySchedule = () => {
         </View>
     ), []);
 
-    // 주차별 요일 박스 렌더링 함수
     const renderWeekBoxes = useCallback((style, weekType, animations) => (
         <View style={[
             style,
-            weekType === 'oneWeek' && isSwapped && styles.swappedOneWeek,  // oneWeek의 배경색이 바뀜
-            weekType === 'twoWeek' && isSwapped && styles.swappedTwoWeek   // twoWeek의 배경색이 바뀜
+            weekType === 'oneWeek' && isSwapped && styles.swappedOneWeek,
+            weekType === 'twoWeek' && isSwapped && styles.swappedTwoWeek
         ]}>
-            {[...Array(7)].map((_, index) => (
-                <Pressable
-                    key={index}
-                    style={[
-                        styles.dayBox,
-                        weekType === 'oneWeek' && selectedBox.oneWeek === index && styles.selectedBox,
-                        weekType === 'twoWeek' && selectedBox.twoWeek === index && styles.selectedBox,
-                        todayIndex === index && !isSwapped && weekType === 'oneWeek' && styles.todayBox,
-                        todayIndex === index && isSwapped && weekType === 'twoWeek' && styles.todayBox,
-                    ]}
-                    onPress={() => handleBoxPress(index, weekType)}
-                >
-                    <Animated.View
+            {[...Array(7)].map((_, index) => {
+                const day = days[index]; // 요일을 가져오기
+                const partsForDay = getPartForDay(day, weekType);  // 해당 요일의 운동 부위 가져오기
+    
+                return (
+                    <Pressable
+                        key={index}
                         style={[
-                            styles.animatedBox,
-                            {
-                                backgroundColor: animations[index].interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: isSwapped
-                                        ? weekType === 'oneWeek'
-                                            ? ['#326CA8', '#7AACE0']  // oneWeek 색상이 두번째 주의 색상으로 변경
-                                            : ['#5FA5EB', '#9BC7F2']  // twoWeek 색상이 첫번째 주의 색상으로 변경
-                                        : weekType === 'oneWeek'
-                                            ? ['#5FA5EB', '#9BC7F2']  // 기본 oneWeek 색상
-                                            : ['#326CA8', '#7AACE0'],  // 기본 twoWeek 색상
-                                }),
-                            },
+                            styles.dayBox,
+                            weekType === 'oneWeek' && selectedBox.oneWeek === index && styles.selectedBox,
+                            weekType === 'twoWeek' && selectedBox.twoWeek === index && styles.selectedBox,
+                            todayIndex === index && !isSwapped && weekType === 'oneWeek' && styles.todayBox,
+                            todayIndex === index && isSwapped && weekType === 'twoWeek' && styles.todayBox,
                         ]}
-                    />
-                </Pressable>
-            ))}
+                        onPress={() => handleBoxPress(index, weekType)}
+                    >
+                        <Animated.View
+                            style={[
+                                styles.animatedBox,
+                                {
+                                    flex: 1,
+                                    alignItems:'center',
+                                    backgroundColor: animations[index].interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: isSwapped
+                                            ? weekType === 'oneWeek'
+                                                ? ['#326CA8', '#7AACE0']
+                                                : ['#5FA5EB', '#9BC7F2']
+                                            : weekType === 'oneWeek'
+                                                ? ['#5FA5EB', '#9BC7F2']
+                                                : ['#326CA8', '#7AACE0'],
+                                    }),
+                                },
+                            ]}
+                        >
+                            {/* 운동 부위 텍스트 추가 - 각 부분을 줄 바꿈하여 표시 */}
+                            {partsForDay.map((part, partIndex) => (
+                                <View style={{ backgroundColor: '#CBD9FD', width: '85%', marginTop: 2, borderRadius: 11, padding: 3, justifyContent: 'center' }}>
+                                    <Text key={partIndex} style={{ color: '#1A1C22', textAlign: 'center', fontSize: 12, fontWeight: 'bold' }}>
+                                        {part}
+                                    </Text>
+                                </View>
+                            ))}
+                        </Animated.View>
+                    </Pressable>
+                );
+            })}
         </View>
-    ), [selectedBox, handleBoxPress, isSwapped, todayIndex]);
-
+    ), [selectedBox, handleBoxPress, isSwapped, todayIndex, scheduleData]);
+    
     const isDaySelected = selectedBox.oneWeek !== null || selectedBox.twoWeek !== null;
 
     return (
@@ -136,7 +167,7 @@ const WeeklySchedule = () => {
                         selectedWeekType={selectedWeekType}
                         selectedDay={selectedDay}
                         selectedDayIndex={selectedBox[selectedWeekType]}
-                        weekInfo={weekInfo}  // 주차 정보를 prop으로 전달
+                        weekInfo={weekInfo}
                     />
                 )}
             </View>

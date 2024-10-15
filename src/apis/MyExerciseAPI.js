@@ -1,39 +1,51 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import  { fetchMyExercisesSuccess, fetchMyExercisesFailure } from '../modules/MyExerciseSclice'
 
+// 내 운동 조회 함수
+export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
+    console.log("운동조회 실행"); // API 호출 시작 로그
 
-// 내 운동 조회
-export const fetchMyExercises = async (memberId, muscleGroup) => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
+        // console.log("액세스 토큰:", accessToken); // 액세스 토큰 로그
+
         const response = await axios.get(`http://localhost:8080/myExercises/${memberId}/${muscleGroup}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`, // 액세스 토큰을 사용한 인증 헤더
             },
         });
 
-        return response.data;
+        // API 응답에서 데이터 가져오기
+        dispatch(fetchMyExercisesSuccess(response.data)); // 성공 시 상태 업데이트
+        // console.log("운동 목록 업데이트 완료", response.data); // 상태 업데이트 후 로그
+
     } catch (error) {
         if (error.response && error.response.status === 401) {
             // 상태 코드가 401인 경우 토큰 갱신
             console.warn('토큰이 만료되었습니다. 새로운 토큰을 가져오는 중입니다.');
+
             const newAccessToken = await refreshAccessToken();
             if (newAccessToken) {
                 // 새 토큰을 AsyncStorage에 저장
                 await AsyncStorage.setItem('accessToken', newAccessToken);
+                console.log("새로운 액세스 토큰 저장 완료:", newAccessToken); // 새로운 토큰 로그
+
                 // 새 토큰으로 다시 시도
-                return await fetchMyExercises(memberId, muscleGroup);
+                return dispatch(fetchMyExercises(memberId, muscleGroup));
             } else {
                 console.error('새로운 토큰을 가져오지 못했습니다.');
-                throw new Error('토큰 갱신 실패');
+                dispatch(fetchMyExercisesFailure('토큰 갱신 실패'));
             }
         } else {
-            console.error('내 운동 조회 중 오류 발생:', error);
-            throw error;
+            console.error('내 운동 조회 중 오류 발생:', error.message); // 오류 메시지 로그
+            dispatch(fetchMyExercisesFailure(error.message)); // 오류 상태 업데이트
         }
     }
 };
+
+
 
 
 // 서버로 운동 등록 데이터를 전송하는 함수

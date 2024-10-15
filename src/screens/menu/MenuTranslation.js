@@ -4,10 +4,18 @@ import { View, Text, Button } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DefaultHeader from '../common/DefaultHeader';
+import { useSelector } from 'react-redux';
+
 
 const MenuTranslation = ({navigation}) => {
+
+    const { myExercises } = useSelector((state) => state.myExercises || {});
+
+
     useEffect(() => {
         console.log("=====================번역 페이지 ========================")
+
+        console.log(myExercises)
     }, []);
 
     const { t, i18n } = useTranslation();

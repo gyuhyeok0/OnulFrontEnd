@@ -1,7 +1,5 @@
 import { StyleSheet } from 'react-native';
-
 export const styles = StyleSheet.create({
-    
     registration: {
         margin: 15,
         padding: 10,
@@ -53,7 +51,7 @@ export const styles = StyleSheet.create({
     },
 
     completeButton: {
-        margin:8,
+        margin: 8,
         marginTop: 13,
 
         paddingTop: 8,
@@ -86,6 +84,44 @@ export const styles = StyleSheet.create({
         width: 290,
         height: 100,
         backgroundColor: 'gray'
-    }
+    },
+
+    dayBox: {
+        width: 40, // 요일 박스 크기
+        height: 40,
+        justifyContent: 'center', // 세로 중앙 정렬
+        alignItems: 'center', // 가로 중앙 정렬
+        margin: 5, // 박스 사이의 간격
+        backgroundColor: '#7AACE0', // 기본 배경 색상
+        borderRadius: 8, // 박스의 모서리 둥글기
+    },
+
+    selectedBox: {
+        backgroundColor: '#FFD700', // 선택된 박스 색상
+    },
+
+    animatedBox: {
+        flex: 1, // Animated.View의 크기를 채움
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    todayBox: {
+        borderWidth: 2, // 오늘 날짜 박스의 강조
+        borderColor: '#FF6347', // 강조 색상
+    },
+
+    dayText: {
+        fontSize: 12,
+        color: '#fff',
+    },
+
+    saturdayText: {
+        color: '#1E90FF',
+    },
+
+    sundayText: {
+        color: '#FF4500',
+    },
 
 });
