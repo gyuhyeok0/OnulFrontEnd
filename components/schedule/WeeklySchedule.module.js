@@ -41,8 +41,9 @@ export const styles = StyleSheet.create({
     sundayText: {
         color: '#ED2F2F',
     },
+
     oneWeek: {
-        height: 60,
+        minHeight: 60,
         borderRadius: 10,
         marginHorizontal: 10,
         flexDirection: 'row',
@@ -56,7 +57,7 @@ export const styles = StyleSheet.create({
 
     twoWeek: {
         marginTop: 7,
-        height: 60,
+        minHeight: 60,
         borderRadius: 10,
         marginHorizontal: 10,
         flexDirection: 'row',
