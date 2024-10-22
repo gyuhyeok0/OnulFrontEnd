@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, SafeAreaView, Animated, Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { callFetchExercisesAPI, callToggleLikeAPI } from '../../../src/apis/ExerciseAPICalls'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { styles } from './RegistModal.module';
-import { fetchMyExercises, deleteExerciseFromServer, sendExerciseToServer } from '../../../src/apis/MyExerciseAPI';
+import { deleteExerciseFromServer, sendExerciseToServer, fetchMyExercises as fetchMyExercisesAction } from '../../../src/apis/MyExerciseAPI';
 
 const RegistCustom = () => {
     const dispatch = useDispatch();
     const { exercises } = useSelector((state) => state.exercises);
+    const { myExercises: myCustom } = useSelector((state) => state.customExercises || {}); // 사용자 정의 운동 상태 가져오기
 
     const categories = [
         '전체', '좋아요', '맨몸', '덤벨', '바벨', '스미스머신', '머신', '밴드', '케이블', '케틀벨', '이지바', '로프', '플레이트', '랜드마인', '폼롤러', '벨트', '짐볼'
@@ -25,35 +26,6 @@ const RegistCustom = () => {
     const [selectedExercises, setSelectedExercises] = useState([]);
     const [scheduleExercises, setScheduleExercises] = useState([]);
     const [memberId, setMemberId] = useState(null);
-    const [myExercises, setMyExercises] = useState([]);
-
-    useEffect(() => {
-        const fetchMyExerciseData = async () => {
-            if (!memberId) return;
-
-            try {
-                const muscleGroup = "커스텀"; // 근육 그룹 설정
-                const exercisesData = await fetchMyExercises(memberId, muscleGroup);
-                const exerciseIds = exercisesData.map((exercise) => exercise.id);
-                setScheduleExercises(exerciseIds); // 내 운동 ID 목록을 상태에 저장
-                setMyExercises(exercisesData); // 내 운동 데이터를 상태에 저장
-
-                // 만약 운동 스케쥴이 있다면 chevron-up 상태로 설정
-                if (exerciseIds.length > 0) {
-                    setIsCollapsed(false);
-                    Animated.timing(heightAnimation, {
-                        toValue: height * 0.47,
-                        duration: 300,
-                        useNativeDriver: false,
-                    }).start();
-                }
-            } catch (error) {
-                // console.error('내 운동 데이터를 불러오는 중 오류 발생:', error);
-            }
-        };
-
-        fetchMyExerciseData();
-    }, [memberId, heightAnimation, height]);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -64,17 +36,50 @@ const RegistCustom = () => {
                 }
                 const id = await AsyncStorage.getItem('memberId');
                 setMemberId(id);
-
+    
+                // 운동 데이터 요청
+                if (id) {
+                    const muscleGroup = "커스텀"; // 근육 그룹 설정
+                    await dispatch(fetchMyExercisesAction(id, muscleGroup)); // 액션 디스패치
+                }
+    
+                // 운동 리스트 가져오기
                 if (exercises.length === 0) {
                     dispatch(callFetchExercisesAPI());
                 }
+                
             } catch (error) {
                 console.error('초기 데이터를 로드하는 중 오류 발생:', error);
             }
         };
-
+    
         loadInitialData();
     }, [dispatch, exercises.length]);
+    
+    useEffect(() => {
+        if (Array.isArray(myCustom) && myCustom.length > 0) { // 사용자 정의 운동 상태 사용
+            const exerciseIds = myCustom.map(exercise => exercise.id);
+            setScheduleExercises(exerciseIds);
+    
+            // 만약 운동 스케쥴이 있다면 chevron-up 상태로 설정
+            if (exerciseIds.length > 0) {
+                setIsCollapsed(false);
+                Animated.timing(heightAnimation, {
+                    toValue: height * 0.47,
+                    duration: 300,
+                    useNativeDriver: false,
+                }).start();
+            }
+        }
+    }, [myCustom]); // 사용자 정의 운동 상태가 변경될 때 업데이트
+
+
+    useEffect(() => {
+        console.log("안녕")
+        console.log(myCustom)
+    }, []); 
+    
+    
 
     const handleButtonPress = (index) => setSelectedIndex(index);
 
@@ -116,6 +121,9 @@ const RegistCustom = () => {
             if (isCollapsed) {
                 toggleHeight();
             }
+
+            dispatch(fetchMyExercisesAction(memberId, muscleGroup));
+
         } catch (error) {
             console.error('운동 전송 중 오류 발생:', error);
         }
@@ -148,7 +156,7 @@ const RegistCustom = () => {
                 if (selectedIndex === 0) return true;
                 return exercise.exerciseType === categories[selectedIndex];
             })
-            // .filter((exercise) => exercise.mainMuscleGroup === "전체")
+            // .filter((exercise) => exercise.mainMuscleGroup === "가슴")
             .filter((exercise) => exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()))
             .slice(0, displayCount)
             .sort((a, b) => b.popularityGroup - a.popularityGroup);
@@ -159,6 +167,9 @@ const RegistCustom = () => {
             const muscleGroup = "커스텀";
             await deleteExerciseFromServer(exerciseId, muscleGroup, memberId);
             setScheduleExercises((prevSchedule) => prevSchedule.filter(id => id !== exerciseId));
+
+            dispatch(fetchMyExercisesAction(memberId, muscleGroup));
+
         } catch (error) {
             console.error('운동 삭제 중 오류 발생:', error);
         }

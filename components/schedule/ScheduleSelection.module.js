@@ -16,6 +16,7 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         color: '#fff',
         marginBottom: 12,
+        fontWeight: 'bold'
     },
 
     buttonContainer: {
@@ -73,18 +74,6 @@ export const styles = StyleSheet.create({
         width: 290,
     },
 
-    detailTitle: {
-        marginTop: 15,
-        color: 'white',
-        fontSize: 12,
-    },
-
-    detailExerciseList: {
-        marginTop: 7,
-        width: 290,
-        height: 100,
-        backgroundColor: 'gray'
-    },
 
     dayBox: {
         width: 40, // 요일 박스 크기
@@ -122,6 +111,44 @@ export const styles = StyleSheet.create({
 
     sundayText: {
         color: '#FF4500',
+    },
+
+
+    detailTitle: {
+        textAlign:'center',
+        marginTop: 15,
+        color: 'white',
+        fontSize: 13,
+        fontWeight: 'bold',
+    },
+
+    detailExerciseList: {
+        marginTop: 12,
+        width: 290,
+        minHeight: 25,
+    },
+
+
+    exerciseButton: {
+        backgroundColor: '#394452', // 어두운 배경색
+        padding: 5,
+        marginBottom: 4,
+        borderRadius: 10, // 모서리 둥글게
+        borderWidth: 2,
+        borderColor: '#4a90e2', // 파란색 테두리
+        alignItems: 'center', // 텍스트 중앙 정렬
+    },
+
+    exerciseButtonText: {
+        color: '#ffffff', // 흰색 텍스트
+        fontSize: 13, // 텍스트 크기
+        fontWeight: 'bold'
+    },
+
+    noExerciseText: {
+        color: '#ffffff',
+        fontSize: 13,
+        textAlign: 'center',
     },
 
 });
