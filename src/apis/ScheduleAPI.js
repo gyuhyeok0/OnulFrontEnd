@@ -69,7 +69,7 @@ export const deleteDataFromServer = async (part, memberId, weekType, day, access
             }),
         });
 
-        console.log(response.status)
+        // console.log(response.status)
 
         if (!response.ok) {
             if (response.status === 401) { // 상태 코드가 401 (Unauthorized)일 경우

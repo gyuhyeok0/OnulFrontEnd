@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, SafeAreaView, Animated, Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { callFetchExercisesAPI, callToggleLikeAPI } from '../../../src/apis/ExerciseAPICalls'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { styles } from './RegistModal.module';
-import { fetchMyExercises, deleteExerciseFromServer, sendExerciseToServer } from '../../../src/apis/MyExerciseAPI';
+import { deleteExerciseFromServer, sendExerciseToServer, fetchMyExercises as fetchMyExercisesAction } from '../../../src/apis/MyExerciseAPI';
 
 const RegistBack = () => {
     const dispatch = useDispatch();
     const { exercises } = useSelector((state) => state.exercises);
+    const { myExercises: myBack } = useSelector((state) => state.backExercises || {});
+
 
     const categories = [
         '전체', '좋아요', '맨몸', '덤벨', '바벨', '스미스머신', '머신', '밴드', '케이블', '케틀벨', '이지바', '로프', '플레이트', '랜드마인', '폼롤러', '벨트', '짐볼'
@@ -25,35 +27,7 @@ const RegistBack = () => {
     const [selectedExercises, setSelectedExercises] = useState([]);
     const [scheduleExercises, setScheduleExercises] = useState([]);
     const [memberId, setMemberId] = useState(null);
-    const [myExercises, setMyExercises] = useState([]);
 
-    useEffect(() => {
-        const fetchMyExerciseData = async () => {
-            if (!memberId) return;
-
-            try {
-                const muscleGroup = "등"; // 근육 그룹 설정
-                const exercisesData = await fetchMyExercises(memberId, muscleGroup);
-                const exerciseIds = exercisesData.map((exercise) => exercise.id);
-                setScheduleExercises(exerciseIds); // 내 운동 ID 목록을 상태에 저장
-                setMyExercises(exercisesData); // 내 운동 데이터를 상태에 저장
-
-                // 만약 운동 스케쥴이 있다면 chevron-up 상태로 설정
-                if (exerciseIds.length > 0) {
-                    setIsCollapsed(false);
-                    Animated.timing(heightAnimation, {
-                        toValue: height * 0.47,
-                        duration: 300,
-                        useNativeDriver: false,
-                    }).start();
-                }
-            } catch (error) {
-                // console.error('내 운동 데이터를 불러오는 중 오류 발생:', error);
-            }
-        };
-
-        fetchMyExerciseData();
-    }, [memberId, heightAnimation, height]);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -64,17 +38,44 @@ const RegistBack = () => {
                 }
                 const id = await AsyncStorage.getItem('memberId');
                 setMemberId(id);
-
+    
+                // 운동 데이터 요청
+                if (id) {
+                    const muscleGroup = "등"; // 근육 그룹 설정
+                    await dispatch(fetchMyExercisesAction(id, muscleGroup)); // 액션 디스패치
+                }
+    
+                // 운동 리스트 가져오기
                 if (exercises.length === 0) {
                     dispatch(callFetchExercisesAPI());
                 }
+                
             } catch (error) {
                 console.error('초기 데이터를 로드하는 중 오류 발생:', error);
             }
         };
-
+    
         loadInitialData();
     }, [dispatch, exercises.length]);
+    
+    useEffect(() => {
+        if (Array.isArray(myBack) && myBack.length > 0) {
+            const exerciseIds = myBack.map(exercise => exercise.id);
+            setScheduleExercises(exerciseIds);
+    
+            // 만약 운동 스케쥴이 있다면 chevron-up 상태로 설정
+            if (exerciseIds.length > 0) {
+                setIsCollapsed(false);
+                Animated.timing(heightAnimation, {
+                    toValue: height * 0.47,
+                    duration: 300,
+                    useNativeDriver: false,
+                }).start();
+            }
+        }
+    }, [myBack]);
+    
+    
 
     const handleButtonPress = (index) => setSelectedIndex(index);
 
@@ -116,6 +117,8 @@ const RegistBack = () => {
             if (isCollapsed) {
                 toggleHeight();
             }
+
+            dispatch(fetchMyExercisesAction(memberId, muscleGroup));
         } catch (error) {
             console.error('운동 전송 중 오류 발생:', error);
         }
@@ -159,6 +162,9 @@ const RegistBack = () => {
             const muscleGroup = "등";
             await deleteExerciseFromServer(exerciseId, muscleGroup, memberId);
             setScheduleExercises((prevSchedule) => prevSchedule.filter(id => id !== exerciseId));
+
+            dispatch(fetchMyExercisesAction(memberId, muscleGroup));
+
         } catch (error) {
             console.error('운동 삭제 중 오류 발생:', error);
         }
@@ -272,16 +278,18 @@ const RegistBack = () => {
                                     {scheduleExercises.length > 0 ? (
                                         <View style={styles.exerciseGrid}>
                                             {scheduleExercises.map((exerciseId) => {
-                                                const exercise = exercises.find(e => e.id === exerciseId);
+                                                const exercise = exercises.find(e => e.id === exerciseId && e.mainMuscleGroup === "등");
                                                 return (
-                                                    <View key={exerciseId} style={styles.exerciseItemBox}>
-                                                        <View style={styles.scheduleItem}>
-                                                            <Text style={styles.exerciseNameOnly}>{exercise?.exerciseName}</Text>
-                                                            <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
-                                                                <Ionicons name="close" size={24} color="white" />
-                                                            </TouchableOpacity>
+                                                    exercise && ( // 이 조건을 추가해, 복근인 운동만 렌더링되도록 합니다
+                                                        <View key={exerciseId} style={styles.exerciseItemBox}>
+                                                            <View style={styles.scheduleItem}>
+                                                                <Text style={styles.exerciseNameOnly}>{exercise.exerciseName}</Text>
+                                                                <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
+                                                                    <Ionicons name="close" size={24} color="white" />
+                                                                </TouchableOpacity>
+                                                            </View>
                                                         </View>
-                                                    </View>
+                                                    )
                                                 );
                                             })}
                                         </View>

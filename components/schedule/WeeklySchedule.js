@@ -19,15 +19,15 @@ const WeeklySchedule = () => {
     const dispatch = useDispatch();
     const scheduleData = useSelector((state) => state.schedule);  // 스케줄 데이터 가져오기
 
+
     useEffect(() => {
+
+
         if (!scheduleData || scheduleData.needsUpdate) {  // 데이터가 없거나 업데이트가 필요하면
             dispatch(callFetchScheduleAPI());  // API 호출
         }
     }, [dispatch, scheduleData]);
 
-    useEffect(() => {
-        console.log(scheduleData);
-    }, []);
 
     // 요일과 주차에 맞는 운동 부위 텍스트 가져오기
     const getPartForDay = (day, weekType) => {
@@ -90,7 +90,7 @@ const WeeklySchedule = () => {
     
                 return (
                     <Pressable
-                        key={index}
+                        key={index}  // key prop 추가
                         style={[
                             styles.dayBox,
                             weekType === 'oneWeek' && selectedBox.oneWeek === index && styles.selectedBox,
@@ -105,7 +105,7 @@ const WeeklySchedule = () => {
                                 styles.animatedBox,
                                 {
                                     flex: 1,
-                                    alignItems:'center',
+                                    alignItems: 'center',
                                     backgroundColor: animations[index].interpolate({
                                         inputRange: [0, 1],
                                         outputRange: isSwapped
@@ -121,8 +121,11 @@ const WeeklySchedule = () => {
                         >
                             {/* 운동 부위 텍스트 추가 - 각 부분을 줄 바꿈하여 표시 */}
                             {partsForDay.map((part, partIndex) => (
-                                <View style={{ backgroundColor: '#CBD9FD', width: '85%', marginTop: 2, borderRadius: 11, padding: 3, justifyContent: 'center' }}>
-                                    <Text key={partIndex} style={{ color: '#1A1C22', textAlign: 'center', fontSize: 12, fontWeight: 'bold' }}>
+                                <View
+                                    key={partIndex}  // key prop 추가
+                                    style={{ backgroundColor: '#CBD9FD', width: '85%', marginTop: 2, borderRadius: 11, padding: 3, justifyContent: 'center' }}
+                                >
+                                    <Text style={{ color: '#1A1C22', textAlign: 'center', fontSize: 12, fontWeight: 'bold' }}>
                                         {part}
                                     </Text>
                                 </View>

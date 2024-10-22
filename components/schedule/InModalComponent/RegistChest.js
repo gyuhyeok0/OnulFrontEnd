@@ -10,8 +10,7 @@ import { deleteExerciseFromServer, sendExerciseToServer, fetchMyExercises as fet
 const RegistChest = () => {
     const dispatch = useDispatch();
     const { exercises } = useSelector((state) => state.exercises);
-    const { myExercises } = useSelector((state) => state.myExercises || {});
-
+    const { myExercises: myChest } = useSelector((state) => state.chestExercises || {});
 
     const categories = [
         '전체', '좋아요', '맨몸', '덤벨', '바벨', '스미스머신', '머신', '밴드', '케이블', '케틀벨', '이지바', '로프', '플레이트', '랜드마인', '폼롤러', '벨트', '짐볼'
@@ -28,7 +27,6 @@ const RegistChest = () => {
     const [scheduleExercises, setScheduleExercises] = useState([]);
     const [memberId, setMemberId] = useState(null);
 
-
     useEffect(() => {
         const loadInitialData = async () => {
             try {
@@ -38,13 +36,13 @@ const RegistChest = () => {
                 }
                 const id = await AsyncStorage.getItem('memberId');
                 setMemberId(id);
-    
+
                 // 운동 데이터 요청
                 if (id) {
                     const muscleGroup = "가슴"; // 근육 그룹 설정
                     await dispatch(fetchMyExercisesAction(id, muscleGroup)); // 액션 디스패치
                 }
-    
+
                 // 운동 리스트 가져오기
                 if (exercises.length === 0) {
                     dispatch(callFetchExercisesAPI());
@@ -54,16 +52,15 @@ const RegistChest = () => {
                 console.error('초기 데이터를 로드하는 중 오류 발생:', error);
             }
         };
-    
+
         loadInitialData();
     }, [dispatch, exercises.length]);
-    
+
     useEffect(() => {
-        console.log(myExercises)
-        if (Array.isArray(myExercises) && myExercises.length > 0) {
-            const exerciseIds = myExercises.map(exercise => exercise.id);
+        if (Array.isArray(myChest) && myChest.length > 0) {
+            const exerciseIds = myChest.map(exercise => exercise.id);
             setScheduleExercises(exerciseIds);
-    
+
             // 만약 운동 스케쥴이 있다면 chevron-up 상태로 설정
             if (exerciseIds.length > 0) {
                 setIsCollapsed(false);
@@ -74,9 +71,7 @@ const RegistChest = () => {
                 }).start();
             }
         }
-    }, [myExercises]);
-    
-    
+    }, [myChest]);
 
     const handleButtonPress = (index) => setSelectedIndex(index);
 
@@ -118,6 +113,9 @@ const RegistChest = () => {
             if (isCollapsed) {
                 toggleHeight();
             }
+
+            dispatch(fetchMyExercisesAction(memberId, muscleGroup));
+
         } catch (error) {
             console.error('운동 전송 중 오류 발생:', error);
         }
@@ -277,16 +275,18 @@ const RegistChest = () => {
                                     {scheduleExercises.length > 0 ? (
                                         <View style={styles.exerciseGrid}>
                                             {scheduleExercises.map((exerciseId) => {
-                                                const exercise = exercises.find(e => e.id === exerciseId);
+                                                const exercise = exercises.find(e => e.id === exerciseId && e.mainMuscleGroup === "가슴");
                                                 return (
-                                                    <View key={exerciseId} style={styles.exerciseItemBox}>
-                                                        <View style={styles.scheduleItem}>
-                                                            <Text style={styles.exerciseNameOnly}>{exercise?.exerciseName}</Text>
-                                                            <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
-                                                                <Ionicons name="close" size={24} color="white" />
-                                                            </TouchableOpacity>
+                                                    exercise && ( // 이 조건을 추가해, 가슴 운동만 렌더링되도록 합니다
+                                                        <View key={exerciseId} style={styles.exerciseItemBox}>
+                                                            <View style={styles.scheduleItem}>
+                                                                <Text style={styles.exerciseNameOnly}>{exercise.exerciseName}</Text>
+                                                                <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
+                                                                    <Ionicons name="close" size={24} color="white" />
+                                                                </TouchableOpacity>
+                                                            </View>
                                                         </View>
-                                                    </View>
+                                                    )
                                                 );
                                             })}
                                         </View>

@@ -1,28 +1,189 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// 내 운동 조회
-const myExerciseSlice = createSlice({
-    name: 'myExercises',
+// 가슴 운동 슬라이스
+const myChestSlice = createSlice({
+    name: 'myChest',
     initialState: {
         myExercises: [],
-        status: 'idle', // 상태 초기값
+        status: 'idle',
         error: null,
     },
     
     reducers: {
-        fetchMyExercisesSuccess: (state, action) => {
-            state.myExercises = action.payload; // 운동 데이터를 상태에 저장
-            state.status = 'succeeded'; // 상태 변경
+        fetchMyChestExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
         },
-        fetchMyExercisesFailure: (state, action) => {
-            state.error = action.payload; // 오류 메시지 상태에 저장
-            state.status = 'failed'; // 상태 변경
+        fetchMyChestExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+    },
+});
+
+// 등 운동 슬라이스
+const myBackSlice = createSlice({
+    name: 'myBack',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+    
+    reducers: {
+        fetchMyBackExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyBackExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+    },
+});
+
+// 복근 운동 슬라이스
+const myAbsSlice = createSlice({
+    name: 'myAbs',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+    
+    reducers: {
+        fetchMyAbsExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyAbsExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+    },
+});
+
+// 팔 운동 슬라이스
+const myArmsSlice = createSlice({
+    name: 'myArms',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+    
+    reducers: {
+        fetchMyArmsExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyArmsExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+    },
+});
+
+// 사용자 정의 운동 슬라이스
+const myCustomSlice = createSlice({
+    name: 'myCustom',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+    
+    reducers: {
+        fetchMyCustomExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyCustomExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+    },
+});
+
+// 기타 운동 슬라이스
+const myEtcSlice = createSlice({
+    name: 'myEtc',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+    
+    reducers: {
+        fetchMyEtcExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyEtcExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+    },
+});
+
+// 하체 운동 슬라이스
+const myLowerBodySlice = createSlice({
+    name: 'myLowerBody',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+    
+    reducers: {
+        fetchMyLowerBodyExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyLowerBodyExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+    },
+});
+
+// 어깨 운동 슬라이스
+const myShouldersSlice = createSlice({
+    name: 'myShoulders',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+    
+    reducers: {
+        fetchMyShouldersExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyShouldersExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
         },
     },
 });
 
 // 액션 생성자 내보내기
-export const { fetchMyExercisesSuccess, fetchMyExercisesFailure } = myExerciseSlice.actions;
+export const { fetchMyChestExercisesSuccess, fetchMyChestExercisesFailure } = myChestSlice.actions;
+export const { fetchMyBackExercisesSuccess, fetchMyBackExercisesFailure } = myBackSlice.actions;
+export const { fetchMyAbsExercisesSuccess, fetchMyAbsExercisesFailure } = myAbsSlice.actions;
+export const { fetchMyArmsExercisesSuccess, fetchMyArmsExercisesFailure } = myArmsSlice.actions;
+export const { fetchMyCustomExercisesSuccess, fetchMyCustomExercisesFailure } = myCustomSlice.actions;
+export const { fetchMyEtcExercisesSuccess, fetchMyEtcExercisesFailure } = myEtcSlice.actions;
+export const { fetchMyLowerBodyExercisesSuccess, fetchMyLowerBodyExercisesFailure } = myLowerBodySlice.actions;
+export const { fetchMyShouldersExercisesSuccess, fetchMyShouldersExercisesFailure } = myShouldersSlice.actions;
 
 // 리듀서 내보내기
-export default myExerciseSlice.reducer;
+export const myChestReducer = myChestSlice.reducer;
+export const myBackReducer = myBackSlice.reducer;
+export const myAbsReducer = myAbsSlice.reducer;
+export const myArmsReducer = myArmsSlice.reducer;
+export const myCustomReducer = myCustomSlice.reducer;
+export const myEtcReducer = myEtcSlice.reducer;
+export const myLowerBodyReducer = myLowerBodySlice.reducer;
+export const myShouldersReducer = myShouldersSlice.reducer;

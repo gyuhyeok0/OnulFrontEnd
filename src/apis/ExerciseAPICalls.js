@@ -5,6 +5,7 @@ import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가�
 // 운동 데이터를 서버에서 가져오는 API 호출 함수
 export const callFetchExercisesAPI = () => {
     return async (dispatch) => {
+        
         try {
             const requestURL = 'http://localhost:8080/exercises/selectList'; // 실제 API 주소로 변경
             const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기

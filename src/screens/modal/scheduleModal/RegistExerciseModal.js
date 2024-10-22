@@ -13,22 +13,22 @@ import RegistShoulders from '../../../../components/schedule/InModalComponent/Re
 
 const screenHeight = Dimensions.get('window').height;
 
-const RegistExerciseModal = ({ isVisible, onClose, exercise }) => {
-    const [modalY] = useState(new Animated.Value(screenHeight)); // 모달의 Y축 초기 위치
-    const [overlayOpacity] = useState(new Animated.Value(0)); // 배경 투명도를 위한 초기값
+const RegistExerciseModal = ({ isVisible, onClose, exercise, onSelectExercise }) => {
+    const [modalY] = useState(new Animated.Value(screenHeight));
+    const [overlayOpacity] = useState(new Animated.Value(0));
+    const [isExerciseSelected, setIsExerciseSelected] = useState(false);  // 운동 선택 여부
 
     useEffect(() => {
         if (isVisible) {
-            // 모달이 열릴 때 애니메이션을 실행
-            modalY.setValue(screenHeight); // 모달 Y값을 초기 위치로 설정
+            modalY.setValue(screenHeight);
             Animated.parallel([
                 Animated.timing(modalY, {
-                    toValue: 0, // 화면에 나타날 위치
+                    toValue: 0,
                     duration: 500,
                     useNativeDriver: true,
                 }),
                 Animated.timing(overlayOpacity, {
-                    toValue: 1, // 배경을 완전히 어둡게
+                    toValue: 1,
                     duration: 500,
                     useNativeDriver: true,
                 }),
@@ -37,39 +37,46 @@ const RegistExerciseModal = ({ isVisible, onClose, exercise }) => {
     }, [isVisible]);
 
     const handleClose = () => {
-        // 모달이 닫힐 때 애니메이션 실행
         Animated.parallel([
             Animated.timing(modalY, {
-                toValue: screenHeight, // 화면 밖으로 나감
+                toValue: screenHeight,
                 duration: 500,
                 useNativeDriver: true,
             }),
             Animated.timing(overlayOpacity, {
-                toValue: 0, // 배경 투명도를 원래 상태로
+                toValue: 0,
                 duration: 500,
                 useNativeDriver: true,
             }),
-        ]).start(() => onClose());
+        ]).start(() => {
+            onClose(isExerciseSelected);  // 운동 선택 여부를 전달
+        });
+    };
+
+    const handleSelectExercise = () => {
+        setIsExerciseSelected(true);  // 운동이 선택되면 true로 설정
+        onSelectExercise(exercise);   // 선택된 운동을 상위로 전달
+        handleClose();  // 모달 닫기
     };
 
     const renderExerciseComponent = () => {
         switch (exercise) {
             case '가슴':
-                return <RegistChest />;
+                return <RegistChest onSelectExercise={handleSelectExercise} />;
             case '등':
-                return <RegistBack />;
+                return <RegistBack onSelectExercise={handleSelectExercise} />;
             case '복근':
-                return <RegistAbs />;
+                return <RegistAbs onSelectExercise={handleSelectExercise} />;
             case '기타':
-                return <RegistEtc />;
+                return <RegistEtc onSelectExercise={handleSelectExercise} />;
             case '팔':
-                return <RegistArms />;
+                return <RegistArms onSelectExercise={handleSelectExercise} />;
             case '하체':
-                return <RegistLowerBody />;
+                return <RegistLowerBody onSelectExercise={handleSelectExercise} />;
             case '어깨':
-                return <RegistShoulders />;
+                return <RegistShoulders onSelectExercise={handleSelectExercise} />;
             case '커스텀':
-                return <RegistCustom />;
+                return <RegistCustom onSelectExercise={handleSelectExercise} />;
             default:
                 return null;
         }
@@ -82,9 +89,7 @@ const RegistExerciseModal = ({ isVisible, onClose, exercise }) => {
         >
             <Animated.View style={[styles.modalOverlay, { opacity: overlayOpacity }]}>
                 <Animated.View style={[styles.modalContent, { transform: [{ translateY: modalY }] }]}>
-                    
                     <SafeAreaView style={styles.safeArea}>
-                    {/* 왼쪽 상단에 뒤로 가기 아이콘 */}
                         <View style={styles.titleContainer}>
                             <TouchableOpacity onPress={handleClose} style={styles.backIcon}>
                                 <Ionicons 
@@ -93,13 +98,10 @@ const RegistExerciseModal = ({ isVisible, onClose, exercise }) => {
                                     style={styles.icon}
                                 />
                             </TouchableOpacity>
-                            {/* 선택된 운동 제목 표시 */}
                             <Text style={styles.title}>{exercise} 운동 등록</Text>
                         </View>
 
-                        {/* 모달 내용 */}
                         {renderExerciseComponent()}
-
                     </SafeAreaView>
                 </Animated.View>
             </Animated.View>

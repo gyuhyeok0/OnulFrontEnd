@@ -41,6 +41,11 @@ import Onboarding2 from './screens/start/onboarding/Onboarding2';
 import Onboarding3 from './screens/start/onboarding/Onboarding3';
 import Onboarding4 from './screens/start/onboarding/Onboarding4';
 
+// 운동등록 
+
+import RegistChest from '../components/schedule/InModalComponent/RegistChest';
+
+
 const Stack = createNativeStackNavigator();
 
 function MainApp() {
@@ -224,6 +229,24 @@ function MainApp() {
             ...DefaultHeaderStyles, // 스타일 적용
           }}
         />
+
+        {/* 운동 등록 가슴 페이지 */}
+        <Stack.Screen
+          name="RegistChest"
+          component={RegistChest}
+          options={{ headerShown: "ture" }} // 헤더 숨김 옵션
+        />
+
+
+
+
+
+
+
+
+
+
+
 
       </Stack.Navigator>
     </NavigationContainer>
