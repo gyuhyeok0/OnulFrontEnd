@@ -83,10 +83,16 @@ const AutoAdapt = () => {
     
 
     return (
-        <View style={{ width: '100%', height: 200, backgroundColor: '#1A1C22', padding: 10 }}>
-            <View>
-                <View style={{ width: '100%', height: 200, backgroundColor: '#1A1C22' }}></View>
+        <View style={{ width: '100%', backgroundColor: '#1A1C22', padding: 10 }}>
+        
+            <View style={styles.autoAdaptContainer}>
+
+                    
             </View>
+
+
+
+
             {/* 운동 강도 선택 버튼들 */}
             <View style={styles.intensityContainer}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>오늘의 운동강도</Text>
@@ -145,6 +151,13 @@ const styles = StyleSheet.create({
     selectedText: {
         color: '#FFFFFF', // 선택된 버튼의 텍스트 색상
     },
+
+    autoAdaptContainer: {
+        width: '100%', 
+        minHeight: 100, 
+        backgroundColor: 'gray',
+        marginBottom: 30,
+    }
 });
 
 export default AutoAdapt;

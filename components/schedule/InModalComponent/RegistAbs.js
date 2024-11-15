@@ -17,6 +17,7 @@ const RegistAbs = () => {
     ];
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [searchMessage, setSearchMessage] = useState(''); // 검색 메시지 상태 추가
     const [selectedIndex, setSelectedIndex] = useState(0);
     const { height } = Dimensions.get('window');
     const [heightAnimation] = useState(new Animated.Value(80));
@@ -36,23 +37,23 @@ const RegistAbs = () => {
                 }
                 const id = await AsyncStorage.getItem('memberId');
                 setMemberId(id);
-    
+
                 // 운동 데이터 요청
                 if (id) {
                     const muscleGroup = "복근"; // 근육 그룹 설정
                     await dispatch(fetchMyExercisesAction(id, muscleGroup)); // 액션 디스패치
                 }
-    
+
                 // 운동 리스트 가져오기
                 if (exercises.length === 0) {
                     dispatch(callFetchExercisesAPI());
                 }
-                
+
             } catch (error) {
                 console.error('초기 데이터를 로드하는 중 오류 발생:', error);
             }
         };
-    
+
         loadInitialData();
     }, [dispatch, exercises.length]);
 
@@ -60,7 +61,7 @@ const RegistAbs = () => {
         if (Array.isArray(myAbs) && myAbs.length > 0) { // 복근 운동 상태 사용
             const exerciseIds = myAbs.map(exercise => exercise.id);
             setScheduleExercises(exerciseIds);
-    
+
             // 만약 운동 스케쥴이 있다면 chevron-up 상태로 설정
             if (exerciseIds.length > 0) {
                 setIsCollapsed(false);
@@ -72,6 +73,29 @@ const RegistAbs = () => {
             }
         }
     }, [myAbs]); // 복근 운동 상태가 변경될 때 업데이트    
+
+    useEffect(() => {
+        if (searchQuery.trim() !== '') {
+            const foundExercise = exercises.find(
+                (exercise) =>
+                    exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            if (!foundExercise) {
+                setSearchMessage('검색 결과가 없습니다. 다른 검색어를 입력해주세요.');
+                return;
+            }
+
+            if (foundExercise.mainMuscleGroup !== "복근") {
+                setSearchMessage(`${foundExercise.exerciseName}은(는) ${foundExercise.mainMuscleGroup} 그룹에 있습니다.`);
+                dispatch(fetchMyExercisesAction(memberId, foundExercise.mainMuscleGroup));
+            } else {
+                setSearchMessage(''); // 메시지 초기화
+            }
+        } else {
+            setSearchMessage(''); // 검색어가 없을 때 메시지 초기화
+        }
+    }, [searchQuery, exercises, dispatch, memberId]);
 
     const handleButtonPress = (index) => setSelectedIndex(index);
 
@@ -239,7 +263,7 @@ const RegistAbs = () => {
                         </TouchableOpacity>
                     ))
                 ) : (
-                    <Text style={styles.noExerciseText}>운동 데이터가 없습니다.</Text>
+                    <Text style={styles.noExerciseText}>{searchMessage || '운동 데이터가 없습니다.'}</Text>
                 )}
                 <View style={{ height: 100 }}></View>
             </ScrollView>
@@ -277,7 +301,7 @@ const RegistAbs = () => {
                                             {scheduleExercises.map((exerciseId) => {
                                                 const exercise = exercises.find(e => e.id === exerciseId && e.mainMuscleGroup === "복근");
                                                 return (
-                                                    exercise && ( // 이 조건을 추가해, 복근인 운동만 렌더링되도록 합니다
+                                                    exercise && ( // 복근 운동만 렌더링
                                                         <View key={exerciseId} style={styles.exerciseItemBox}>
                                                             <View style={styles.scheduleItem}>
                                                                 <Text style={styles.exerciseNameOnly}>{exercise.exerciseName}</Text>

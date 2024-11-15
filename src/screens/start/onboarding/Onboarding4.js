@@ -34,7 +34,7 @@ const Onboarding4 = ({ navigation, route }) => {
                 setHeightUnit(savedHeightUnit);
                 setBasicUnit(savedWeightUnit);
             } catch (error) {
-                console.error('Failed to load units from storage.', error);
+                console.error('저장된 단위를 불러오는 데 실패했습니다.', error);
             }
         };
 
@@ -48,7 +48,7 @@ const Onboarding4 = ({ navigation, route }) => {
         setIsNextButtonDisabled(!allFieldsCompleted);
     }, [benchPress, deadlift, squat, unknownValues]);
 
-    const handleNextStep = () => {
+    const handleNextStep = async () => {
         if (!isNextButtonDisabled) {
             const onboardingData = {
                 gender,
@@ -66,6 +66,16 @@ const Onboarding4 = ({ navigation, route }) => {
                 accessToken: accessToken   
             };
 
+            // AsyncStorage에 1RM 값 저장
+            try {
+                await AsyncStorage.setItem('benchPress1rm', JSON.stringify(benchPress || -1));
+                await AsyncStorage.setItem('deadlift1rm', JSON.stringify(deadlift || -1));
+                await AsyncStorage.setItem('squat1rm', JSON.stringify(squat || -1));
+            } catch (error) {
+                console.error('1RM 값을 저장하는 데 실패했습니다.', error);
+            }
+
+            // 다음 단계로 진행
             registrationOnboarding(onboardingData, navigation);
         }
     };
@@ -76,7 +86,7 @@ const Onboarding4 = ({ navigation, route }) => {
         try {
             await AsyncStorage.setItem('basicUnit', newUnit);
         } catch (error) {
-            console.error('Failed to save the weight unit to storage.', error);
+            console.error('무게 단위를 저장하는 데 실패했습니다.', error);
         }
     };
 

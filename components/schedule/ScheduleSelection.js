@@ -67,6 +67,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
             try {
                 const id = await AsyncStorage.getItem('memberId');
                 if (id) setMemberId(id);
+
             } catch (error) {
                 console.error('회원 ID를 가져오는 중 오류가 발생했습니다.', error);
             }
@@ -166,7 +167,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
             <View style={styles.buttonContainer}>
                 {bodyParts.map((part) => (
                     <Pressable
-                        key={part}
+                        key={part} // part가 중복되지 않는지 확인
                         style={[
                             styles.button,
                             selectedParts[part] && styles.selectedButton
@@ -191,7 +192,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
 
                     <View style={styles.detailExerciseList}>
                         {filteredExercises.map((exercise, index) => (
-                            <Pressable key={exercise.id || index} style={styles.exerciseButton}>
+                            <Pressable key={`${exercise.id}-${index}`} style={styles.exerciseButton}>
                                 <Text style={styles.exerciseButtonText}>{exercise.exerciseName}</Text>
                             </Pressable>
                         ))}
@@ -204,6 +205,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
                     </View>
                 </View>
             )}
+
 
             <RegistExerciseModal isVisible={isModalVisible} onClose={closeModal} exercise={selectedExercise} />
         </View>

@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     tooltip: {
         position: 'absolute',
         maxWidth: 300,
-        top: 125,
+        top: 110,
         backgroundColor: '#333',
         padding: 10,
         borderRadius: 10,
