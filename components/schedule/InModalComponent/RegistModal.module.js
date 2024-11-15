@@ -161,9 +161,10 @@ export const styles = StyleSheet.create({
     },
 
     exerciseIcon:{
-        width:65,
+        width:75,
         height:55,
         borderColor: 'black',
+        borderRadius: 5,
         borderWidth: 1,
         backgroundColor: 'gray',
         marginRight: 8,
@@ -259,5 +260,8 @@ export const styles = StyleSheet.create({
         color: '#999999',
         marginTop: 20
     }
+
+
+    
     
 });

@@ -1,9 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBar from '../../common/ProgressBar';
 
 const Onboarding2 = ({ navigation }) => {
     const [selectedGender, setSelectedGender] = useState(null);
+
+    // 성별을 저장하는 함수
+    const saveGenderSelection = async (gender) => {
+        try {
+            await AsyncStorage.setItem('gender', gender);
+        } catch (e) {
+            console.error('성별 선택 저장에 실패했습니다.', e);
+        }
+    };
+
+    const handleGenderSelection = (gender) => {
+        setSelectedGender(gender);
+        saveGenderSelection(gender); // 성별 저장 함수 호출
+    };
 
     const handleNextStep = () => {
         if (selectedGender) {
@@ -19,7 +34,7 @@ const Onboarding2 = ({ navigation }) => {
                 styles.genderButton,
                 selectedGender === gender && styles.selectedGenderButton,
             ]}
-            onPress={() => setSelectedGender(gender)}
+            onPress={() => handleGenderSelection(gender)}
         >
             <Text style={styles.genderButtonText}>{gender}</Text>
         </TouchableOpacity>

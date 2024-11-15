@@ -19,6 +19,7 @@ const Onboarding3 = ({ navigation, route }) => {
                 ]);
                 if (storedHeightUnit) setHeightUnit(storedHeightUnit);
                 if (storedWeightUnit) setWeightUnit(storedWeightUnit);
+                
             } catch (e) {
                 console.error('Failed to load units from storage', e);
             }

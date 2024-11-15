@@ -27,6 +27,8 @@ const RegistBack = () => {
     const [selectedExercises, setSelectedExercises] = useState([]);
     const [scheduleExercises, setScheduleExercises] = useState([]);
     const [memberId, setMemberId] = useState(null);
+    const [searchMessage, setSearchMessage] = useState(''); // 검색 메시지 상태 추가
+
 
 
     useEffect(() => {
@@ -170,6 +172,29 @@ const RegistBack = () => {
         }
     };
 
+    useEffect(() => {
+        if (searchQuery.trim() !== '') {
+            const foundExercise = exercises.find(
+                (exercise) =>
+                    exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            if (!foundExercise) {
+                setSearchMessage('검색 결과가 없습니다. 다른 검색어를 입력해주세요.');
+                return;
+            }
+
+            if (foundExercise.mainMuscleGroup !== "등") {
+                setSearchMessage(`${foundExercise.exerciseName}은(는) ${foundExercise.mainMuscleGroup} 그룹에 있습니다.`);
+                dispatch(fetchMyExercisesAction(memberId, foundExercise.mainMuscleGroup));
+            } else {
+                setSearchMessage(''); // 메시지 초기화
+            }
+        } else {
+            setSearchMessage(''); // 검색어가 없을 때 메시지 초기화
+        }
+    }, [searchQuery, exercises, dispatch, memberId]);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.searchContainer}>
@@ -242,7 +267,7 @@ const RegistBack = () => {
                         </TouchableOpacity>
                     ))
                 ) : (
-                    <Text style={styles.noExerciseText}>운동 데이터가 없습니다.</Text>
+                    <Text style={styles.noExerciseText}>{searchMessage || '운동 데이터가 없습니다.'}</Text>
                 )}
                 <View style={{ height: 100 }}></View>
             </ScrollView>
