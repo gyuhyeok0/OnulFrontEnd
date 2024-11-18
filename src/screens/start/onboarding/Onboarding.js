@@ -11,6 +11,10 @@ const Onboarding = ({ navigation }) => {
     const saveUnitSelection = async (key, value) => {
         try {
             await AsyncStorage.setItem(key, value);
+            // weightUnit 선택 시 bodyWeightUnit도 동일하게 설정
+            if (key === 'weightUnit') {
+                await AsyncStorage.setItem('bodyWeightUnit', value);
+            }
         } catch (e) {
             console.error('Failed to save the unit selection.', e);
         }
