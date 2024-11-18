@@ -67,8 +67,10 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 10,
     },
+
     buttonContainer: {
         marginTop: 'auto',
+        justifyContent: 'space-between',
     },
     infoButton: {
         width: 75,
@@ -79,11 +81,17 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         alignItems: 'center',
     },
+    infoButtonPressed: {
+        backgroundColor: '#497CF4', // 눌렀을 때 배경색
+        borderColor: '#497CF4',
+
+    },
     buttonText: {
         color: 'white',
         fontSize: 12,
         fontWeight: 'bold',
     },
+
     exerciseRecord: {
         width: '75%',
         flex: 1,
@@ -156,6 +164,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: 5,
     },
+
+    exerciseInfoText:{
+        color: 'white'
+    },
+
+    eachInformation: {
+        minHeight: 60,
+        flex: 1,
+        // backgroundColor:'gray'
+    },
+
+
+
 });
 
 export default styles;

@@ -3,15 +3,30 @@ import { View, StyleSheet, Text, Pressable, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './EachExercise.module';
 import { isKmAndTime, isTime, isNumber } from './ExerciseClassification';
+import ExerciseInfoComponent from './ExerciseInfoComponent';
+import PreviousRecordComponent from './PreviousRecordComponent';
 
 const EachExercise = ({ exercise, isSelected, onPress }) => {
+
+    // 운동 세트 기본 3개 지정
     const [sets, setSets] = useState([
         { kg: '', reps: '', km: '', time: '', completed: false },
         { kg: '', reps: '', km: '', time: '', completed: false },
         { kg: '', reps: '', km: '', time: '', completed: false }
     ]);
 
+    // 운동 단위 기본값 지정
     const [weightUnit, setWeightUnit] = useState('kg'); // 기본값 'kg'
+    //운동 정보 토글
+    const [showExerciseInfo, setShowExerciseInfo] = useState(false);
+    const [showPreviousRecord, setShowPreviousRecord] = useState(false);
+
+    //버튼 상태
+    const [isInfoButtonPressed, setIsInfoButtonPressed] = useState(false);
+    const [isPreviousRecordButtonPressed, setIsPreviousRecordButtonPressed] = useState(false);
+
+
+
 
     // 무게 단위 가져오기
     useEffect(() => {
@@ -31,13 +46,30 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
         console.log(exercise.mainMuscleGroup, exercise.detailMuscleGroup, exercise.exerciseType);
     }, [exercise]);
 
+    // 운동 정보 버튼
     const handleExerciseInfoPress = () => {
-        console.log("운동 정보 버튼 클릭:", exercise.exerciseName);
+        setIsInfoButtonPressed((prev) => !prev);
+        setShowExerciseInfo((prev) => !prev); // 상태를 토글
+    
+        if (!isInfoButtonPressed) {
+            // 다른 버튼 상태 초기화
+            setIsPreviousRecordButtonPressed(false);
+            setShowPreviousRecord(false);
+        }
     };
 
+    // 이전 기록 버튼
     const handlePreviousRecordPress = () => {
-        console.log("이전 기록 버튼 클릭:", exercise.exerciseName);
+        setIsPreviousRecordButtonPressed((prev) => !prev);
+        setShowPreviousRecord((prev) => !prev); // 상태를 토글
+
+        if (!isPreviousRecordButtonPressed) {
+            // 다른 버튼 상태 초기화
+            setIsInfoButtonPressed(false);
+            setShowExerciseInfo(false);
+        }
     };
+
 
     const addSet = () => {
         setSets([...sets, { kg: '', reps: '', km: '', time: '', completed: false }]);
@@ -122,17 +154,37 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
 
                     
                     <View style={styles.buttonContainer}>
-                        <Pressable style={styles.infoButton} onPress={handleExerciseInfoPress}>
+                        <Pressable
+                            style={[
+                                styles.infoButton,
+                                isInfoButtonPressed && styles.infoButtonPressed, // 눌렸을 때 스타일
+                            ]}
+                            onPress={handleExerciseInfoPress}
+                        >
                             <Text style={styles.buttonText}>운동 정보</Text>
                         </Pressable>
 
-                        <Pressable style={styles.infoButton} onPress={handlePreviousRecordPress}>
+                        <Pressable
+                            style={[
+                                styles.infoButton,
+                                isPreviousRecordButtonPressed && styles.infoButtonPressed, // 눌렸을 때 스타일
+                            ]}
+                            onPress={handlePreviousRecordPress}
+                        >
                             <Text style={styles.buttonText}>이전 기록</Text>
                         </Pressable>
                     </View>
+
                 </View>
 
                 <View style={styles.exerciseRecord}>
+                {showExerciseInfo ? (
+                    // 운동 정보 컴포넌트
+                    <ExerciseInfoComponent exercise={exercise} />
+                ) : showPreviousRecord ? (
+                    // 이전 기록 컴포넌트
+                    <PreviousRecordComponent previousRecords={exercise.previousRecords || []} />
+                ) : (
                     <View style={styles.record}>
                         <Text style={styles.recordTitle}>record</Text>
                         
@@ -331,22 +383,26 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                             ))}
                         </View>
                     </View>
-                    <View style={styles.setting}>
-                        <Text style={styles.settingTitle}>세트 설정</Text>
-                        <View style={styles.settingButtonsContainer}>
-                            <Pressable style={styles.settingButton} onPress={addSet}>
-                                <Text style={styles.buttonText}>세트 추가</Text>
-                            </Pressable>
+                )}
+                    {!showExerciseInfo && !showPreviousRecord && (                        
+                        <View style={styles.setting}>
+                            <Text style={styles.settingTitle}>세트 설정</Text>
+                            <View style={styles.settingButtonsContainer}>
+                                <Pressable style={styles.settingButton} onPress={addSet}>
+                                    <Text style={styles.buttonText}>세트 추가</Text>
+                                </Pressable>
 
-                            <Pressable style={styles.settingButton} onPress={removeSet}>
-                                <Text style={styles.buttonText}>세트 삭제</Text>
-                            </Pressable>
+                                <Pressable style={styles.settingButton} onPress={removeSet}>
+                                    <Text style={styles.buttonText}>세트 삭제</Text>
+                                </Pressable>
 
-                            <Pressable style={styles.settingButton} onPress={completeAllSets}>
-                                <Text style={styles.buttonText}>모든 세트완료</Text>
-                            </Pressable>
+                                <Pressable style={styles.settingButton} onPress={completeAllSets}>
+                                    <Text style={styles.buttonText}>모든 세트완료</Text>
+                                </Pressable>
+                            </View>
                         </View>
-                    </View>
+                    )}
+
                 </View>
             </View>
         </Pressable>
