@@ -1,14 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Pressable, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './EachExercise.module';
+import { isKmAndTime, isTime, isNumber } from './ExerciseClassification';
 
-// 각각의 운동 기록 코드 
 const EachExercise = ({ exercise, isSelected, onPress }) => {
     const [sets, setSets] = useState([
-        { kg: '', reps: '', completed: false },
-        { kg: '', reps: '', completed: false },
-        { kg: '', reps: '', completed: false }
+        { kg: '', reps: '', km: '', time: '', completed: false },
+        { kg: '', reps: '', km: '', time: '', completed: false },
+        { kg: '', reps: '', km: '', time: '', completed: false }
     ]);
+
+    const [weightUnit, setWeightUnit] = useState('kg'); // 기본값 'kg'
+
+    // 무게 단위 가져오기
+    useEffect(() => {
+        const fetchWeightUnit = async () => {
+            try {
+                const unit = await AsyncStorage.getItem('weightUnit');
+                setWeightUnit(unit || 'kg'); // 저장된 값이 없으면 기본값 'kg'
+            } catch (error) {
+                console.error('Error fetching weight unit:', error);
+            }
+        };
+
+        fetchWeightUnit();
+    }, []);
 
     useEffect(() => {
         console.log(exercise.mainMuscleGroup, exercise.detailMuscleGroup, exercise.exerciseType);
@@ -23,7 +40,7 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
     };
 
     const addSet = () => {
-        setSets([...sets, { kg: '', reps: '', completed: false }]);
+        setSets([...sets, { kg: '', reps: '', km: '', time: '', completed: false }]);
     };
 
     const removeSet = () => {
@@ -35,9 +52,7 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
 
     const handleCompletePress = (index) => {
         const newSets = [...sets];
-    
         if (newSets[index].completed) {
-            // 해제 시 역순으로 진행
             for (let i = sets.length - 1; i >= 0; i--) {
                 if (newSets[i].completed) {
                     newSets[i].completed = false; // 완료 상태 해제
@@ -47,7 +62,6 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                 }
             }
         } else {
-            // 완료 상태가 아닐 때, 정상 순서로 진행
             if (index === 0 || newSets[index - 1].completed) {
                 newSets[index].completed = true; // 완료 상태로 설정
                 setSets(newSets);
@@ -57,17 +71,20 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
             }
         }
     };
-    
-    
+
     const completeAllSets = () => {
         const newSets = sets.map(set => ({ ...set, completed: true })); // 모든 세트를 완료로 설정
         setSets(newSets);
     };
 
+    // 조건 평가
+    const kmAndTime = isKmAndTime(exercise.exerciseName || '');
+    const time = isTime(exercise.exerciseName || '');
+    const number = isNumber(exercise.exerciseName || '');
+    
     return (
         <Pressable onPress={onPress}>
             <View style={[styles.exerciseContainer, isSelected && styles.selectedContainer]}>
-                
                 <View style={styles.exerciseInformation}>
                     <View style={styles.exerciseIcon}>
                         {/* 아이콘 추가 시 사용 */}
@@ -78,14 +95,31 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                     <View style={styles.volumeContainer}>
                         <Text style={styles.volumeText}>볼륨</Text>
                         <Text style={styles.volumeSeparator}> --</Text>
-                        <Text style={styles.volumeUnit}> kg</Text>
+                        <Text style={styles.volumeUnit}>
+                            {kmAndTime 
+                                ? 'km' 
+                                : time 
+                                ? '시간' 
+                                : number 
+                                ? '회' 
+                                : weightUnit}
+                        </Text>
                     </View>
 
                     <View style={styles.weightChangeContainer}>
                         <Text style={styles.weightChangeText}>up</Text>
                         <Text style={styles.weightChangeValue}>--</Text>
-                        <Text style={styles.weightChangeUnit}>kg</Text>
+                        <Text style={styles.weightChangeUnit}>
+                            {kmAndTime 
+                                ? 'km' 
+                                : time 
+                                ? '시간' 
+                                : number 
+                                ? '회' 
+                                : weightUnit}
+                        </Text>
                     </View>
+
                     
                     <View style={styles.buttonContainer}>
                         <Pressable style={styles.infoButton} onPress={handleExerciseInfoPress}>
@@ -102,11 +136,66 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                     <View style={styles.record}>
                         <Text style={styles.recordTitle}>record</Text>
                         
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3}}>
-                            <Text style={{color:'white', fontWeight:'bold', fontSize: 11, width: 30, textAlign:'center', marginRight: 5}}>SET</Text>
-                            <Text style={{color:'white', fontWeight:'bold', fontSize: 11, width: 60, textAlign:'center', flex: 1, marginHorizontal: 5}}>KG</Text>
-                            <Text style={{color:'white', fontWeight:'bold', fontSize: 11, width: 60, textAlign:'center', flex: 1, marginHorizontal: 5}}>횟수</Text>
-                            <Text style={{color:'white', fontWeight:'bold', fontSize: 11, width: 60, textAlign:'center', flex: 1, marginHorizontal: 5}}>완료</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: 11,
+                                    width: 30,
+                                    textAlign: 'center',
+                                    marginRight: 5,
+                                }}
+                            >
+                                SET
+                            </Text>
+                            {!time && !number &&(
+                                <Text
+                                    style={{
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        fontSize: 11,
+                                        width: 60,
+                                        textAlign: 'center',
+                                        flex: 1,
+                                        marginHorizontal: 5,
+                                    }}
+                                >
+                                    {kmAndTime ? 'km' : weightUnit}
+                                </Text>
+                            )}
+                            <View>
+                                <Text
+                                    style={{
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        fontSize: 11,
+                                        width: 60,
+                                        textAlign: 'center',
+                                        flex: 1,
+                                        marginHorizontal: 5,
+                                    }}
+                                >
+                                {time || kmAndTime ? '시간' : '횟수'}
+                                </Text>
+                            </View>
+                        
+                            <View>
+                                <Text
+                                    style={{
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        fontSize: 11,
+                                        width: 60,
+                                        textAlign: 'center',
+                                        flex: 1,
+                                        marginHorizontal: 5,
+                                    }}
+                                >
+                                    완료
+                                </Text>
+                            </View>
+                    
                         </View>
 
                         <View style={styles.recordInputs}>
@@ -125,39 +214,107 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                                             {index + 1}
                                         </Text>
                                     </Pressable>
-                                    
-                                    <TextInput 
-                                        style={[styles.input, { 
-                                            backgroundColor: set.completed ? '#4BA262' : '#525E77', 
-                                            color: set.completed ? '#96D3A6' : 'white' 
-                                        }]} 
-                                        placeholder="KG" 
-                                        placeholderTextColor="#B0B0B0" 
-                                        keyboardType="numeric" 
-                                        value={set.kg}
-                                        onChangeText={(text) => {
-                                            const newSets = [...sets];
-                                            newSets[index].kg = text;
-                                            setSets(newSets);
-                                        }} 
-                                    />
-                                    
-                                    <TextInput 
-                                        style={[styles.input, { 
-                                            backgroundColor: set.completed ? '#4BA262' : '#525E77', 
-                                            color: set.completed ? '#96D3A6' : 'white' 
-                                        }]} 
-                                        placeholder="횟수" 
-                                        placeholderTextColor="#B0B0B0" 
-                                        keyboardType="numeric" 
-                                        value={set.reps}
-                                        onChangeText={(text) => {
-                                            const newSets = [...sets];
-                                            newSets[index].reps = text;
-                                            setSets(newSets);
-                                        }} 
-                                    />
-                                    
+
+                                    {number ? (
+                                        <TextInput 
+                                            style={[styles.input, { 
+                                                backgroundColor: set.completed ? '#4BA262' : '#525E77', 
+                                                color: set.completed ? '#96D3A6' : 'white' 
+                                            }]} 
+                                            placeholder="횟수" 
+                                            placeholderTextColor="#B0B0B0" 
+                                            keyboardType="numeric" 
+                                            value={set.reps}
+                                            onChangeText={(text) => {
+                                                const newSets = [...sets];
+                                                newSets[index].reps = text;
+                                                setSets(newSets);
+                                            }} 
+                                        />
+                                    )   : time ? (
+                                        <TextInput 
+                                                style={[styles.input, { 
+                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77', 
+                                                    color: set.completed ? '#96D3A6' : 'white' 
+                                                }]} 
+                                                placeholder="시간" 
+                                                placeholderTextColor="#B0B0B0" 
+                                                keyboardType="numeric" 
+                                                value={set.time}
+                                                onChangeText={(text) => {
+                                                    const newSets = [...sets];
+                                                    newSets[index].time = text;
+                                                    setSets(newSets);
+                                                }} 
+                                            />
+                                    ) : kmAndTime ? (
+                                        <>
+                                            <TextInput 
+                                                style={[styles.input, { 
+                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77', 
+                                                    color: set.completed ? '#96D3A6' : 'white' 
+                                                }]} 
+                                                placeholder="km" 
+                                                placeholderTextColor="#B0B0B0" 
+                                                keyboardType="numeric" 
+                                                value={set.km}
+                                                onChangeText={(text) => {
+                                                    const newSets = [...sets];
+                                                    newSets[index].km = text;
+                                                    setSets(newSets);
+                                                }} 
+                                            />
+                                            <TextInput 
+                                                style={[styles.input, { 
+                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77', 
+                                                    color: set.completed ? '#96D3A6' : 'white' 
+                                                }]} 
+                                                placeholder="시간" 
+                                                placeholderTextColor="#B0B0B0" 
+                                                keyboardType="numeric" 
+                                                value={set.time}
+                                                onChangeText={(text) => {
+                                                    const newSets = [...sets];
+                                                    newSets[index].time = text;
+                                                    setSets(newSets);
+                                                }} 
+                                            />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <TextInput 
+                                                style={[styles.input, { 
+                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77', 
+                                                    color: set.completed ? '#96D3A6' : 'white' 
+                                                }]} 
+                                                placeholder={weightUnit} 
+                                                placeholderTextColor="#B0B0B0" 
+                                                keyboardType="numeric" 
+                                                value={set.kg}
+                                                onChangeText={(text) => {
+                                                    const newSets = [...sets];
+                                                    newSets[index].kg = text;
+                                                    setSets(newSets);
+                                                }} 
+                                            />
+                                            <TextInput 
+                                                style={[styles.input, { 
+                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77', 
+                                                    color: set.completed ? '#96D3A6' : 'white' 
+                                                }]} 
+                                                placeholder="횟수" 
+                                                placeholderTextColor="#B0B0B0" 
+                                                keyboardType="numeric" 
+                                                value={set.reps}
+                                                onChangeText={(text) => {
+                                                    const newSets = [...sets];
+                                                    newSets[index].reps = text;
+                                                    setSets(newSets);
+                                                }} 
+                                            />
+                                        </>
+                                    )}
+
                                     <Pressable 
                                         style={[styles.input, styles.completeButton, { 
                                             backgroundColor: set.completed ? '#4BA262' : '#525E77' 
@@ -195,6 +352,5 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
         </Pressable>
     );
 };
-
 
 export default EachExercise;

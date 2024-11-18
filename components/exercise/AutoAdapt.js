@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { sendIntensityToServer } from '../../src/hooks/Intensity'; // 함수 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 가져오기
 
-
+// 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
     const userId = useSelector((state) => state.member.userInfo.memberId);
     const accessToken = useSelector((state) => state.member.userInfo.accessToken);

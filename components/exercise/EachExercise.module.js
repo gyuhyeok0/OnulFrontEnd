@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
     },
+    
     setSection: {
         width: '100%',
         flexDirection: 'row',
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         justifyContent: 'space-between',
     },
+
     setButton: {
         width: 30, 
         height: 30, 
@@ -117,6 +119,7 @@ const styles = StyleSheet.create({
         borderRadius: 5, 
         marginRight: 5,
     },
+    
     input: {
         width: 60,
         height: 30,
@@ -127,6 +130,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginRight: 5,
     },
+
     completeButton: {
         justifyContent: 'center',
         alignItems: 'center',
