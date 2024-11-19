@@ -15,6 +15,8 @@ import {
 } from '../../src/selectors/selectors';
 
 import EachExercise from './EachExercise';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 // 운동메뉴의 맞춤일정 코드
 const OnSchedule = () => {
@@ -87,16 +89,24 @@ const OnSchedule = () => {
     return (
         <View style={styles.container}>
             {todaySchedules.length > 0 && hasExercises ? (
-                <View style={styles.Schedule}>
-                    {todaySchedules.map((item, index) => {
-                        const exerciseList = renderExerciseList(item.part);
-                        return exerciseList ? (
-                            <View key={index}>
-                                {exerciseList}
-                            </View>
-                        ) : null; 
-                    })}
-                </View>
+                <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                extraScrollHeight={20} // 키보드 위 여백
+                enableOnAndroid={true} // Android에서도 작동하도록 설정
+                >
+
+                    <View style={styles.Schedule}>
+                        {todaySchedules.map((item, index) => {
+                            const exerciseList = renderExerciseList(item.part);
+                            return exerciseList ? (
+                                <View key={index}>
+                                    {exerciseList}
+                                </View>
+                            ) : null; 
+                        })}
+                    </View>
+
+                </KeyboardAwareScrollView>
             ) : (
                 <View style={styles.noSchedule}>
                     <Text style={styles.noScheduleText}>현재 스케쥴에 등록된 운동이 없습니다.</Text>

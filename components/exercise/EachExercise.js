@@ -32,7 +32,7 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
     useEffect(() => {
         const fetchWeightUnit = async () => {
             try {
-                const unit = await AsyncStorage.getItem('weightUnit');
+                const unit = await AsyncStorage.getItem('basicUnit');
                 setWeightUnit(unit || 'kg'); // 저장된 값이 없으면 기본값 'kg'
             } catch (error) {
                 console.error('Error fetching weight unit:', error);
@@ -284,21 +284,59 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                                             }} 
                                         />
                                     )   : time ? (
-                                        <TextInput 
-                                                style={[styles.input, { 
-                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77', 
-                                                    color: set.completed ? '#96D3A6' : 'white' 
-                                                }]} 
-                                                placeholder="시간" 
-                                                placeholderTextColor="#B0B0B0" 
-                                                keyboardType="numeric" 
-                                                value={set.time}
-                                                onChangeText={(text) => {
-                                                    const newSets = [...sets];
-                                                    newSets[index].time = text;
-                                                    setSets(newSets);
-                                                }} 
-                                            />
+                                        <TextInput
+                                            style={[
+                                                styles.input,
+                                                {
+                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77',
+                                                    color: set.completed ? '#96D3A6' : 'white',
+                                                },
+                                            ]}
+                                            placeholder="0:00"
+                                            placeholderTextColor="#B0B0B0"
+                                            keyboardType="numeric"
+                                            value={set.time}
+                                            maxLength={8} // 최대 8자 (99:99:99 형식)
+                                            selectTextOnFocus={true} // 포커스 시 텍스트 전체 선택
+                                            onChangeText={(text) => {
+                                                // 숫자만 필터링
+                                                const filteredText = text.replace(/[^0-9]/g, '');
+                                                let formattedTime = '';
+
+                                                // 입력된 숫자가 2자리 이하인 경우 앞에 0 추가
+                                                const paddedText = filteredText.length <= 2 ? filteredText.padStart(4, '0') : filteredText;
+
+                                                // 입력된 숫자 길이에 따라 포맷팅
+                                                if (filteredText.length <= 2) {
+                                                    // 초만 입력된 경우
+                                                    formattedTime = paddedText;
+                                                } else if (filteredText.length <= 4) {
+                                                    // 분:초 형식
+                                                    formattedTime = `${filteredText.slice(0, -2)}:${filteredText.slice(-2)}`;
+                                                } else if (filteredText.length <= 6) {
+                                                    // 시:분:초 형식
+                                                    formattedTime = `${filteredText.slice(0, -4)}:${filteredText.slice(-4, -2)}:${filteredText.slice(-2)}`;
+                                                }
+
+                                                // 최대값 초과 여부 확인 (99:99:99)
+                                                const [hours, minutes, seconds] = formattedTime.split(':').map((val) => parseInt(val || '0', 10));
+                                                if (
+                                                    hours > 99 ||
+                                                    minutes > 99 ||
+                                                    seconds > 99
+                                                ) {
+                                                    // 초과 시 상태 업데이트를 막음
+                                                    console.warn('최대 입력값은 99:99:99입니다.');
+                                                    return;
+                                                }
+
+                                                // 상태 업데이트
+                                                const newSets = [...sets];
+                                                newSets[index].time = formattedTime;
+                                                setSets(newSets);
+                                            }}
+                                        />
+
                                     ) : kmAndTime ? (
                                         <>
                                             <TextInput 

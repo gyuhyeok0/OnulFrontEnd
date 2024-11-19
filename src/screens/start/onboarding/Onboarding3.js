@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBar from '../../common/ProgressBar';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const Onboarding3 = ({ navigation, route }) => {
     const { selectedGender } = route.params;
@@ -81,69 +83,76 @@ const Onboarding3 = ({ navigation, route }) => {
         <>
             <ProgressBar currentStep={3} navigation={navigation} />
             <SafeAreaView style={styles.safeArea}>
-                <View style={styles.container}>
-                    <Text style={styles.title}>현재 키와 몸무게가 몇인가요?</Text>
-                    <Text style={styles.subTitle}>언제든지 변경 가능합니다.</Text>
 
-                    <View style={styles.inputContainer}>
-                        {heightUnit === 'feet' ? (
-                            <View style={styles.heightInput}>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="0"
-                                    keyboardType="numeric"
-                                    value={height.feet}
-                                    onChangeText={(text) => handleHeightChange('feet', text)}
-                                />
-                                <Text style={styles.unitText}>feet</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="0"
-                                    keyboardType="numeric"
-                                    value={height.inches}
-                                    onChangeText={(text) => handleHeightChange('inches', text)}
-                                />
-                                <Text style={styles.unitText}>inches</Text>
+                <KeyboardAwareScrollView
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    extraScrollHeight={20} // 키보드 위 여백
+                    enableOnAndroid={true} // Android에서도 작동하도록 설정
+                >
+                    <View style={styles.container}>
+                        <Text style={styles.title}>현재 키와 몸무게가 몇인가요?</Text>
+                        <Text style={styles.subTitle}>언제든지 변경 가능합니다.</Text>
+
+                        <View style={styles.inputContainer}>
+                            {heightUnit === 'feet' ? (
+                                <View style={styles.heightInput}>
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        value={height.feet}
+                                        onChangeText={(text) => handleHeightChange('feet', text)}
+                                    />
+                                    <Text style={styles.unitText}>feet</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        value={height.inches}
+                                        onChangeText={(text) => handleHeightChange('inches', text)}
+                                    />
+                                    <Text style={styles.unitText}>inches</Text>
+                                </View>
+                            ) : (
+                                <View style={styles.singleInput}>
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        value={height.cm}
+                                        onChangeText={(text) => handleHeightChange('cm', text)}
+                                    />
+                                    <Text style={styles.unitText}>cm</Text>
+                                </View>
+                            )}
+
+                            <View style={styles.wrapContainer}>
+                                <View style={styles.line} />
+                                <Text style={styles.andText}>And</Text>
+                                <View style={styles.line} />
                             </View>
-                        ) : (
+
                             <View style={styles.singleInput}>
                                 <TextInput
                                     style={styles.input}
                                     placeholder="0"
                                     keyboardType="numeric"
-                                    value={height.cm}
-                                    onChangeText={(text) => handleHeightChange('cm', text)}
+                                    value={weight[weightUnit]}
+                                    onChangeText={handleWeightChange}
                                 />
-                                <Text style={styles.unitText}>cm</Text>
+                                <Text style={styles.unitText}>{weightUnit}</Text>
                             </View>
-                        )}
-
-                        <View style={styles.wrapContainer}>
-                            <View style={styles.line} />
-                            <Text style={styles.andText}>And</Text>
-                            <View style={styles.line} />
                         </View>
 
-                        <View style={styles.singleInput}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="0"
-                                keyboardType="numeric"
-                                value={weight[weightUnit]}
-                                onChangeText={handleWeightChange}
-                            />
-                            <Text style={styles.unitText}>{weightUnit}</Text>
-                        </View>
+                        <TouchableOpacity
+                            style={[styles.nextButton, isNextButtonDisabled && styles.disabledButton]}
+                            onPress={handleNextStep}
+                            disabled={isNextButtonDisabled}
+                        >
+                            <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>다음</Text>
+                        </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity
-                        style={[styles.nextButton, isNextButtonDisabled && styles.disabledButton]}
-                        onPress={handleNextStep}
-                        disabled={isNextButtonDisabled}
-                    >
-                        <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>다음</Text>
-                    </TouchableOpacity>
-                </View>
+                </KeyboardAwareScrollView>
             </SafeAreaView>
         </>
     );

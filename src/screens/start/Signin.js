@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './Signin.module';
 import FindPassword from '../modal/FindPassword';
 import { callLoginAPI } from '../../apis/MemberAPICalls';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -51,6 +53,12 @@ function Signin({ navigation }) {
 
     return (
         <>
+            <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                extraScrollHeight={20} // 키보드 위 여백
+                enableOnAndroid={true} // Android에서도 작동하도록 설정
+            >
+
             <DefaultHeader title="로그인" navigation={navigation} />
             <View style={styles.container}>
                 <View style={[styles.BackgroundCircle, { top: height * 0.13 }]}></View>
@@ -99,9 +107,10 @@ function Signin({ navigation }) {
             </View>
 
             <FindPassword isVisible={isModalVisible} onClose={closeModal} />
+
+            </KeyboardAwareScrollView>
         </>
     );
 }
 
 export default Signin;
-
