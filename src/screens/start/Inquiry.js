@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Dimensions, StyleSheet, Text, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Dimensions, StyleSheet, Text, Alert, ScrollView } from 'react-native';
 import DefaultHeader from '../common/DefaultHeader';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const Inquiry = ({ navigation }) => {
     const [memberId, setMemberId] = useState('');
@@ -76,59 +78,67 @@ const Inquiry = ({ navigation }) => {
     return (
         <>
             <DefaultHeader title="문의하기" navigation={navigation} />
+
             <View style={styles.container}>
-                <View style={styles.form}>
-                    {/* 아이디 */}
-                    <Text style={styles.label}>아이디</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="아이디 입력"
-                        placeholderTextColor="#666666"  // placeholder 색상 변경
-                        value={memberId}
-                        onChangeText={setMemberId}
-                    />
+            <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                extraScrollHeight={20} // 키보드 위 여백
+                enableOnAndroid={true} // Android에서도 작동하도록 설정
+            >
 
-                    {/* 이메일 (필수) */}
-                    <Text style={styles.label}>이메일 *</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="이메일 입력"
-                        placeholderTextColor="#666666"  // placeholder 색상 변경
-                        keyboardType="email-address"
-                        value={email}
-                        onChangeText={setEmail}
-                        required
-                    />
+                    <View style={styles.form}>
+                        {/* 아이디 */}
+                        <Text style={styles.label}>아이디</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="아이디 입력"
+                            placeholderTextColor="#666666"  // placeholder 색상 변경
+                            value={memberId}
+                            onChangeText={setMemberId}
+                        />
 
-                    {/* 제목 (필수) */}
-                    <Text style={styles.label}>제목 *</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="제목 입력"
-                        placeholderTextColor="#666666"  // placeholder 색상 변경
-                        value={title}
-                        onChangeText={setTitle}
-                        required
-                    />
+                        {/* 이메일 (필수) */}
+                        <Text style={styles.label}>이메일 *</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="이메일 입력"
+                            placeholderTextColor="#666666"  // placeholder 색상 변경
+                            keyboardType="email-address"
+                            value={email}
+                            onChangeText={setEmail}
+                            required
+                        />
 
-                    {/* 문의내용 (필수) */}
-                    <Text style={styles.label}>문의내용 *</Text>
-                    <TextInput
-                        style={[styles.input, styles.textArea]}
-                        placeholder="문의내용 입력"
-                        placeholderTextColor="#666666"  // placeholder 색상 변경
-                        value={content}
-                        onChangeText={setContent}
-                        multiline
-                        numberOfLines={4}
-                        required
-                    />
+                        {/* 제목 (필수) */}
+                        <Text style={styles.label}>제목 *</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="제목 입력"
+                            placeholderTextColor="#666666"  // placeholder 색상 변경
+                            value={title}
+                            onChangeText={setTitle}
+                            required
+                        />
 
-                    {/* 제출 버튼 */}
-                    <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                        <Text style={styles.submitButtonText}>제출</Text>
-                    </TouchableOpacity>
-                </View>
+                        {/* 문의내용 (필수) */}
+                        <Text style={styles.label}>문의내용 *</Text>
+                        <TextInput
+                            style={[styles.input, styles.textArea]}
+                            placeholder="문의내용 입력"
+                            placeholderTextColor="#666666"  // placeholder 색상 변경
+                            value={content}
+                            onChangeText={setContent}
+                            multiline
+                            numberOfLines={4}
+                            required
+                        />
+
+                        {/* 제출 버튼 */}
+                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                            <Text style={styles.submitButtonText}>제출</Text>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardAwareScrollView>
             </View>
         </>
     );

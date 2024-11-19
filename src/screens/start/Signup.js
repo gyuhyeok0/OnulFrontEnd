@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
 import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포트 임포트
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 function Signup({ navigation }) {
     const [memberId, setMemberId] = useState('');
@@ -103,82 +104,90 @@ function Signup({ navigation }) {
         <>
             <DefaultHeader title="간편가입" navigation={navigation} />
 
-            <View style={styles.container}>
-                <View style={[styles.BackgroundCircle, { top: height * 0.14 }]}></View>
+            <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                extraScrollHeight={20} // 키보드 위 여백
+                enableOnAndroid={true} // Android에서도 작동하도록 설정
+            >
 
-                <Text style={[styles.label, { marginTop: 50 }]}>아이디</Text>
+                <View style={styles.container}>
+                    <View style={[styles.BackgroundCircle, { top: height * 0.14 }]}></View>
 
-                <View style={styles.idContainer}>
-                    {/* 아이디 입력 */}
-                    <TextInput
-                        style={[
-                            styles.idInput,
-                            isMemberIdValid === false && styles.invalidInput,
-                            isIdAvailable && styles.availableInput // 아이디 사용 가능 상태일 때 스타일 적용
-                        ]}
-                        placeholder="아이디를 입력하세요"
-                        placeholderTextColor="#888"
-                        value={memberId}
-                        onChangeText={validateMemberId}
-                    />
+                    <Text style={[styles.label, { marginTop: 50 }]}>아이디</Text>
 
-                    {/* 중복확인 버튼 */}
-                    <TouchableOpacity
-                        style={[
-                            styles.checkButton,
-                            isIdAvailable && styles.availableButton // 아이디 사용 가능 상태일 때 버튼 색상 변경
-                        ]}
-                        onPress={checkMemberIdDuplicate}
-                    >
-                        <Text
+                    <View style={styles.idContainer}>
+                        {/* 아이디 입력 */}
+                        <TextInput
                             style={[
-                                styles.checkButtonText,
-                                isIdAvailable && styles.availableButtonText // 아이디 사용 가능 상태일 때 텍스트 색상 변경
+                                styles.idInput,
+                                isMemberIdValid === false && styles.invalidInput,
+                                isIdAvailable && styles.availableInput // 아이디 사용 가능 상태일 때 스타일 적용
                             ]}
+                            placeholder="아이디를 입력하세요"
+                            placeholderTextColor="#888"
+                            value={memberId}
+                            onChangeText={validateMemberId}
+                        />
+
+                        {/* 중복확인 버튼 */}
+                        <TouchableOpacity
+                            style={[
+                                styles.checkButton,
+                                isIdAvailable && styles.availableButton // 아이디 사용 가능 상태일 때 버튼 색상 변경
+                            ]}
+                            onPress={checkMemberIdDuplicate}
                         >
-                            중복확인
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-                {isMemberIdValid === false && <Text style={styles.errorText}>영문자와 숫자가 모두 포함된 6자리 이상의 아이디를 입력해주세요.</Text>}
+                            <Text
+                                style={[
+                                    styles.checkButtonText,
+                                    isIdAvailable && styles.availableButtonText // 아이디 사용 가능 상태일 때 텍스트 색상 변경
+                                ]}
+                            >
+                                중복확인
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    {isMemberIdValid === false && <Text style={styles.errorText}>영문자와 숫자가 모두 포함된 6자리 이상의 아이디를 입력해주세요.</Text>}
 
-                <View style={{ marginTop: 20 }}>
-                    {/* 비밀번호 입력 */}
-                    <Text style={styles.label}>비밀번호</Text>
-                    <TextInput
-                        style={[styles.input, isMemberPasswordValid === false && styles.invalidInput]}
-                        placeholder="비밀번호를 입력하세요"
-                        placeholderTextColor="#888"
-                        secureTextEntry
-                        value={memberPassword}
-                        onChangeText={validateMemberPassword}
-                    />
-                    {isMemberPasswordValid === false && <Text style={styles.errorText}>영문 대/소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
+                    <View style={{ marginTop: 20 }}>
+                        {/* 비밀번호 입력 */}
+                        <Text style={styles.label}>비밀번호</Text>
+                        <TextInput
+                            style={[styles.input, isMemberPasswordValid === false && styles.invalidInput]}
+                            placeholder="비밀번호를 입력하세요"
+                            placeholderTextColor="#888"
+                            secureTextEntry
+                            value={memberPassword}
+                            onChangeText={validateMemberPassword}
+                        />
+                        {isMemberPasswordValid === false && <Text style={styles.errorText}>영문 대/소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
 
-                    {/* 비밀번호 확인 입력 */}
-                    <Text style={styles.label}>비밀번호 확인</Text>
-                    <TextInput
-                        style={[styles.input, isConfirmPasswordValid === false && styles.invalidInput]}
-                        placeholder="비밀번호를 다시 입력하세요"
-                        placeholderTextColor="#888"
-                        secureTextEntry
-                        value={confirmPassword}
-                        onChangeText={validateConfirmPassword}
-                    />
-                    {isConfirmPasswordValid === false && <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>}
+                        {/* 비밀번호 확인 입력 */}
+                        <Text style={styles.label}>비밀번호 확인</Text>
+                        <TextInput
+                            style={[styles.input, isConfirmPasswordValid === false && styles.invalidInput]}
+                            placeholder="비밀번호를 다시 입력하세요"
+                            placeholderTextColor="#888"
+                            secureTextEntry
+                            value={confirmPassword}
+                            onChangeText={validateConfirmPassword}
+                        />
+                        {isConfirmPasswordValid === false && <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>}
+                    </View>
+
+                    <View style={styles.buttonContainer}>
+                        {/* 다음 버튼 (모든 조건 충족 시에만 활성화) */}
+                        <TouchableOpacity
+                            style={[styles.nextButton, (!isIdAvailable || !isIdChecked || !isMemberPasswordValid || !isConfirmPasswordValid) && styles.disabledButton]}
+                            onPress={handleNextStep}
+                            disabled={!isIdAvailable || !isIdChecked || !isMemberPasswordValid || !isConfirmPasswordValid} // 조건 충족 여부에 따른 버튼 활성화/비활성화
+                        >
+                            <Text style={styles.nextButtonText}>다음</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View style={styles.buttonContainer}>
-                    {/* 다음 버튼 (모든 조건 충족 시에만 활성화) */}
-                    <TouchableOpacity
-                        style={[styles.nextButton, (!isIdAvailable || !isIdChecked || !isMemberPasswordValid || !isConfirmPasswordValid) && styles.disabledButton]}
-                        onPress={handleNextStep}
-                        disabled={!isIdAvailable || !isIdChecked || !isMemberPasswordValid || !isConfirmPasswordValid} // 조건 충족 여부에 따른 버튼 활성화/비활성화
-                    >
-                        <Text style={styles.nextButtonText}>다음</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            </KeyboardAwareScrollView>
         </>
     );
 }

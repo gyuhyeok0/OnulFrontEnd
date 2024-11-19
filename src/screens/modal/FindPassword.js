@@ -7,6 +7,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './FindPassword.module';
 import { handleVerification, fetchUserPhoneNumber } from '../../hooks/HandlePhone';
 import { Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -308,149 +310,161 @@ const FindPassword = ({ isVisible, onClose }) => {
                         <Text style={modalstyles.title}>비밀번호 찾기</Text>
                     </View>
 
-                    <View style={styles.container}>
-                        {/* 아이디 입력과 본인 확인 영역 숨기기 */}
-                        {!isComplete && (
-                            <>
-                                <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginBottom: 10}}>아이디 입력</Text>
-                                <TextInput
-                                    style={[styles.idInput, isVerified && { color: '#6D6E6F' }, isInputDisabled && { backgroundColor: '#242732', color: '#AAAAAA' }]}
-                                    placeholder="아이디 입력"
-                                    placeholderTextColor="#CCCCCC"
-                                    keyboardType="default"
-                                    onChangeText={text => {
-                                        const filteredText = text.replace(/[^a-zA-Z0-9]/g, ''); // 영문자와 숫자만 허용
-                                        setUserId(filteredText);
-                                    }}
-                                    value={userId} // 입력값 설정
-                                    editable={!isInputDisabled} 
-                                />
-                                <TouchableOpacity style={[styles.completeButton, isInputDisabled && { backgroundColor: '#242732' }]} onPress={handleComplete} disabled={isInputDisabled}>
-                                    <Text style={styles.completeButtonText}>완료</Text>
-                                </TouchableOpacity>
+                    <KeyboardAwareScrollView
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        extraScrollHeight={20} // 키보드 위 여백
+                        enableOnAndroid={true} // Android에서도 작동하도록 설정
+                    >
 
-                                {showInputFields && (
-                                    <>
-                                        <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>본인 확인</Text>
-                                        <PhoneInput
-                                            key={defaultCountryCode}
-                                            ref={phoneInput}
-                                            defaultValue={phoneNumber}
-                                            defaultCode={defaultCountryCode}
-                                            layout="first"
-                                            onChangeText={(text) => setPhoneNumber(text)}
-                                            onChangeFormattedText={(text) => setFormattedValue(text)}
-                                            containerStyle={{
-                                                marginTop: 10,
-                                                width: '100%',
-                                                height: 55,
-                                                backgroundColor: '#3B404B',
-                                                borderRadius: 8,
-                                            }}
-                                            textInputStyle={{ 
-                                                color: 'white',  
-                                                fontSize: 16,    
-                                            }}
-                                            textContainerStyle={{ 
-                                                backgroundColor: '#3B404B', 
-                                                borderRadius: 8,
-                                                paddingVertical: 10, 
-                                            }}
-                                            codeTextStyle={{ color: 'white' }} 
-                                            countryPickerButtonStyle={{ backgroundColor: '#5E56C3', borderRadius: 12 }}
-                                            textInputProps={{
-                                                placeholderTextColor: '#CCCCCC', 
-                                                cursorColor: 'white',
-                                                keyboardType: 'numeric' // 숫자 키보드로 제한
-                                            }}
-                                            withDarkTheme={true}
-                                            withShadow={false}
-                                            autoFocus
-                                        />
-
-                                        <View style={styles.requestBox}>
-                                            <TouchableOpacity 
-                                                style={styles.requestButton} 
-                                                onPress={() => handleNext(formattedValue, userId, setTimeLeft, setIsTimerRunning)} 
-                                                disabled={isVerified}
-                                            >
-                                                <Text style={styles.requestButtonText}>인증번호 요청</Text>
-                                            </TouchableOpacity>
-
-                                            <TextInput
-                                                style={[
-                                                    styles.verificationInput,
-                                                    isVerified && { color: '#6D6E6F' }
-                                                ]}
-                                                placeholder="인증번호 입력"
-                                                placeholderTextColor="#CCCCCC"
-                                                keyboardType="numeric"
-                                                maxLength={6}
-                                                onChangeText={(text) => {
-                                                    const filteredText = text.replace(/[^0-9]/g, ''); // 숫자만 허용
-                                                    if (isExpired) {
-                                                        Alert.alert("오류", "인증 시간이 만료되었습니다. 다시 요청해 주세요.");
-                                                        return; // 만료되었을 경우 입력을 막음
-                                                    }
-                                                    handleVerificationCodeChange(filteredText);
-                                                }}
-                                                value={verificationCode}
-                                                editable={!isVerified}
-                                            />
-
-                                            <View style={{ position: 'absolute', top: 18, right: 15 }}>
-                                                <View style={{ flexDirection: 'row', alignItems:'center' }}>
-                                                    <Icon name="clock-o" size={14} color={timerColor} style={{ marginRight: 3 }} />
-                                                    <Text style={[styles.timerText, { color: timerColor }]}>
-                                                        {formatTime(timeLeft)} 
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </>
-                                )}
-                            </>
-                        )}
-
-                        {/* 비밀번호 재설정 영역 */}
-                        {isComplete && (
-                            <View>
-                                <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>비밀번호 재설정</Text>
-
-                                <View>
-                                    {/* 새 비밀번호 입력 */}
+                        <View style={styles.container}>
+                            {/* 아이디 입력과 본인 확인 영역 숨기기 */}
+                            {!isComplete && (
+                                <>
+                                    <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginBottom: 10}}>아이디 입력</Text>
                                     <TextInput
-                                        style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white' }]}
-                                        placeholder="새 비밀번호 입력"
+                                        style={[styles.idInput, isVerified && { color: '#6D6E6F' }, isInputDisabled && { backgroundColor: '#242732', color: '#AAAAAA' }]}
+                                        placeholder="아이디 입력"
                                         placeholderTextColor="#CCCCCC"
-                                        secureTextEntry={true}
-                                        onChangeText={validateMemberPassword} // validateMemberPassword로 변경
+                                        keyboardType="default"
+                                        onChangeText={text => {
+                                            const filteredText = text.replace(/[^a-zA-Z0-9]/g, ''); // 영문자와 숫자만 허용
+                                            setUserId(filteredText);
+                                        }}
+                                        value={userId} // 입력값 설정
+                                        editable={!isInputDisabled} 
                                     />
-                                    {isMemberPasswordValid === false && <Text style={styles.errorText}>영문자와 소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
-
-                                    
-                                    {/* 비밀번호 확인 입력 */}
-                                    <TextInput
-                                        style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white', marginTop: 10 }]}
-                                        placeholder="새 비밀번호 확인"
-                                        placeholderTextColor="#CCCCCC"
-                                        secureTextEntry={true}
-                                        onChangeText={validateConfirmPassword} // 여기서 validateConfirmPassword로 변경
-                                    />
-                                    {isConfirmPasswordValid === false && <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>}
-
-
-                                    {/* 완료 버튼 */}
-                                    <TouchableOpacity 
-                                        style={[styles.completeButton, { marginTop: 20 }]} 
-                                        onPress={handlePasswordResetComplete}
-                                    >
+                                    <TouchableOpacity style={[styles.completeButton, isInputDisabled && { backgroundColor: '#242732' }]} onPress={handleComplete} disabled={isInputDisabled}>
                                         <Text style={styles.completeButtonText}>완료</Text>
                                     </TouchableOpacity>
+
+                                    {showInputFields && (
+                                        <>
+                                            <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>본인 확인</Text>
+                                            <PhoneInput
+                                                key={defaultCountryCode}
+                                                ref={phoneInput}
+                                                defaultValue={phoneNumber}
+                                                defaultCode={defaultCountryCode}
+                                                layout="first"
+                                                onChangeText={(text) => setPhoneNumber(text)}
+                                                onChangeFormattedText={(text) => setFormattedValue(text)}
+                                                containerStyle={{
+                                                    marginTop: 10,
+                                                    width: '100%',
+                                                    height: 55,
+                                                    backgroundColor: '#3B404B',
+                                                    borderRadius: 8,
+                                                }}
+                                                textInputStyle={{ 
+                                                    color: 'white',  
+                                                    fontSize: 16,    
+                                                }}
+                                                textContainerStyle={{ 
+                                                    backgroundColor: '#3B404B', 
+                                                    borderRadius: 8,
+                                                    paddingVertical: 10, 
+                                                }}
+                                                codeTextStyle={{ color: 'white' }} 
+                                                countryPickerButtonStyle={{ backgroundColor: '#5E56C3', borderRadius: 12 }}
+                                                textInputProps={{
+                                                    placeholderTextColor: '#CCCCCC', 
+                                                    cursorColor: 'white',
+                                                    keyboardType: 'numeric' // 숫자 키보드로 제한
+                                                }}
+                                                withDarkTheme={true}
+                                                withShadow={false}
+                                                autoFocus
+                                            />
+
+                                            <View style={styles.requestBox}>
+                                                <TouchableOpacity 
+                                                    style={styles.requestButton} 
+                                                    onPress={() => handleNext(formattedValue, userId, setTimeLeft, setIsTimerRunning)} 
+                                                    disabled={isVerified}
+                                                >
+                                                    <Text style={styles.requestButtonText}>인증번호 요청</Text>
+                                                </TouchableOpacity>
+
+                                                <TextInput
+                                                    style={[
+                                                        styles.verificationInput,
+                                                        isVerified && { color: '#6D6E6F' }
+                                                    ]}
+                                                    placeholder="인증번호 입력"
+                                                    placeholderTextColor="#CCCCCC"
+                                                    keyboardType="numeric"
+                                                    maxLength={6}
+                                                    onChangeText={(text) => {
+                                                        const filteredText = text.replace(/[^0-9]/g, ''); // 숫자만 허용
+                                                        if (isExpired) {
+                                                            Alert.alert("오류", "인증 시간이 만료되었습니다. 다시 요청해 주세요.");
+                                                            return; // 만료되었을 경우 입력을 막음
+                                                        }
+                                                        handleVerificationCodeChange(filteredText);
+                                                    }}
+                                                    value={verificationCode}
+                                                    editable={!isVerified}
+                                                />
+
+                                                <View style={{ position: 'absolute', top: 18, right: 15 }}>
+                                                    <View style={{ flexDirection: 'row', alignItems:'center' }}>
+                                                        <Icon name="clock-o" size={14} color={timerColor} style={{ marginRight: 3 }} />
+                                                        <Text style={[styles.timerText, { color: timerColor }]}>
+                                                            {formatTime(timeLeft)} 
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </>
+                                    )}
+                                </>
+                            )}
+
+                            {/* 비밀번호 재설정 영역 */}
+                            {isComplete && (
+                                <View>
+                                    <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>비밀번호 재설정</Text>
+
+                                    <View>
+                                        {/* 새 비밀번호 입력 */}
+                                        <TextInput
+                                            style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white' }]}
+                                            placeholder="새 비밀번호 입력"
+                                            placeholderTextColor="#CCCCCC"
+                                            secureTextEntry={true}
+                                            onChangeText={validateMemberPassword} // validateMemberPassword로 변경
+                                        />
+                                        {isMemberPasswordValid === false && <Text style={styles.errorText}>영문자와 소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
+
+                                        
+                                        {/* 비밀번호 확인 입력 */}
+                                        <TextInput
+                                            style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white', marginTop: 10 }]}
+                                            placeholder="새 비밀번호 확인"
+                                            placeholderTextColor="#CCCCCC"
+                                            secureTextEntry={true}
+                                            onChangeText={validateConfirmPassword} // 여기서 validateConfirmPassword로 변경
+                                        />
+                                        {isConfirmPasswordValid === false && <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>}
+
+
+                                        {/* 완료 버튼 */}
+                                        <TouchableOpacity 
+                                            style={[styles.completeButton, { marginTop: 20 }]} 
+                                            onPress={handlePasswordResetComplete}
+                                        >
+                                            <Text style={styles.completeButtonText}>완료</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
-                        )}
-                    </View>
+                            )}
+
+                            
+                        </View>
+
+
+                    </KeyboardAwareScrollView>
+
                 </Animated.View>
             </Animated.View>
         </Modal>
@@ -466,7 +480,7 @@ const modalstyles = StyleSheet.create({
     },
     modalContent: {
         width: '100%',
-        height: screenHeight * 0.91,
+        height: screenHeight * 0.94,
         backgroundColor: '#191D22',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,

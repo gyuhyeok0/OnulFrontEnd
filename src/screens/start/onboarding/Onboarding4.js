@@ -5,6 +5,8 @@ import ProgressBar from '../../common/ProgressBar';
 import styles from './Onboarding4.module';
 import { registrationOnboarding } from '../../../hooks/HendleOnboarding';
 import { useSelector } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const Onboarding4 = ({ navigation, route }) => {
     const { gender, height, weight } = route.params;
@@ -117,98 +119,106 @@ const Onboarding4 = ({ navigation, route }) => {
         <>
             <ProgressBar currentStep={4} navigation={navigation} />
             <SafeAreaView style={styles.safeArea}>
-                <View style={styles.container}>
-                    <Text style={styles.title}>한 번에 들 수 있는 최대 무게를 입력해주세요</Text>
-                    <Text style={styles.subTitle}>회원님만을 위한 운동 프로그램</Text>
+                
+                <KeyboardAwareScrollView
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    extraScrollHeight={20} // 키보드 위 여백
+                    enableOnAndroid={true} // Android에서도 작동하도록 설정
+                >
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 30 }}>
-                        <Text style={[styles.unitText, basicUnit === 'lbs' && styles.activeUnit]}>lbs</Text>
-                        <TouchableOpacity style={styles.toggleSwitch} onPress={toggleUnit}>
-                            <View
-                                style={[
-                                    styles.toggleCircle,
-                                    basicUnit === 'kg' ? styles.toggleRight : styles.toggleLeft,
-                                ]}
-                            />
+                    <View style={styles.container}>
+                        <Text style={styles.title}>한 번에 들 수 있는 최대 무게를 입력해주세요</Text>
+                        <Text style={styles.subTitle}>회원님만을 위한 운동 프로그램</Text>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 30 }}>
+                            <Text style={[styles.unitText, basicUnit === 'lbs' && styles.activeUnit]}>lbs</Text>
+                            <TouchableOpacity style={styles.toggleSwitch} onPress={toggleUnit}>
+                                <View
+                                    style={[
+                                        styles.toggleCircle,
+                                        basicUnit === 'kg' ? styles.toggleRight : styles.toggleLeft,
+                                    ]}
+                                />
+                            </TouchableOpacity>
+                            <Text style={[styles.unitText, basicUnit === 'kg' && styles.activeUnit]}>kg</Text>
+                        </View>
+
+                        {/* Bench Press */}
+                        <View style={styles.inputRow}>
+                            <Text style={styles.label}>벤치프레스</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="0"
+                                    keyboardType="numeric"
+                                    value={unknownValues.benchPress ? '' : benchPress}
+                                    editable={!unknownValues.benchPress}
+                                    onChangeText={(text) => handleInputChange('benchPress', text)}
+                                />
+                                <Text style={styles.unitText}>{basicUnit}</Text>
+                                <TouchableOpacity
+                                    style={[styles.unknownButton, unknownValues.benchPress && styles.selectedUnknownButton]}
+                                    onPress={() => handleUnknownToggle('benchPress')}
+                                >
+                                    <Text style={styles.unknownButtonText}>몰라요</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        {/* Deadlift */}
+                        <View style={styles.inputRow}>
+                            <Text style={styles.label}>데드리프트</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="0"
+                                    keyboardType="numeric"
+                                    value={unknownValues.deadlift ? '' : deadlift}
+                                    editable={!unknownValues.deadlift}
+                                    onChangeText={(text) => handleInputChange('deadlift', text)}
+                                />
+                                <Text style={styles.unitText}>{basicUnit}</Text>
+                                <TouchableOpacity
+                                    style={[styles.unknownButton, unknownValues.deadlift && styles.selectedUnknownButton]}
+                                    onPress={() => handleUnknownToggle('deadlift')}
+                                >
+                                    <Text style={styles.unknownButtonText}>몰라요</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        {/* Squat */}
+                        <View style={styles.inputRow}>
+                            <Text style={styles.label}>스쿼트</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="0"
+                                    keyboardType="numeric"
+                                    value={unknownValues.squat ? '' : squat}
+                                    editable={!unknownValues.squat}
+                                    onChangeText={(text) => handleInputChange('squat', text)}
+                                />
+                                <Text style={styles.unitText}>{basicUnit}</Text>
+                                <TouchableOpacity
+                                    style={[styles.unknownButton, unknownValues.squat && styles.selectedUnknownButton]}
+                                    onPress={() => handleUnknownToggle('squat')}
+                                >
+                                    <Text style={styles.unknownButtonText}>몰라요</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        {/* Next Button */}
+                        <TouchableOpacity
+                            style={[styles.nextButton, isNextButtonDisabled && styles.disabledButton]}
+                            onPress={handleNextStep}
+                            disabled={isNextButtonDisabled}
+                        >
+                            <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>다음</Text>
                         </TouchableOpacity>
-                        <Text style={[styles.unitText, basicUnit === 'kg' && styles.activeUnit]}>kg</Text>
                     </View>
-
-                    {/* Bench Press */}
-                    <View style={styles.inputRow}>
-                        <Text style={styles.label}>벤치프레스</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="0"
-                                keyboardType="numeric"
-                                value={unknownValues.benchPress ? '' : benchPress}
-                                editable={!unknownValues.benchPress}
-                                onChangeText={(text) => handleInputChange('benchPress', text)}
-                            />
-                            <Text style={styles.unitText}>{basicUnit}</Text>
-                            <TouchableOpacity
-                                style={[styles.unknownButton, unknownValues.benchPress && styles.selectedUnknownButton]}
-                                onPress={() => handleUnknownToggle('benchPress')}
-                            >
-                                <Text style={styles.unknownButtonText}>몰라요</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    {/* Deadlift */}
-                    <View style={styles.inputRow}>
-                        <Text style={styles.label}>데드리프트</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="0"
-                                keyboardType="numeric"
-                                value={unknownValues.deadlift ? '' : deadlift}
-                                editable={!unknownValues.deadlift}
-                                onChangeText={(text) => handleInputChange('deadlift', text)}
-                            />
-                            <Text style={styles.unitText}>{basicUnit}</Text>
-                            <TouchableOpacity
-                                style={[styles.unknownButton, unknownValues.deadlift && styles.selectedUnknownButton]}
-                                onPress={() => handleUnknownToggle('deadlift')}
-                            >
-                                <Text style={styles.unknownButtonText}>몰라요</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    {/* Squat */}
-                    <View style={styles.inputRow}>
-                        <Text style={styles.label}>스쿼트</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="0"
-                                keyboardType="numeric"
-                                value={unknownValues.squat ? '' : squat}
-                                editable={!unknownValues.squat}
-                                onChangeText={(text) => handleInputChange('squat', text)}
-                            />
-                            <Text style={styles.unitText}>{basicUnit}</Text>
-                            <TouchableOpacity
-                                style={[styles.unknownButton, unknownValues.squat && styles.selectedUnknownButton]}
-                                onPress={() => handleUnknownToggle('squat')}
-                            >
-                                <Text style={styles.unknownButtonText}>몰라요</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    {/* Next Button */}
-                    <TouchableOpacity
-                        style={[styles.nextButton, isNextButtonDisabled && styles.disabledButton]}
-                        onPress={handleNextStep}
-                        disabled={isNextButtonDisabled}
-                    >
-                        <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>다음</Text>
-                    </TouchableOpacity>
-                </View>
+                </KeyboardAwareScrollView>
             </SafeAreaView>
         </>
     );

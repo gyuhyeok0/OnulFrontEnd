@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     },
     
     input: {
-        width: 60,
+        minWidth: 60,
         height: 30,
         borderRadius: 5,
         paddingHorizontal: 5,
