@@ -5,6 +5,9 @@ import styles from './EachExercise.module';
 import { isKmAndTime, isTime, isNumber } from './ExerciseClassification';
 import ExerciseInfoComponent from './ExerciseInfoComponent';
 import PreviousRecordComponent from './PreviousRecordComponent';
+import TimeInput from './keyboard/TimeInput'; // 추가된 컴포넌트 import
+import ScheduleSelection from '../schedule/ScheduleSelection';
+
 
 const EachExercise = ({ exercise, isSelected, onPress }) => {
 
@@ -284,21 +287,14 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                                             }} 
                                         />
                                     )   : time ? (
-                                        <TextInput 
-                                                style={[styles.input, { 
-                                                    backgroundColor: set.completed ? '#4BA262' : '#525E77', 
-                                                    color: set.completed ? '#96D3A6' : 'white' 
-                                                }]} 
-                                                placeholder="시간" 
-                                                placeholderTextColor="#B0B0B0" 
-                                                keyboardType="numeric" 
-                                                value={set.time}
-                                                onChangeText={(text) => {
-                                                    const newSets = [...sets];
-                                                    newSets[index].time = text;
-                                                    setSets(newSets);
-                                                }} 
-                                            />
+                                        <TimeInput
+                                            set={set}
+                                            index={index}
+                                            sets={sets}
+                                            setSets={setSets}
+                                            style={styles.input}
+                                        />
+
                                     ) : kmAndTime ? (
                                         <>
                                             <TextInput 
