@@ -114,22 +114,26 @@ const RegistCustom = () => {
         try {
             const newExercises = selectedExercises.filter(exerciseId => !scheduleExercises.includes(exerciseId));
             const muscleGroup = "커스텀";
+    
+            console.log("보내는 운동 데이터:", { newExercises, muscleGroup, memberId });
+    
             await sendExerciseToServer(newExercises, muscleGroup, memberId);
-
+    
+            console.log("운동 데이터 전송 성공!");
+    
             setScheduleExercises((prevSchedule) => [...prevSchedule, ...newExercises]);
             setSelectedExercises([]);
-
+    
             if (isCollapsed) {
                 toggleHeight();
             }
-
+    
             dispatch(fetchMyExercisesAction(memberId, muscleGroup));
-
         } catch (error) {
             console.error('운동 전송 중 오류 발생:', error);
         }
     };
-
+    
     const toggleLike = async (exerciseId) => {
         const currentLikeStatus = likedExercises[exerciseId] || false;
         const newLikeStatus = !currentLikeStatus;

@@ -13,7 +13,7 @@ export const useCurrentWeekAndDay = () => {
     // 오늘의 요일 인덱스 설정 (0: 일요일, 6: 토요일)
     const today = new Date().getDay();
     setTodayIndex(today);  // 일요일(0)을 첫 번째로 맞춤
-  }, []);
+  }, [new Date().getDate()]);
 
   const getCurrentWeekNumber = (date) => {
     const firstDayOfYear = new Date(date.getFullYear(), 0, 1);

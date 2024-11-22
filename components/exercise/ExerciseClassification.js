@@ -91,7 +91,6 @@ export const isNumber = (exerciseName) => {
             '친업', 
             '디클라인 싯업', 
             '머슬업', 
-            '매달리기', 
             '스탠딩 AB 슬라이드', 
             'AB 슬라이드', 
             '다이아몬드 프레스', 

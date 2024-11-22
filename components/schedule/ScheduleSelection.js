@@ -63,6 +63,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     }, [selectedParts, chestExercises, backExercises, lowerBodyExercises, shouldersExercises, absExercises, armsExercises, aerobicExercises, customExercises]);
 
     useEffect(() => {
+        
         const fetchMemberId = async () => {
             try {
                 const id = await AsyncStorage.getItem('memberId');

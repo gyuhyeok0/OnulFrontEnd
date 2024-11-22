@@ -164,7 +164,7 @@ const Exercise = ({ navigation }) => {
                         />
                     </Pressable>
                 </View>
-                
+
                 {renderSelectedComponent()}
 
                 {showTooltip.visible && (
@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         backgroundColor: '#1A1C22',
+        
     },
     scrollView: {
         backgroundColor: '#1A1C22',
@@ -191,16 +192,20 @@ const styles = StyleSheet.create({
     
     selectionContainer: {
         marginTop: 20,
-        marginBottom: 20,
         borderWidth: 0.5,
         borderColor: 'white',
         borderRadius: 20,
-        margin: 10,
+        // margin: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        marginBottom: 5,
+
         flexDirection: 'row',
         backgroundColor: '#15181C',
         justifyContent: 'space-around',
         alignItems: 'center',
         padding: 20,
+        // backgroundColor:'white'
     },
     option: {
         alignItems: 'center',

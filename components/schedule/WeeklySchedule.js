@@ -21,11 +21,10 @@ const WeeklySchedule = () => {
 
 
     useEffect(() => {
-
-
         if (!scheduleData || scheduleData.needsUpdate) {  // 데이터가 없거나 업데이트가 필요하면
             dispatch(callFetchScheduleAPI());  // API 호출
         }
+
     }, [dispatch, scheduleData]);
 
 
