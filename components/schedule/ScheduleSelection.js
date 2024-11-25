@@ -104,6 +104,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     const handlePress = useCallback(async (part) => {
         const isPartSelected = selectedParts[part];
         const updatedParts = { ...selectedParts, [part]: !isPartSelected };
+        console.log(isPartSelected)
 
         setSelectedParts(updatedParts);
 
