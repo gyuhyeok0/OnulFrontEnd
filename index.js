@@ -2,6 +2,7 @@
  * @format
  */
 
+import 'react-native-gesture-handler'; // 반드시 가장 위에 위치해야 함
 import { AppRegistry } from 'react-native';
 import App from './src/App';  // 실제 앱 컴포넌트
 import { name as appName } from './app.json';

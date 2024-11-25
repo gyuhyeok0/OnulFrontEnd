@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Pressable, Animated } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, Text, Pressable, Animated, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector, useDispatch } from 'react-redux';  // useDispatch 추가
+import { useSelector, useDispatch } from 'react-redux';
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
 import { 
     selectChestExercises, 
@@ -15,18 +15,23 @@ import {
 } from '../../src/selectors/selectors';
 
 import EachExercise from './EachExercise';
-import Icon from 'react-native-vector-icons/Feather'; // Import Feather icons
+import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/FontAwesome5';
-import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';  // API 호출 함수
+
+import { deleteDataFromServer, sendDataToServer } from '../../src/apis/ScheduleAPI'; 
+import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';
+
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExerciseModal';
 
 const OnSchedule = () => {
     const navigation = useNavigation();
-    const dispatch = useDispatch(); // useDispatch 훅 사용
-
-    const scheduleData = useSelector((state) => state.schedule?.schedule || []);
+    const dispatch = useDispatch();
+    const [memberId, setMemberId] = useState(null);
+    const scheduleData = useSelector(state => state.schedule?.schedule || []);
     const { isSwapped, todayIndex } = useCurrentWeekAndDay();
-    const days = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'];
-    const KoreanDays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
+    const todayKorean = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][todayIndex];
 
     const chestExercises = useSelector(selectChestExercises);
     const backExercises = useSelector(selectBackExercises);
@@ -36,34 +41,49 @@ const OnSchedule = () => {
     const armsExercises = useSelector(selectArmsExercises);
     const aerobicExercises = useSelector(selectAerobicExercises);
     const customExercises = useSelector(selectCustomExercises);
-    
-    const [scheduleHeight, setScheduleHeight] = useState(0); // 스케쥴 높이를 저장
-    const [refreshKey, setRefreshKey] = useState(0); // 새로고침을 위한 키 추가
-    const [isVisible, setIsVisible] = useState(false); // 숨겨진 영역의 보임 여부
-    const [animationHeight] = useState(new Animated.Value(0)); // 애니메이션을 위한 height 값
 
-    const today = days[todayIndex];
-    const todayKorean = KoreanDays[todayIndex]; // Adding Korean day
+    const [scheduleHeight, setScheduleHeight] = useState(0);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+    const [animationHeight] = useState(new Animated.Value(0));
 
-    const bodyParts = ['가슴', '등', '하체', '어깨', '복근', '팔', '기타', '커스텀'];
     const [selectedParts, setSelectedParts] = useState({});
+    const [selectedWeekType, setSelectedWeekType] = useState();
+    const [selectedDay, setSelectedDay] = useState();
+    const [selectedExercise, setSelectedExercise] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
-
-    // 데이터가 없거나 업데이트가 필요하면 API 호출
     useEffect(() => {
-        if (!scheduleData || scheduleData.needsUpdate) {  // 데이터가 없거나 업데이트가 필요하면
-            dispatch(callFetchScheduleAPI());  // API 호출
+        if (!scheduleData || scheduleData.needsUpdate) {
+            dispatch(callFetchScheduleAPI());
         }
-    }, [dispatch, scheduleData]);
 
-    // 새로고침 트리거용 useMemo
-    const todaySchedules = React.useMemo(() => {
-        const today = days[todayIndex];
+        const initialSelectedParts = scheduleData.reduce((acc, item) => {
+            if (item.day === today) acc[item.part] = true;
+            return acc;
+        }, {});
+
+        setSelectedParts(initialSelectedParts);
+    }, [dispatch, scheduleData, today]);
+
+    useEffect(() => {
+        const fetchMemberId = async () => {
+            try {
+                const id = await AsyncStorage.getItem('memberId');
+                if (id) setMemberId(id);
+            } catch (error) {
+                console.error('Error fetching memberId:', error);
+            }
+        };
+        fetchMemberId();
+    }, []);
+
+    useEffect(() => {
         const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
-        return scheduleData.filter(
-            (item) => item.day === today && item.weekType === currentWeekType
-        );
-    }, [scheduleData, days, todayIndex, isSwapped, refreshKey, new Date().getDate()]); // 의존성 배열에 new Date().getDate()를 제외하고 사용
+        const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
+        setSelectedWeekType(currentWeekType);
+        setSelectedDay(today);
+    }, [isSwapped, todayIndex]);
 
     const exerciseMap = {
         '가슴': chestExercises,
@@ -78,95 +98,94 @@ const OnSchedule = () => {
 
     const renderExerciseList = (part) => {
         const exercises = exerciseMap[part];
-        if (!Array.isArray(exercises) || exercises.length === 0) {
-            return null;
-        }
+        if (!Array.isArray(exercises) || exercises.length === 0) return null;
         return exercises.map((exercise, index) => (
-            <EachExercise 
-                key={exercise.id || index} 
-                exercise={exercise} 
-            />
+            <EachExercise key={exercise.id || index} exercise={exercise} />
         ));
     };
 
-    const hasExercises = todaySchedules.some(item => {
-        const exercises = exerciseMap[item.part];
-        return Array.isArray(exercises) && exercises.length > 0;
-    });
+    const todaySchedules = React.useMemo(() => {
+        const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
+        return scheduleData.filter(item => item.day === today && item.weekType === currentWeekType);
+    }, [scheduleData, today, isSwapped, refreshKey]);
 
-    const handleRefresh = () => {
-        setRefreshKey(prevKey => prevKey + 1); // 상태를 업데이트하여 새로고침 트리거
-        console.log("눌림")
-        console.log(today)
-        console.log(todaySchedules)
-        console.log(scheduleData)
-    };
+    const handleRefresh = () => setRefreshKey(prevKey => prevKey + 1);
 
-    
-    // 숨겨진 영역 보이기/숨기기 토글 함수
     const toggleVisibility = () => {
         setIsVisible(prevState => !prevState);
-
-        // 애니메이션을 사용하여 height 값 변경
         Animated.timing(animationHeight, {
-            toValue: isVisible ? 0 : 75, // 보이기 상태에서는 높이를 150으로 설정
-            duration: 300, // 애니메이션 지속 시간
-            useNativeDriver: false, // 높이 변화를 위한 false (opacity와 같은 스타일을 제외한 모든 스타일은 false로 설정)
+            toValue: isVisible ? 0 : 75,
+            duration: 300,
+            useNativeDriver: false,
         }).start();
     };
 
-    const handlePress = (part) => {
-        setSelectedParts((prevParts) => ({
-            ...prevParts,
-            [part]: !prevParts[part],
-        }));
-    };
+    const handlePress = useCallback(async (part) => {
+        const isPartSelected = selectedParts[part];
+        const updatedParts = { ...selectedParts, [part]: !isPartSelected };
+        setSelectedParts(updatedParts);
+
+        const exercises = exerciseMap[part];
+        const hasExercisesForPart = Array.isArray(exercises) && exercises.length > 0;
+
+        if (memberId) {
+            try {
+                if (!isPartSelected) {
+                    if (!hasExercisesForPart) {
+                        Alert.alert(`${part} 운동 등록 필요`, `먼저 ${part} 운동을 등록해주세요.`, [
+                            { text: "확인", onPress: () => openModal(part) }
+                        ]);
+                        setSelectedParts(prev => ({ ...prev, [part]: false }));
+                        return;
+                    }
+                    await sendDataToServer(part, memberId, selectedWeekType, selectedDay);
+                } else {
+                    await deleteDataFromServer(part, memberId, selectedWeekType, selectedDay);
+                }
+                dispatch(callFetchScheduleAPI());
+            } catch (error) {
+                console.error('Error communicating with the server:', error);
+            }
+        } else {
+            Alert.alert('회원 ID를 찾을 수 없습니다.');
+        }
+    }, [selectedParts, memberId, chestExercises, backExercises, lowerBodyExercises, shouldersExercises, absExercises, armsExercises, aerobicExercises, customExercises, dispatch]);
+
+    const openModal = useCallback((exercise) => {
+        setSelectedExercise(exercise);
+        setIsModalVisible(true);
+    }, []);
+
+    const closeModal = useCallback(() => {
+        setIsModalVisible(false);
+        setSelectedExercise('');
+    }, []);
 
     return (
         <View style={[styles.container, { height: scheduleHeight + 250 }]}>
-            <View style={{ minHeight: 40, backgroundColor:'#222732', borderRadius: 10, padding: 8, marginBottom: 15}}>
-                <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                    <Pressable style={{ height: 30, flexDirection:'row'}} onPress={handleRefresh}>
-                        <View style={{flexDirection: 'row', alignItems:'center', backgroundColor:'#4A5569', padding:6, borderRadius: 5}}>
-                            <Text style={{ color: 'white', fontSize: 17, fontWeight: 'bold' }}>
-                                {todayKorean}
-                            </Text>
-                            <Icon name="rotate-cw" size={15} color="white" style={{ marginLeft: 3}} />
+            <View style={styles.header}>
+                <View style={styles.headerContent}>
+                    <Pressable style={styles.refreshButton} onPress={handleRefresh}>
+                        <View style={styles.refreshInner}>
+                            <Text style={styles.refreshText}>{todayKorean}</Text>
+                            <Icon name="rotate-cw" size={15} color="white" style={styles.refreshIcon} />
                         </View>
-                        <Text style={{ color: '#C4C4C4', fontSize: 14, fontWeight: 'bold', marginTop:11, marginLeft: 4 }}>운동</Text>
+                        <Text style={styles.refreshLabel}>운동</Text>
                     </Pressable>
-                    
-                    {/* caret-down 아이콘을 눌렀을 때 숨겨진 영역 보이기 */}
-                    <Pressable style={{ maxWidth: 200, flexDirection: 'row', justifyContent: 'flex-end', flex: 1 }} onPress={toggleVisibility}>
-                        <Icon2 name={isVisible ? "caret-up" : "caret-down"} size={28} color="white" style={{ marginRight: 5 }} />
+                    <Pressable style={styles.caretButton} onPress={toggleVisibility}>
+                        <Icon2 name={isVisible ? "caret-up" : "caret-down"} size={28} color="white" />
                     </Pressable>
                 </View>
-
-                {/* 숨겨진 영역 */}
-                <Animated.View
-                    style={[
-                        styles.hiddenContent,
-                        {
-                            height: animationHeight, // height 애니메이션 적용
-                            overflow: 'hidden', // 높이가 늘어나거나 줄어들 때 내용이 잘리지 않도록 설정
-                        }
-                    ]}
-                >
+                <Animated.View style={[styles.hiddenContent, { height: animationHeight }]}>
                     {isVisible && (
                         <View style={styles.buttonContainer}>
-                            {bodyParts.map((part) => (
+                            {['가슴', '등', '하체', '어깨', '복근', '팔', '기타', '커스텀'].map(part => (
                                 <Pressable
-                                    key={part} // part가 중복되지 않는지 확인
-                                    style={[
-                                        styles.button,
-                                        selectedParts[part] && styles.selectedButton
-                                    ]}
+                                    key={part}
+                                    style={[styles.button, selectedParts[part] && styles.selectedButton]}
                                     onPress={() => handlePress(part)}
                                 >
-                                    <Text style={[
-                                        styles.buttonText,
-                                        selectedParts[part] && styles.selectedButtonText
-                                    ]}>
+                                    <Text style={[styles.buttonText, selectedParts[part] && styles.selectedButtonText]}>
                                         {part}
                                     </Text>
                                 </Pressable>
@@ -174,17 +193,10 @@ const OnSchedule = () => {
                         </View>
                     )}
                 </Animated.View>
-
             </View>
 
-            {todaySchedules.length > 0 && hasExercises ? (
-                <View 
-                    style={styles.schedule}
-                    onLayout={(event) => {
-                        const { height } = event.nativeEvent.layout;
-                        setScheduleHeight(height); // 스케쥴 높이를 저장
-                    }}
-                >
+            {todaySchedules.length > 0 ? (
+                <View style={styles.schedule} onLayout={(event) => setScheduleHeight(event.nativeEvent.layout.height)}>
                     {todaySchedules.map((item, index) => (
                         <View key={index}>
                             {renderExerciseList(item.part)}
@@ -199,6 +211,8 @@ const OnSchedule = () => {
                     </Pressable>
                 </View>
             )}
+
+            <RegistExerciseModal isVisible={isModalVisible} onClose={closeModal} exercise={selectedExercise} />
         </View>
     );
 };
@@ -208,18 +222,88 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 10,
     },
-
+    header: {
+        minHeight: 40,
+        backgroundColor: '#222732',
+        borderRadius: 10,
+        padding: 8,
+        marginBottom: 15,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    refreshButton: {
+        height: 30,
+        flexDirection: 'row',
+    },
+    refreshInner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#4A5569',
+        padding: 6,
+        borderRadius: 5,
+    },
+    refreshText: {
+        color: 'white',
+        fontSize: 17,
+        fontWeight: 'bold',
+    },
+    refreshIcon: {
+        marginLeft: 3,
+    },
+    refreshLabel: {
+        color: '#C4C4C4',
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginTop: 11,
+        marginLeft: 4,
+    },
+    caretButton: {
+        maxWidth: 200,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        flex: 1,
+    },
+    hiddenContent: {
+        overflow: 'hidden',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 10,
+        maxWidth: 350,
+    },
+    button: {
+        paddingTop: 4,
+        paddingBottom: 4,
+        paddingLeft: 10,
+        paddingRight: 10,
+        margin: 4,
+        borderWidth: 0.5,
+        borderRadius: 10,
+        borderColor: '#fff',
+    },
+    selectedButton: {
+        backgroundColor: '#fff',
+        borderColor: '#fff',
+    },
+    buttonText: {
+        fontSize: 16,
+        color: '#fff',
+    },
+    selectedButtonText: {
+        color: '#000',
+    },
     noSchedule: {
         width: '100%',
         marginBottom: 30,
         padding: 15,
     },
-
     noScheduleText: {
         fontSize: 13,
         color: '#F0F0F0',
     },
-
     noScheduleButton: {
         marginTop: 10,
         paddingVertical: 15,
@@ -227,70 +311,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#4A7BF6',
         borderRadius: 10,
     },
-    
     noScheduleButtonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
     },
-
-    hiddenContent: {
-        // marginTop: 10,
-    },
-
-    buttonContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap', // 여러 줄로 버튼을 정렬
-        marginTop:10,
-        maxWidth: 350,
-        // backgroundColor: 'white'
-    },
-
-    button: {
-        paddingTop: 4,
-        paddingBottom: 4,
-        paddingLeft: 10,
-        paddingRight: 10,
-
-        margin: 4,
-        borderWidth: 0.5,
-        borderRadius: 10,
-        borderColor: '#fff',
-    },
-
-    selectedButton: {
-        backgroundColor: '#fff',
-        borderColor: '#fff',
-    },
-    
-    buttonText: {
-        fontSize: 16,
-        color: '#fff',
-    },
-
-    selectedButtonText: {
-        color: '#000',
-    },
-
-    completeButton: {
-        margin: 8,
-        marginTop: 13,
-
-        paddingTop: 8,
-        paddingBottom: 8,
-        paddingLeft: 20,
-        paddingRight: 20,
-
-        backgroundColor: '#183B95',
-        borderRadius: 20,
-    },
-
-    completeButtonText: {
-        fontSize: 15,
-        color: '#fff',
-        fontWeight: 'bold',
-    },
 });
 
 export default OnSchedule;
+

@@ -41,6 +41,10 @@ import Onboarding2 from './screens/start/onboarding/Onboarding2';
 import Onboarding3 from './screens/start/onboarding/Onboarding3';
 import Onboarding4 from './screens/start/onboarding/Onboarding4';
 
+//실험페이지
+import Page from './screens/menu/Page';
+
+
 // 운동등록 
 
 import RegistChest from '../components/schedule/InModalComponent/RegistChest';
@@ -225,6 +229,17 @@ function MainApp() {
           component={AsyncStorage2}
           options={{
             title: 'AsyncStorage2',
+            headerShown: false, // 헤더 보이기 설정
+            ...DefaultHeaderStyles, // 스타일 적용
+          }}
+        />
+
+         {/* 메뉴 실험 페이지 */}
+         <Stack.Screen
+          name="Page"
+          component={Page}
+          options={{
+            title: 'Page',
             headerShown: false, // 헤더 보이기 설정
             ...DefaultHeaderStyles, // 스타일 적용
           }}

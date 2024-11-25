@@ -24,6 +24,12 @@ const Menu = ({navigation}) => {
         navigation.navigate('AsyncStorage2');
     }
 
+    const hadlePage = () => {
+
+        navigation.navigate('Page');
+    }
+
+
 
     return (
         <>
@@ -33,7 +39,7 @@ const Menu = ({navigation}) => {
                 <Button title="번역" onPress={ handleTranslation } />
                 <Button title="계정정보" onPress={ hadleAcountInfo } />
                 <Button title="스토리지" onPress={ hadleAsyncStorage } />
-
+                <Button title="실험용" onPress={ hadlePage } />
 
             </View>
         
