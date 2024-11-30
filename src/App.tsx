@@ -50,6 +50,7 @@ import Page from './screens/menu/Page';
 import RegistChest from '../components/schedule/InModalComponent/RegistChest';
 
 
+
 const Stack = createNativeStackNavigator();
 
 function MainApp() {

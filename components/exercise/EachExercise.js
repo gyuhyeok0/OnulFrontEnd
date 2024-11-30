@@ -7,6 +7,7 @@ import ExerciseInfoComponent from './ExerciseInfoComponent';
 import PreviousRecordComponent from './PreviousRecordComponent';
 import TimeInput from './keyboard/TimeInput'; // 추가된 컴포넌트 import
 import ScheduleSelection from '../schedule/ScheduleSelection';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 
 const EachExercise = ({ exercise, isSelected, onPress }) => {

@@ -131,18 +131,19 @@ export const styles = StyleSheet.create({
 
     exerciseButton: {
         backgroundColor: '#394452', // 어두운 배경색
+        height: 30,
         padding: 5,
         marginBottom: 4,
         borderRadius: 10, // 모서리 둥글게
         borderWidth: 2,
         borderColor: '#4a90e2', // 파란색 테두리
-        alignItems: 'center', // 텍스트 중앙 정렬
+        // alignItems: 'center', // 텍스트 중앙 정렬
     },
 
     exerciseButtonText: {
         color: '#ffffff', // 흰색 텍스트
         fontSize: 13, // 텍스트 크기
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
 
     noExerciseText: {
@@ -151,4 +152,5 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
+    
 });
