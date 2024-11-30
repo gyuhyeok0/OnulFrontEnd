@@ -1,8 +1,7 @@
 /**
  * @format
  */
-
-import 'react-native-gesture-handler'; // 반드시 가장 위에 위치해야 함
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppRegistry } from 'react-native';
 import App from './src/App';  // 실제 앱 컴포넌트
 import { name as appName } from './app.json';
@@ -11,11 +10,15 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store';  // store와 persistor 불러오기
 
+
 // Provider와 PersistGate 설정을 추가한 RootApp 컴포넌트
 const RootApp = () => (
     <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-            <App />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <App />
+
+            </GestureHandlerRootView>
         </PersistGate>
     </Provider>
 );

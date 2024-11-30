@@ -16,6 +16,9 @@ const Exercise = ({ navigation }) => {
     const [selectedOption, setSelectedOption] = useState('AutoAdapt');
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });
 
+    useEffect(() => {
+        console.log("==========운동페이지 입니다============")
+    }, []);
 
     useEffect(() => {
         const checkAndSaveDate = async () => {
@@ -96,7 +99,7 @@ const Exercise = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView style={styles.scrollView}>
+            <ScrollView  style={styles.scrollView}>
                 <View style={styles.selectionContainer}>
                     <Pressable
                         style={styles.option}
@@ -152,7 +155,7 @@ const Exercise = ({ navigation }) => {
                                 selectedOption === 'Custom' && styles.selectedTextColor
                             ]}
                         >
-                            커스텀
+                            자유일정
                         </Text>
                         <Image
                             source={

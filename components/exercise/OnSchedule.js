@@ -17,12 +17,16 @@ import {
 import EachExercise from './EachExercise';
 import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/FontAwesome5';
+import styles from './OnSchedule.module';
+
 
 import { deleteDataFromServer, sendDataToServer } from '../../src/apis/ScheduleAPI'; 
 import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';
 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExerciseModal';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const OnSchedule = () => {
     const navigation = useNavigation();
@@ -52,19 +56,127 @@ const OnSchedule = () => {
     const [selectedDay, setSelectedDay] = useState();
     const [selectedExercise, setSelectedExercise] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [reorderedExercises, setReorderedExercises] = useState([]); // 순서 변경된 운동 리스트
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            if (selectedWeekType && selectedDay) {
+                const initializeReorderedExercises = async () => {
+                    try {
+                        const savedData = await AsyncStorage.getItem('reorderedExercises');
+                        if (savedData) {
+                            const parsedData = JSON.parse(savedData);
+                            if (
+                                parsedData.weekType === selectedWeekType &&
+                                parsedData.day === selectedDay
+                            ) {
+                                setReorderedExercises(parsedData.exercises);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("운동 목록 초기화 중 오류 발생:", error);
+                    }
+                };
+    
+                initializeReorderedExercises();
+            }
+        }, [selectedWeekType, selectedDay]) // `selectedWeekType`과 `selectedDay`를 의존성에 추가
+    );
+    
+    
+
+    const loadReorderedExercises = useCallback(async (retryCount = 0) => {
+
+        try {
+            const savedData = await AsyncStorage.getItem('reorderedExercises');
+            // console.log("스토리지에 저장된 데이터"+ savedData)
+    
+            // 저장된 데이터가 없거나 운동 배열이 비어있을 경우
+            if ((!savedData || JSON.parse(savedData).exercises.length === 0) && retryCount < 3) {
+                // console.log("스토리지에 저장된 데이터가 없습니다.")
+                setTimeout(() => loadReorderedExercises(retryCount + 1), 500); // 500ms 대기 후 재시도
+                return;
+            }
+    
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                    
+                // 예상치 못한 데이터 형식을 처리
+                if (!parsedData || !Array.isArray(parsedData.exercises)) {
+                    setReorderedExercises([]);
+                    return;
+                }
+    
+                const { exercises, weekType, day } = parsedData;
+                if (weekType === selectedWeekType && day === selectedDay) {
+
+                    // console.log("스토리지에 데이터가 있습니다.")
+                    setReorderedExercises(exercises);
+                }
+            } else {
+                // console.log('저장된 데이터가 없습니다.');
+                setReorderedExercises([]); // 기본값 설정
+            }
+        } catch (error) {
+            console.error('운동 목록 로드 중 오류 발생:', error);
+            setReorderedExercises([]); // 오류 발생 시 빈 배열로 초기화
+        }
+    }, [selectedWeekType, selectedDay]);
+
+
+    //스토리지 저장
+    const saveReorderedExercises = useCallback(async () => {
+        try {
+            const uniqueExercises = reorderedExercises.filter(
+                (exercise, index, self) =>
+                    index === self.findIndex((ex) => ex.id === exercise.id)
+            );
+    
+            const dataToSave = {
+                exercises: uniqueExercises,
+                weekType: selectedWeekType,
+                day: selectedDay,
+            };
+    
+            const currentData = await AsyncStorage.getItem('reorderedExercises');
+            if (currentData) {
+                const parsedData = JSON.parse(currentData);
+                if (JSON.stringify(parsedData) === JSON.stringify(dataToSave)) {
+                    return;
+                }
+            }
+    
+            await AsyncStorage.setItem('reorderedExercises', JSON.stringify(dataToSave));
+            console.log('운동 목록 저장 완료');
+        } catch (error) {
+            console.error('운동 목록 저장 중 오류 발생:', error);
+        }
+    }, [reorderedExercises, selectedWeekType, selectedDay]);
+    
+    
+    // 상태가 변경될 때만 저장
+    useEffect(() => {
+        saveReorderedExercises(); // 빈 배열 포함 모든 경우 저장
+    }, [reorderedExercises, saveReorderedExercises]);
 
     useEffect(() => {
         if (!scheduleData || scheduleData.needsUpdate) {
             dispatch(callFetchScheduleAPI());
         }
-
-        const initialSelectedParts = scheduleData.reduce((acc, item) => {
-            if (item.day === today) acc[item.part] = true;
-            return acc;
-        }, {});
-
-        setSelectedParts(initialSelectedParts);
-    }, [dispatch, scheduleData, today]);
+    
+        if (Array.isArray(scheduleData)) {
+            const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
+            const initialSelectedParts = scheduleData.reduce((acc, item) => {
+                if (item.day === today && item.weekType === currentWeekType) {
+                    acc[item.part] = true;
+                }
+                return acc;
+            }, {});
+            setSelectedParts(initialSelectedParts);
+        } else {
+            console.warn('scheduleData is not an array');
+        }
+    }, [dispatch, scheduleData, today, isSwapped]);
 
     useEffect(() => {
         const fetchMemberId = async () => {
@@ -120,27 +232,51 @@ const OnSchedule = () => {
         }).start();
     };
 
+    
     const handlePress = useCallback(async (part) => {
         const isPartSelected = selectedParts[part];
         const updatedParts = { ...selectedParts, [part]: !isPartSelected };
         setSelectedParts(updatedParts);
-
+    
         const exercises = exerciseMap[part];
         const hasExercisesForPart = Array.isArray(exercises) && exercises.length > 0;
+    
+        if (!isPartSelected) {
+            // 운동 추가
+            if (hasExercisesForPart) {
+                setReorderedExercises((prev) => [
+                    ...prev,
+                    ...exercises.map((exercise) => ({
+                        ...exercise,
+                        part,
+                    })),
+                ]);
+            } else {
+                Alert.alert(`${part} 운동 등록 필요`, `먼저 ${part} 운동을 등록해주세요.`, [
+                    { text: "확인", onPress: () => openModal(part) },
+                ]);
+                setSelectedParts((prevParts) => ({ ...prevParts, [part]: false }));
 
+                return;
+            }
+        } else {
+
+            if (part === "커스텀") {
+                setReorderedExercises([]); // "커스텀"일 경우 배열 초기화
+            } else {
+                setReorderedExercises((prev) =>
+                    prev.filter((exercise) => exercise.mainMuscleGroup !== part)
+                );
+            }
+        }
+    
         if (memberId) {
             try {
                 if (!isPartSelected) {
-                    if (!hasExercisesForPart) {
-                        Alert.alert(`${part} 운동 등록 필요`, `먼저 ${part} 운동을 등록해주세요.`, [
-                            { text: "확인", onPress: () => openModal(part) }
-                        ]);
-                        setSelectedParts(prev => ({ ...prev, [part]: false }));
-                        return;
-                    }
                     await sendDataToServer(part, memberId, selectedWeekType, selectedDay);
                 } else {
                     await deleteDataFromServer(part, memberId, selectedWeekType, selectedDay);
+                    // setReorderedExercises([])
                 }
                 dispatch(callFetchScheduleAPI());
             } catch (error) {
@@ -149,8 +285,9 @@ const OnSchedule = () => {
         } else {
             Alert.alert('회원 ID를 찾을 수 없습니다.');
         }
-    }, [selectedParts, memberId, chestExercises, backExercises, lowerBodyExercises, shouldersExercises, absExercises, armsExercises, aerobicExercises, customExercises, dispatch]);
+    }, [selectedParts, memberId, selectedWeekType, selectedDay, dispatch, exerciseMap]);
 
+    
     const openModal = useCallback((exercise) => {
         setSelectedExercise(exercise);
         setIsModalVisible(true);
@@ -160,9 +297,12 @@ const OnSchedule = () => {
         setIsModalVisible(false);
         setSelectedExercise('');
     }, []);
+    
 
     return (
-        <View style={[styles.container, { height: scheduleHeight + 250 }]}>
+        
+        
+        <View style={[styles.container, { minHeight: scheduleHeight + 250 }]}>
             <View style={styles.header}>
                 <View style={styles.headerContent}>
                     <Pressable style={styles.refreshButton} onPress={handleRefresh}>
@@ -170,7 +310,7 @@ const OnSchedule = () => {
                             <Text style={styles.refreshText}>{todayKorean}</Text>
                             <Icon name="rotate-cw" size={15} color="white" style={styles.refreshIcon} />
                         </View>
-                        <Text style={styles.refreshLabel}>운동</Text>
+                        <Text style={styles.refreshLabel}>맞춤운동</Text>
                     </Pressable>
                     <Pressable style={styles.caretButton} onPress={toggleVisibility}>
                         <Icon2 name={isVisible ? "caret-up" : "caret-down"} size={28} color="white" />
@@ -195,11 +335,11 @@ const OnSchedule = () => {
                 </Animated.View>
             </View>
 
-            {todaySchedules.length > 0 ? (
+            {reorderedExercises.length > 0 ? (
                 <View style={styles.schedule} onLayout={(event) => setScheduleHeight(event.nativeEvent.layout.height)}>
-                    {todaySchedules.map((item, index) => (
-                        <View key={index}>
-                            {renderExerciseList(item.part)}
+                    {reorderedExercises.map((exercise, index) => (
+                        <View style={{ position: 'relative' }} key={index}>
+                            <EachExercise exercise={exercise} />
                         </View>
                     ))}
                 </View>
@@ -217,107 +357,6 @@ const OnSchedule = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        padding: 10,
-    },
-    header: {
-        minHeight: 40,
-        backgroundColor: '#222732',
-        borderRadius: 10,
-        padding: 8,
-        marginBottom: 15,
-    },
-    headerContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    refreshButton: {
-        height: 30,
-        flexDirection: 'row',
-    },
-    refreshInner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#4A5569',
-        padding: 6,
-        borderRadius: 5,
-    },
-    refreshText: {
-        color: 'white',
-        fontSize: 17,
-        fontWeight: 'bold',
-    },
-    refreshIcon: {
-        marginLeft: 3,
-    },
-    refreshLabel: {
-        color: '#C4C4C4',
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginTop: 11,
-        marginLeft: 4,
-    },
-    caretButton: {
-        maxWidth: 200,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        flex: 1,
-    },
-    hiddenContent: {
-        overflow: 'hidden',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginTop: 10,
-        maxWidth: 350,
-    },
-    button: {
-        paddingTop: 4,
-        paddingBottom: 4,
-        paddingLeft: 10,
-        paddingRight: 10,
-        margin: 4,
-        borderWidth: 0.5,
-        borderRadius: 10,
-        borderColor: '#fff',
-    },
-    selectedButton: {
-        backgroundColor: '#fff',
-        borderColor: '#fff',
-    },
-    buttonText: {
-        fontSize: 16,
-        color: '#fff',
-    },
-    selectedButtonText: {
-        color: '#000',
-    },
-    noSchedule: {
-        width: '100%',
-        marginBottom: 30,
-        padding: 15,
-    },
-    noScheduleText: {
-        fontSize: 13,
-        color: '#F0F0F0',
-    },
-    noScheduleButton: {
-        marginTop: 10,
-        paddingVertical: 15,
-        paddingHorizontal: 30,
-        backgroundColor: '#4A7BF6',
-        borderRadius: 10,
-    },
-    noScheduleButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-});
 
 export default OnSchedule;
 

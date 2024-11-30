@@ -105,11 +105,13 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 10,
-        marginBottom: 5,
+        marginBottom: 8,
     },
+
     recordInputs: {
         flexDirection: 'column',
         justifyContent: 'space-between',
+
     },
     
     setSection: {
@@ -150,7 +152,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 10,
         fontWeight: 'bold',
-        marginTop: 5,
+        marginTop: 10,
     },
     settingButtonsContainer: {
         flexDirection: 'row',
