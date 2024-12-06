@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Pressable, TextInput } from 'react-native';
+import { View, StyleSheet, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './EachExercise.module';
 import { isKmAndTime, isTime, isNumber } from './ExerciseClassification';
@@ -29,7 +29,13 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
     const [isInfoButtonPressed, setIsInfoButtonPressed] = useState(false);
     const [isPreviousRecordButtonPressed, setIsPreviousRecordButtonPressed] = useState(false);
 
+    // 선택한 textInput
+    const [selectedIndex, setSelectedIndex] = useState(null); // 선택된 TextInput의 인덱스
 
+
+    useEffect(() => {
+        console.log('Updated Sets:', sets);
+    }, [sets]);
 
 
     // 무게 단위 가져오기
@@ -119,8 +125,11 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
     const number = isNumber(exercise.exerciseName || '');
     
     return (
-        <Pressable onPress={onPress}>
-            <View style={[styles.exerciseContainer, isSelected && styles.selectedContainer]}>
+            <Pressable onPress={() => { 
+                Keyboard.dismiss(); 
+            }}>
+
+                <View style={[styles.exerciseContainer, isSelected && styles.selectedContainer]}>
                 <View style={styles.exerciseInformation}>
                     <View style={styles.exerciseIcon}>
                         {/* 아이콘 추가 시 사용 */}
@@ -254,6 +263,7 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                     
                         </View>
 
+                        {/* 종류에 따라 다른 키보드 랜더링 */}
                         <View style={styles.recordInputs}>
                             {sets.map((set, index) => (
                                 <View key={index} style={styles.setSection}>
@@ -271,6 +281,7 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                                         </Text>
                                     </Pressable>
 
+                                    {/* 횟수만 있는 경우 */}
                                     {number ? (
                                         <TextInput 
                                             style={[styles.input, { 
@@ -288,15 +299,18 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                                             }} 
                                         />
                                     )   : time ? (
+                                        // 시간만 있는 경우 ex 매달리기
                                         <TimeInput
                                             set={set}
                                             index={index}
                                             sets={sets}
                                             setSets={setSets}
                                             style={styles.input}
+                                            selectedIndex={selectedIndex}
+                                            setSelectedIndex={setSelectedIndex} // 상위 상태를 전달
                                         />
-
                                     ) : kmAndTime ? (
+                                        // km 와 시간 인 경우 ex) 러닝머신
                                         <>
                                             <TextInput 
                                                 style={[styles.input, { 
@@ -330,6 +344,7 @@ const EachExercise = ({ exercise, isSelected, onPress }) => {
                                             />
                                         </>
                                     ) : (
+                                        // 그외 모든 경우 (무게+ 횟수) ex 벤치프레스
                                         <>
                                             <TextInput 
                                                 style={[styles.input, { 

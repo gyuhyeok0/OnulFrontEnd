@@ -185,7 +185,6 @@ const RegistAbs = () => {
             setScheduleExercises((prevSchedule) => prevSchedule.filter(id => id !== exerciseId));
 
             dispatch(fetchMyExercisesAction(memberId, muscleGroup));
-
         } catch (error) {
             console.error('운동 삭제 중 오류 발생:', error);
         }
