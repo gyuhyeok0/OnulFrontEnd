@@ -111,7 +111,52 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     const customExercises = useSelector((state) => state.customExercises.myExercises || []);
 
     const bodyParts = ['가슴', '등', '하체', '어깨', '복근', '팔', '기타', '커스텀'];
+    
+    // 운동 제거시 reorderedExercises
+    useEffect(() => {
+        const activeParts = Object.keys(selectedParts).filter((part) => selectedParts[part]);
 
+        const newExercises = activeParts.reduce((acc, part) => {
+            switch (part) {
+                case '가슴':
+                    return [...acc, ...chestExercises];
+                case '등':
+                    return [...acc, ...backExercises];
+                case '하체':
+                    return [...acc, ...lowerBodyExercises];
+                case '어깨':
+                    return [...acc, ...shouldersExercises];
+                case '복근':
+                    return [...acc, ...absExercises];
+                case '팔':
+                    return [...acc, ...armsExercises];
+                case '기타':
+                    return [...acc, ...aerobicExercises];
+                case '커스텀':
+                    return [...acc, ...customExercises];
+                default:
+                    return acc;
+            }
+        }, []);
+
+        setReorderedExercises((prev) => {
+            const updated = [...newExercises];
+            return updated.filter(
+                (exercise, index, self) =>
+                    index === self.findIndex((ex) => ex.id === exercise.id) // 중복 제거
+            );
+        });
+    }, [
+        chestExercises,
+        backExercises,
+        lowerBodyExercises,
+        shouldersExercises,
+        absExercises,
+        armsExercises,
+        aerobicExercises,
+        customExercises,
+        selectedParts,
+    ]);
 
 
     useEffect(() => {
@@ -197,7 +242,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     const loadReorderedExercises = useCallback(async (retryCount = 0) => {
         try {
             const savedData = await AsyncStorage.getItem('reorderedExercises');
-            // console.log('저장된 데이터 확인:', savedData);
+            console.log('저장된 데이터 확인:', savedData);
     
             // 저장된 데이터가 없거나 운동 배열이 비어있을 경우
             if ((!savedData || JSON.parse(savedData).exercises.length === 0) && retryCount < 3) {
@@ -276,6 +321,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
         setSelectedExercise(exercise);
         setIsModalVisible(true);
     }, []);
+    
 
     // 모달 닫기
     const closeModal = useCallback(() => {

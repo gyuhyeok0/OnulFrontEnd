@@ -8,6 +8,7 @@ export const isTime = (exerciseName) =>
         exerciseName.includes(term)
     );
 
+
 // number 조건 함수
 export const isNumber = (exerciseName) => {
     
@@ -46,7 +47,6 @@ export const isNumber = (exerciseName) => {
             (exerciseName.includes('브릿지') && !excludeBlitz.includes(exerciseName)) ||
             (exerciseName.includes('딥스') && !excludeDips.includes(exerciseName))) ||
         [
-            '줄넘기',
             '요가', 
             '허리 돌리기', 
             '팔벌려뛰기', 

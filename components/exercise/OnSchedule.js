@@ -58,12 +58,62 @@ const OnSchedule = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [reorderedExercises, setReorderedExercises] = useState([]); // 순서 변경된 운동 리스트
     
+
+    // 스케쥴에서 운동 제거 또는 추가시 reorderedExercises 갱신
+    useEffect(() => {
+        const activeParts = Object.keys(selectedParts).filter((part) => selectedParts[part]);
+
+        const newExercises = activeParts.reduce((acc, part) => {
+            switch (part) {
+                case '가슴':
+                    return [...acc, ...chestExercises];
+                case '등':
+                    return [...acc, ...backExercises];
+                case '하체':
+                    return [...acc, ...lowerBodyExercises];
+                case '어깨':
+                    return [...acc, ...shouldersExercises];
+                case '복근':
+                    return [...acc, ...absExercises];
+                case '팔':
+                    return [...acc, ...armsExercises];
+                case '기타':
+                    return [...acc, ...aerobicExercises];
+                case '커스텀':
+                    return [...acc, ...customExercises];
+                default:
+                    return acc;
+            }
+        }, []);
+
+        setReorderedExercises((prev) => {
+            const updated = [...newExercises];
+            return updated.filter(
+                (exercise, index, self) =>
+                    index === self.findIndex((ex) => ex.id === exercise.id) // 중복 제거
+            );
+        });
+    }, [
+        chestExercises,
+        backExercises,
+        lowerBodyExercises,
+        shouldersExercises,
+        absExercises,
+        armsExercises,
+        aerobicExercises,
+        customExercises,
+        selectedParts,
+    ]);
+
+    // 스케쥴에서 순서 변경시 적용
     useFocusEffect(
-        React.useCallback(() => {
+        React.useCallback(() => {            
             if (selectedWeekType && selectedDay) {
+                console.log("작동하니?")
                 const initializeReorderedExercises = async () => {
                     try {
                         const savedData = await AsyncStorage.getItem('reorderedExercises');
+                        console.log(savedData)
                         if (savedData) {
                             const parsedData = JSON.parse(savedData);
                             if (
@@ -82,7 +132,6 @@ const OnSchedule = () => {
             }
         }, [selectedWeekType, selectedDay]) // `selectedWeekType`과 `selectedDay`를 의존성에 추가
     );
-    
     
 
     const loadReorderedExercises = useCallback(async (retryCount = 0) => {

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExerciseModal';
+import ScheduleSelection from './ScheduleSelection'; 
 
 const WorkoutRegistration = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -79,7 +80,7 @@ const WorkoutRegistration = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-
+            
             {/* RegistExerciseModal 모달 컴포넌트 */}
             <RegistExerciseModal 
                 isVisible={isModalVisible} 

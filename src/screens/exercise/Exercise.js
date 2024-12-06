@@ -99,7 +99,9 @@ const Exercise = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView  style={styles.scrollView}>
+            <ScrollView  style={styles.scrollView}
+                keyboardShouldPersistTaps="handled" // 버튼 탭 시 키보드 유지
+            >
                 <View style={styles.selectionContainer}>
                     <Pressable
                         style={styles.option}
