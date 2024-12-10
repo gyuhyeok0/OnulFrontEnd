@@ -4,7 +4,7 @@ export const isKmAndTime = (exerciseName) =>
 
 // time 조건 함수
 export const isTime = (exerciseName) => 
-    ['스트레칭', '할로우', '폼롤러', '배틀로프', '균형잡기', '박스', '플란체', '매달리기', '마운틴 클라이머', '러시안 트위스트', '플랭크', '줄넘기', '폼 롤러'].some(term => 
+    ['스트레칭', '할로우', '폼롤러', '배틀로프', '균형잡기', '박스', '플란체', '매달리기', '마운틴 클라이머', '플랭크', '줄넘기', '폼 롤러'].some(term => 
         exerciseName.includes(term)
     );
 

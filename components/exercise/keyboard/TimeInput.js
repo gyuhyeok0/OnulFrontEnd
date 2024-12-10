@@ -6,30 +6,68 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
     const [tempValue, setTempValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const inputRef = useRef(null);
-    const inputAccessoryViewID = 'uniqueID';
+    const inputAccessoryViewID = `inputTime-${index}`; // 고유 ID 설정
+    const selectedIndexRef = useRef(null);
+    const [adjustedTime, setAdjustedTime] = useState(null); // handleTimeAdjustment에서 변경된 값 저장
+
+    // 포커스 상태 확인
+    const isFocused = selectedIndex === index;
+
+    useEffect(() => {
+        if (set.time !== inputValue && adjustedTime === null) {
+            console.log(`[useEffect] set.time 업데이트 감지: ${set.time}`);
+            setInputValue(set.time);
+        }
+    }, [set.time, adjustedTime, inputValue]);
+
+    useEffect(() => {
+        selectedIndexRef.current = selectedIndex;
+        console.log(`selectedIndexRef가 업데이트됨: ${selectedIndex}`);
+    }, [selectedIndex]);
     
 
-    const formatTime = (value) => {
+    const formatTime = (value = '') => {
+        if (!value || isNaN(Number(value))) return '00:00';
         if (value.length === 1) return `00:0${value}`;
         if (value.length === 2) return `00:${value}`;
         if (value.length === 3) return `0${value[0]}:${value.slice(1)}`;
         if (value.length === 4) return `${value.slice(0, 2)}:${value.slice(2)}`;
         if (value.length === 5) return `0${value[0]}:${value.slice(1, 3)}:${value.slice(3)}`;
         if (value.length === 6) return `${value.slice(0, 2)}:${value.slice(2, 4)}:${value.slice(4)}`;
-        return value;
+        return '00:00';
     };
 
     const handleBlur = () => {
-        const finalValue = tempValue ? formatTime(tempValue) : set.time; // tempValue가 비어 있으면 기존 값 유지
-        setInputValue(finalValue); // 로컬 상태 업데이트
+        console.log(`[handleBlur] 실행: inputValue=${inputValue}, tempValue=${tempValue}, adjustedTime=${adjustedTime}, set.time=${set.time}`);
+    
+        // 최종 값 결정: 항상 inputValue를 기반으로 포맷팅
+        const finalValue = formatTime(inputValue.replace(/[^\d]/g, ''));
+        console.log(`[handleBlur] 최종 값: ${finalValue}`);
+    
+        // 로컬 상태와 부모 상태를 업데이트
+        setInputValue(finalValue);
         const updatedSets = [...sets];
         updatedSets[index].time = finalValue; // 부모 상태 업데이트
         setSets(updatedSets);
+    
+        // 상태 초기화
+        setAdjustedTime(null);
+        setTempValue('');
+
+        // selectedIndexRef 초기화
+        if (selectedIndexRef.current === index) {
+            selectedIndexRef.current = null;
+            console.log(`[handleBlur] selectedIndexRef 초기화됨: ${selectedIndexRef.current}`);
+        }
     };
     
+    
     const handleFocus = () => {
-        setSelectedIndex(index); // 현재 선택된 TextInput의 인덱스를 저장
-        inputRef.current?.setNativeProps({ selection: { start: 0, end: inputValue.length } });
+        console.log(`TextInput 포커스: ${index}번 입력창이 선택되었습니다.`);
+
+        selectedIndexRef.current = index; // Ref에 현재 인덱스 저장
+        setSelectedIndex(index); // 상태도 업데이트
+        console.log(`selectedIndexRef 업데이트됨: ${selectedIndexRef.current}`);
     };
 
     const handleSelectionChange = (event) => {
@@ -47,36 +85,51 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
         setTimeout(() => setIsTyping(false), 500);
         const updatedSets = [...sets];
         updatedSets[index].time = sanitizedText; // 부모 상태 업데이트
+
+        console.log("TextInput 내에서 업데이트 완료")
         setSets(updatedSets);
     };
 
+    
     const handleTimeAdjustment = (adjustment) => {
-        if (selectedIndex === null || selectedIndex === undefined) {
-            console.log('No TextInput is currently selected.');
+
+        if (!isFocused) {
+            console.log('현재 포커스된 TextInput이 아닙니다.');
             return;
         }
+        
+        console.log('handleTimeAdjustment 호출됨');
+        console.log('현재 selectedIndexRef 상태:', selectedIndexRef.current);
     
+        if (selectedIndexRef.current === null || selectedIndexRef.current === undefined) {
+            console.log('선택된 TextInput이 없습니다.');
+            return;
+        }
+
+
         // 현재 선택된 index의 time 값 가져오기
         const currentSet = sets[selectedIndex];
-        console.log(`Selected Index: ${selectedIndex}`);
-        console.log(`Current Time Value (raw): ${currentSet.time}`);
+        console.log(`선택된 인덱스: ${selectedIndex}`);
+        console.log(`현재 시간 값 (원본): ${currentSet.time}`);
     
         const currentValue = currentSet.time.replace(/[^0-9]/g, ''); // 숫자만 추출
-        console.log(`Sanitized Current Value: ${currentValue}`);
+        console.log(`숫자만 추출한 현재 값: ${currentValue}`);
     
         let newTimeValue = parseInt(currentValue || '0', 10) + adjustment;
-        console.log(`New Time Value (after adjustment): ${newTimeValue}`);
+        console.log(`조정 후 새로운 시간 값: ${newTimeValue}`);
     
         // 값이 0보다 작아지지 않도록 설정
         if (newTimeValue < 0) {
             newTimeValue = 0;
-            console.log('New Time Value adjusted to 0 (cannot be negative).');
+            console.log('새로운 시간 값이 0으로 조정되었습니다. (음수는 허용되지 않음)');
         }
     
         // 새로운 time 값 포맷팅
         const formattedTime = formatTime(newTimeValue.toString());
-        console.log(`Formatted Time Value: ${formattedTime}`);
+        console.log(`포맷된 시간 값: ${formattedTime}`);
     
+        setAdjustedTime(formattedTime);
+
         // sets 배열 업데이트
         const updatedSets = [...sets];
         updatedSets[selectedIndex].time = formattedTime;
@@ -84,12 +137,12 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
     
         // 현재 선택된 TextInput의 값을 업데이트
         if (selectedIndex === index) {
-            console.log(`Updating inputValue for index: ${index}`);
+            console.log(`인덱스 ${index}의 inputValue를 업데이트합니다.`);
             setInputValue(formattedTime);
         }
     
         // 최종 업데이트 로그
-        console.log('Updated Sets:', updatedSets);
+        console.log('업데이트된 세트:', updatedSets);
     };
     
     

@@ -59,6 +59,35 @@ const OnSchedule = () => {
     const [reorderedExercises, setReorderedExercises] = useState([]); // 순서 변경된 운동 리스트
     
 
+    const [exerciseSets, setExerciseSets] = useState({}); // 모든 운동의 세트 정보를 저장
+
+      // 운동 세트 상태 업데이트 함수
+    const updateExerciseSets = (exerciseId, updatedSets) => {
+        setExerciseSets((prev) => ({
+            ...prev,
+            [exerciseId]: updatedSets,
+        }));
+    };
+
+     // 초기화 - 운동 목록이 바뀔 때 기본 세트 추가
+    useEffect(() => {
+        setExerciseSets((prev) => {
+            const updated = { ...prev };
+            reorderedExercises.forEach((exercise) => {
+                if (!updated[exercise.id]) {
+                    updated[exercise.id] = [
+                        { kg: '', reps: '', km: '', time: '', completed: false },
+                        { kg: '', reps: '', km: '', time: '', completed: false },
+                        { kg: '', reps: '', km: '', time: '', completed: false },
+                    ];
+                }
+            });
+            return updated;
+        });
+
+        console.log("OnScedule 세트가 변경되었습니다.")
+    }, [reorderedExercises]);
+
     // 스케쥴에서 운동 제거 또는 추가시 reorderedExercises 갱신
     useEffect(() => {
         const activeParts = Object.keys(selectedParts).filter((part) => selectedParts[part]);
@@ -109,7 +138,7 @@ const OnSchedule = () => {
     useFocusEffect(
         React.useCallback(() => {            
             if (selectedWeekType && selectedDay) {
-                console.log("작동하니?")
+                // console.log("작동하니?")
                 const initializeReorderedExercises = async () => {
                     try {
                         const savedData = await AsyncStorage.getItem('reorderedExercises');
@@ -388,7 +417,15 @@ const OnSchedule = () => {
                 <View style={styles.schedule} onLayout={(event) => setScheduleHeight(event.nativeEvent.layout.height)}>
                     {reorderedExercises.map((exercise, index) => (
                         <View style={{ position: 'relative' }} key={index}>
-                            <EachExercise exercise={exercise} />
+
+                    <EachExercise
+                        key={`${exercise.id}-${index}`} // 고유 key로 설정
+                        exercise={exercise}
+                        sets={exerciseSets[exercise.id] || []}
+                        updateSets={(updatedSets) => updateExerciseSets(exercise.id, updatedSets)}
+                    />
+                                                
+
                         </View>
                     ))}
                 </View>
