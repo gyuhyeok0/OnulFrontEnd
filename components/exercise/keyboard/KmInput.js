@@ -8,6 +8,7 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit }) => {
     const inputRef = useRef(null);
     const inputAccessoryViewID = `inputKm-${index}`; // 고유 ID 설정
 
+
     const handleSelectionChange = (event) => {
         const { start, end } = event.nativeEvent.selection;
         if (!isTyping && (start !== 0 || end !== inputValue.length)) {
@@ -15,6 +16,17 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit }) => {
         }
     };
 
+    // 단위 변환 함수
+    const convertDistance = (value, fromUnit, toUnit) => {
+        if (fromUnit === toUnit) return value; // 동일 단위일 경우 변환 필요 없음
+        if (fromUnit === 'km' && toUnit === 'mi') {
+            return (value * 0.621371).toFixed(2); // km -> mi 변환
+        } else if (fromUnit === 'mi' && toUnit === 'km') {
+            return (value / 0.621371).toFixed(2); // mi -> km 변환
+        }
+        return value;
+    };
+    
 
     const handleTextChange = (text) => {        
         // 숫자와 소수점만 허용, 소수점은 최대 1개
@@ -34,16 +46,34 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit }) => {
         setInputValue(formattedValue); // 로컬 상태 업데이트
     
         const updatedSets = [...sets];
-        updatedSets[index].km = formattedValue; // 부모 상태 업데이트
-        setSets(updatedSets);
-        };
+        updatedSets[index][kmUnit] = formattedValue; // 현재 단위 값 업데이트
+        updatedSets[index][kmUnit === 'km' ? 'mi' : 'km'] = convertDistance(
+            parseFloat(formattedValue || 0),
+            kmUnit,
+            kmUnit === 'km' ? 'mi' : 'km'
+        ); // 반대 단위로 변환된 값 업데이트
+        setSets(updatedSets); // 부모 상태 업데이트
+
+    };
     
-        const handleUnitChange = (unit) => {
-            console.log(`[handleUnitChange] 단위 변경 요청됨: ${unit}`);
+    const handleUnitChange = (unit) => {
+        setKmUnit(unit); // 단위 상태 업데이트
+    };
 
-            setKmUnit(unit);
-        };
-
+    useEffect(() => {
+        const updatedSets = [...sets];
+        updatedSets.forEach((item, i) => {
+            if (item[kmUnit === 'km' ? 'mi' : 'km'] !== undefined && item[kmUnit === 'km' ? 'mi' : 'km'] !== '') {
+                const currentValue = parseFloat(item[kmUnit === 'km' ? 'mi' : 'km']);
+                updatedSets[i][kmUnit] = convertDistance(currentValue, kmUnit === 'km' ? 'mi' : 'km', kmUnit);
+            } else {
+                updatedSets[i][kmUnit] = ''; // 값이 비어있으면 그대로 유지
+            }
+        });
+        setSets(updatedSets); // 부모 상태 업데이트
+        setInputValue(updatedSets[index][kmUnit] || ''); // 현재 세트에 맞는 값 업데이트
+    }, [kmUnit]);
+    
     const renderKmButtons = () => {
         return ['km', 'mi'].map((label) => (
             <Pressable

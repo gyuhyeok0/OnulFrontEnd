@@ -1,7 +1,6 @@
 // ExerciseInfoComponent.js
 import React from 'react';
-import { View, Text } from 'react-native';
-import styles from './EachExercise.module'; // 기존 스타일 파일을 유지
+import { View, Text, StyleSheet} from 'react-native';
 
 const ExerciseInfoComponent = ({ exercise }) => (
     <View style={styles.eachInformation}>
@@ -11,5 +10,19 @@ const ExerciseInfoComponent = ({ exercise }) => (
         {/* 필요에 따라 추가 정보 표시 */}
     </View>
 );
+
+const styles = StyleSheet.create({
+
+    eachInformation: {
+        minHeight: 60,
+        flex: 1,
+        // backgroundColor:'gray'
+    },
+    
+    exerciseInfoText:{
+        color: 'white'
+    },
+
+});
 
 export default ExerciseInfoComponent;
