@@ -15,6 +15,16 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit }
         }
     };
 
+     // 단위 변환 함수
+    const convertWeight = (value, fromUnit, toUnit) => {
+        if (fromUnit === toUnit) return value; // 동일 단위일 경우 변환 필요 없음
+        if (fromUnit === 'kg' && toUnit === 'lbs') {
+            return (value * 2.20462).toFixed(2); // kg -> lbs 변환
+        } else if (fromUnit === 'lbs' && toUnit === 'kg') {
+            return (value / 2.20462).toFixed(2); // lbs -> kg 변환
+        }
+        return value;
+    };
 
     const handleTextChange = (text) => {        
         // 숫자와 소수점만 허용, 소수점은 최대 1개
@@ -32,18 +42,37 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit }
             : integerPart.slice(0, 4); // 정수부는 최대 4자리
     
         setInputValue(formattedValue); // 로컬 상태 업데이트
+        
     
         const updatedSets = [...sets];
-        updatedSets[index].km = formattedValue; // 부모 상태 업데이트
-        setSets(updatedSets);
+        updatedSets[index][weightUnit] = formattedValue; // 현재 단위 값 업데이트
+        updatedSets[index][weightUnit === 'kg' ? 'lbs' : 'kg'] = convertWeight(
+            parseFloat(formattedValue || 0),
+            weightUnit,
+            weightUnit === 'kg' ? 'lbs' : 'kg'
+        ); // 반대 단위로 변환된 값 업데이트
+        setSets(updatedSets); // 부모 상태 업데이트
     };
     
     
-        const handleUnitChange = (unit) => {
-            console.log(`[handleUnitChange] 단위 변경 요청됨: ${unit}`);
-
-            setWeightUnit(unit);
-        };
+    useEffect(() => {
+        const updatedSets = [...sets];
+        updatedSets.forEach((item, i) => {
+            if (item[weightUnit === 'kg' ? 'lbs' : 'kg'] !== undefined && item[weightUnit === 'kg' ? 'lbs' : 'kg'] !== '') {
+                const currentValue = parseFloat(item[weightUnit === 'kg' ? 'lbs' : 'kg']);
+                updatedSets[i][weightUnit] = convertWeight(currentValue, weightUnit === 'kg' ? 'lbs' : 'kg', weightUnit);
+            } else {
+                updatedSets[i][weightUnit] = ''; // 값이 비어있으면 그대로 유지
+            }
+        });
+        setSets(updatedSets); // 부모 상태 업데이트
+        setInputValue(updatedSets[index][weightUnit] || ''); // 현재 세트에 맞는 값 업데이트
+    }, [weightUnit]); // 단위가 변경될 때 실행
+    
+    const handleUnitChange = (unit) => {
+        console.log(`[handleUnitChange] 단위 변경 요청됨: ${unit}`);
+        setWeightUnit(unit); // 단위 상태 업데이트
+    }; 
 
     const renderKgButtons = () => {
         return ['kg', 'lbs'].map((label) => (

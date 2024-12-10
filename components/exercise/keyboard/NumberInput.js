@@ -17,7 +17,7 @@ const NumberInput = ({ set, index, sets, setSets, style }) => {
 
         // 부모 상태 업데이트
         const updatedSets = [...sets];
-        updatedSets[index].km = sanitizedText;
+        updatedSets[index].reps = sanitizedText;
         setSets(updatedSets);
     };
 

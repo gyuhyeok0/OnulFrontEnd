@@ -69,6 +69,26 @@ const OnSchedule = () => {
         }));
     };
 
+    // useEffect(() => {
+    //     const resetAllSets = () => {
+    //         setExerciseSets(() => {
+    //             const resetSets = {};
+    //             reorderedExercises.forEach((exercise) => {
+    //                 resetSets[exercise.id] = [
+    //                     { kg: '', reps: '', km: '', time: '', completed: false },
+    //                     { kg: '', reps: '', km: '', time: '', completed: false },
+    //                     { kg: '', reps: '', km: '', time: '', completed: false },
+    //                 ];
+    //             });
+    //             return resetSets;
+    //         });
+    //     };
+    
+    //     resetAllSets(); // 초기화 실행
+    // }, []); // 빈 배열로 설정하여 한 번만 실행
+    
+    
+
      // 초기화 - 운동 목록이 바뀔 때 기본 세트 추가
     useEffect(() => {
         setExerciseSets((prev) => {
@@ -76,16 +96,15 @@ const OnSchedule = () => {
             reorderedExercises.forEach((exercise) => {
                 if (!updated[exercise.id]) {
                     updated[exercise.id] = [
-                        { kg: '', reps: '', km: '', time: '', completed: false },
-                        { kg: '', reps: '', km: '', time: '', completed: false },
-                        { kg: '', reps: '', km: '', time: '', completed: false },
+                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
                     ];
                 }
             });
             return updated;
         });
 
-        console.log("OnScedule 세트가 변경되었습니다.")
     }, [reorderedExercises]);
 
     // 스케쥴에서 운동 제거 또는 추가시 reorderedExercises 갱신
