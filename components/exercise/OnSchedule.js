@@ -69,23 +69,25 @@ const OnSchedule = () => {
         }));
     };
 
-    // useEffect(() => {
-    //     const resetAllSets = () => {
-    //         setExerciseSets(() => {
-    //             const resetSets = {};
-    //             reorderedExercises.forEach((exercise) => {
-    //                 resetSets[exercise.id] = [
-    //                     { kg: '', reps: '', km: '', time: '', completed: false },
-    //                     { kg: '', reps: '', km: '', time: '', completed: false },
-    //                     { kg: '', reps: '', km: '', time: '', completed: false },
-    //                 ];
-    //             });
-    //             return resetSets;
-    //         });
-    //     };
+    // 날짜가 변경되었을때 세트 상태 초기화
+    useEffect(() => {
+        const resetAllSets = () => {
+            setExerciseSets(() => {
+                const resetSets = {};
+                reorderedExercises.forEach((exercise) => {
+                    resetSets[exercise.id] = [
+                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+                    ];
+                });
+                return resetSets;
+            });
+        };
     
-    //     resetAllSets(); // 초기화 실행
-    // }, []); // 빈 배열로 설정하여 한 번만 실행
+        resetAllSets(); // 초기화 실행
+    }, [todayIndex]); // `todayIndex`가 바뀔 때마다 실행
+    
     
     
 
@@ -293,6 +295,7 @@ const OnSchedule = () => {
         setSelectedWeekType(currentWeekType);
         setSelectedDay(today);
     }, [isSwapped, todayIndex]);
+
 
     const exerciseMap = {
         '가슴': chestExercises,
