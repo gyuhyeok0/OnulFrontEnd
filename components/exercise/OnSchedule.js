@@ -69,6 +69,19 @@ const OnSchedule = () => {
         }));
     };
 
+    useEffect(() => {
+
+        console.log("날짜가 변경돼 set 업데이트 실행했습니다.")
+
+        const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
+        const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
+
+        setSelectedWeekType(currentWeekType);
+        setSelectedDay(today);
+
+        console.log("변경된 날짜"+ currentWeekType, today)
+    }, [isSwapped, todayIndex]);
+
     // 날짜가 변경되었을때 세트 상태 초기화
     useEffect(() => {
         const resetAllSets = () => {
@@ -87,9 +100,6 @@ const OnSchedule = () => {
     
         resetAllSets(); // 초기화 실행
     }, [todayIndex]); // `todayIndex`가 바뀔 때마다 실행
-    
-    
-    
 
      // 초기화 - 운동 목록이 바뀔 때 기본 세트 추가
     useEffect(() => {
@@ -159,7 +169,6 @@ const OnSchedule = () => {
     useFocusEffect(
         React.useCallback(() => {            
             if (selectedWeekType && selectedDay) {
-                // console.log("작동하니?")
                 const initializeReorderedExercises = async () => {
                     try {
                         const savedData = await AsyncStorage.getItem('reorderedExercises');
@@ -170,6 +179,7 @@ const OnSchedule = () => {
                                 parsedData.weekType === selectedWeekType &&
                                 parsedData.day === selectedDay
                             ) {
+                                console.log(parsedData.exercises)
                                 setReorderedExercises(parsedData.exercises);
                             }
                         }
@@ -185,42 +195,41 @@ const OnSchedule = () => {
     
 
     const loadReorderedExercises = useCallback(async (retryCount = 0) => {
-
         try {
             const savedData = await AsyncStorage.getItem('reorderedExercises');
-            // console.log("스토리지에 저장된 데이터"+ savedData)
+            console.log("로드된 데이터:", savedData);
     
-            // 저장된 데이터가 없거나 운동 배열이 비어있을 경우
+            // 저장된 데이터가 없거나 배열이 비어 있으면 재시도
             if ((!savedData || JSON.parse(savedData).exercises.length === 0) && retryCount < 3) {
-                // console.log("스토리지에 저장된 데이터가 없습니다.")
-                setTimeout(() => loadReorderedExercises(retryCount + 1), 500); // 500ms 대기 후 재시도
+                console.log("데이터가 없거나 비어 있음. 재시도 중:", retryCount + 1);
+                setTimeout(() => loadReorderedExercises(retryCount + 1), 500);
                 return;
             }
     
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
-                    
-                // 예상치 못한 데이터 형식을 처리
-                if (!parsedData || !Array.isArray(parsedData.exercises)) {
-                    setReorderedExercises([]);
-                    return;
-                }
-    
                 const { exercises, weekType, day } = parsedData;
+    
+                console.log("조건 비교:", weekType, selectedWeekType, day, selectedDay);
+    
+                // 조건이 일치하면 운동 목록 업데이트
                 if (weekType === selectedWeekType && day === selectedDay) {
-
-                    // console.log("스토리지에 데이터가 있습니다.")
+                    console.log("조건 일치. 운동 목록 업데이트.");
                     setReorderedExercises(exercises);
+                } else {
+                    console.log("조건 불일치. 목록 업데이트 없음.");
                 }
+
             } else {
-                // console.log('저장된 데이터가 없습니다.');
-                setReorderedExercises([]); // 기본값 설정
+                console.log("저장된 데이터가 없습니다.");
+                setReorderedExercises([]);
             }
         } catch (error) {
             console.error('운동 목록 로드 중 오류 발생:', error);
-            setReorderedExercises([]); // 오류 발생 시 빈 배열로 초기화
+            setReorderedExercises([]);
         }
     }, [selectedWeekType, selectedDay]);
+    
 
 
     //스토리지 저장
@@ -288,13 +297,6 @@ const OnSchedule = () => {
         };
         fetchMemberId();
     }, []);
-
-    useEffect(() => {
-        const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
-        const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
-        setSelectedWeekType(currentWeekType);
-        setSelectedDay(today);
-    }, [isSwapped, todayIndex]);
 
 
     const exerciseMap = {
@@ -445,6 +447,7 @@ const OnSchedule = () => {
                         exercise={exercise}
                         sets={exerciseSets[exercise.id] || []}
                         updateSets={(updatedSets) => updateExerciseSets(exercise.id, updatedSets)}
+                        exerciseServiceNumber = {1}
                     />
                                                 
 

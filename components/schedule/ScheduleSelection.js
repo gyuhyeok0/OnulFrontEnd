@@ -7,6 +7,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';
 import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExerciseModal';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+// import { updateReorderedExercises } from '../../src/modules/ReorderedExercisesSlice';  // 액션 임포트
+
+
+// import { updateExercises } from './yourActions'; // 실제 액션 파일 경로로 수정
 
 // DraggableItem 컴포넌트 수정: 텍스트를 <Text> 컴포넌트로 감쌈
 const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDragEnd }) => {
@@ -111,6 +115,19 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     const customExercises = useSelector((state) => state.customExercises.myExercises || []);
 
     const bodyParts = ['가슴', '등', '하체', '어깨', '복근', '팔', '기타', '커스텀'];
+
+
+    // useEffect(() => {
+    //     if (reorderedExercises && reorderedExercises.length > 0) {
+    //         console.log('Dispatching updateReorderedExercises with:', reorderedExercises);
+    //         dispatch(updateReorderedExercises({
+    //             exercises: reorderedExercises,
+    //             weekType: selectedWeekType,
+    //             day: selectedDay
+    //         }));
+    //     }
+    // }, [reorderedExercises, dispatch, selectedWeekType, selectedDay]);
+    
     
     // 운동 제거시 reorderedExercises
     useEffect(() => {
@@ -207,6 +224,8 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     
     //스토리지 저장
     const saveReorderedExercises = useCallback(async () => {
+
+        console.log("새로 스토리지 저장할게요 ")
         try {
             const uniqueExercises = reorderedExercises.filter(
                 (exercise, index, self) =>
@@ -239,6 +258,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
         saveReorderedExercises(); // 빈 배열 포함 모든 경우 저장
     }, [reorderedExercises, saveReorderedExercises]);
     
+    //데이터 로드
     const loadReorderedExercises = useCallback(async (retryCount = 0) => {
         try {
             const savedData = await AsyncStorage.getItem('reorderedExercises');

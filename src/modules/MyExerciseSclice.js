@@ -11,6 +11,7 @@ const myChestSlice = createSlice({
     
     reducers: {
         fetchMyChestExercisesSuccess: (state, action) => {
+            
             state.myExercises = action.payload;
             state.status = 'succeeded';
         },

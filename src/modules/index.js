@@ -4,6 +4,7 @@ import { askReducer } from './AskSlice';
 import authReducer from './AuthSlice'; // authReducer 가져오기
 import exerciseReducer from './ExerciseSlice'; // exerciseReducer 가져오기
 import scheduleReducer from './ScheduleSlice'; // scheduleReducer 가져오기
+import exerciseRecordReducer from './ExerciseRecordSlice'; // exerciseRecordReducer 가져오기
 
 import {
   myChestReducer,
@@ -15,6 +16,8 @@ import {
   myLowerBodyReducer,
   myShouldersReducer
 } from './MyExerciseSclice'; // 각각의 슬라이스 리듀서 가져오기
+
+// import reorderedExercisesReducer from './ReorderedExercisesSlice'; // reorderedExercises 리듀서 가져오기
 
 const rootReducer = combineReducers({
   member: memberReducer,
@@ -30,6 +33,8 @@ const rootReducer = combineReducers({
   etcExercises: myEtcReducer, // 기타 운동 리듀서
   lowerBodyExercises: myLowerBodyReducer, // 하체 운동 리듀서
   shouldersExercises: myShouldersReducer, // 어깨 운동 리듀서
+  exerciseRecord: exerciseRecordReducer, // 운동 기록 리듀서 추가
+  // reorderedExercises: reorderedExercisesReducer, // reorderedExercises 리듀서 추가
 });
 
 export default rootReducer;
