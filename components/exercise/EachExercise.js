@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
 import { View, StyleSheet, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './EachExercise.module';
@@ -15,9 +16,29 @@ import NumberInput from './keyboard/NumberInput';
 import KgInput from './keyboard/KgInput';
 
 import { submitExerciseRecord, deleteExerciseRecord } from '../../src/apis/SubmitExerciseRecordAPI';
+import moment from 'moment'; // 날짜 형식화를 위한 moment 라이브러리
+
+// 완료 누를 시 데이터 가공 및 삭제 처리
+const deleteExerciseFilter = (set, index) => {
+    const setNumber = index;
+
+    // 오늘 날짜 가져오기 (YYYY-MM-DD 형식)
+    const today = moment().format('YYYY-MM-DD');
+
+    console.log('삭제 요청 날짜:', today);
+
+    // 서버와 Redux/AsyncStorage에서 데이터 삭제
+    deleteExerciseRecord(memberId, setNumber, { ...exercise, recordDate: today }, exerciseService, null, dispatch)
+        .then(() => {
+            console.log(`세트 번호 ${setNumber}가 성공적으로 삭제되었습니다.`);
+        })
+        .catch((error) => {
+            console.error('운동 기록 삭제 중 오류 발생:', error);
+        });
+};
 
 
-const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
+const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceNumber, onPress}) => {
 
 
     const [memberId, setMemberId] = useState(null);
@@ -43,6 +64,12 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
 
     const [exerciseType, setExerciseType] = useState(1);
 
+    const [exerciseService, setExerciseService] = useState();
+
+    
+    // Redux의 dispatch를 가져오기
+    const dispatch = useDispatch();
+
     // 회원아이디 가지고 오기
     useEffect(() => {
         const fetchMemberId = async () => {
@@ -57,6 +84,10 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
         fetchMemberId();
     }, []);
 
+    useEffect(() => {            
+        setExerciseService(exerciseServiceNumber);
+    }, []);
+    
     // 볼륨 시간 인트로 변환
     const convertTimeToSeconds = (timeString) => {
         if (!timeString) return 0;
@@ -130,7 +161,7 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
                 // 누적 계산한것을 다시 00:00 형태로 변환한다.
                 const timeFormat = convertSecondsToTime(calculatedVolume);
     
-                console.log("여기"+timeFormat)
+                // console.log("여기"+timeFormat)
     
                 // 이후 timeFormat 이걸 volume에 넣어야 한다.
                 setVolume(timeFormat); // timeFormat을 상태에 저장
@@ -153,7 +184,7 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
                 calculatedVolume += weight;
                 calculatedVolume = parseFloat(calculatedVolume.toFixed(2));  // 소수점 2자리까지 반올림
 
-                console.log(`Weight-based volume (${weightUnit}): ${weight}`);
+                // console.log(`Weight-based volume (${weightUnit}): ${weight}`);
                 setVolume(calculatedVolume); // 시간일 경우 MM:SS 형식, 나머지는 숫자로 저장
                 setExerciseType(3)
 
@@ -168,25 +199,25 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
         const updateStorage = async () => {
             try {
                 if (kmUnit) {
-                    console.log("kmUnit 변경됨 = " + kmUnit);
+                    // console.log("kmUnit 변경됨 = " + kmUnit);
     
                     // kmUnit에 따라 heightUnit 값 설정
                     const heightUnit = kmUnit === 'km' ? 'cm' : 'feet';
     
                     // AsyncStorage에 저장
                     await AsyncStorage.setItem('heightUnit', heightUnit);
-                    console.log("heightUnit 저장됨: " + heightUnit);
+                    // console.log("heightUnit 저장됨: " + heightUnit);
                 }
     
                 if (weightUnit) {
-                    console.log("weightUnit 변경됨 = " + weightUnit);
+                    // console.log("weightUnit 변경됨 = " + weightUnit);
     
                     // weightUnit 값 설정
                     const unitToSave = weightUnit === 'kg' ? 'kg' : 'lbs';
     
                     // AsyncStorage에 저장
                     await AsyncStorage.setItem('weightUnit', unitToSave);
-                    console.log("weightUnit 저장됨: " + unitToSave);
+                    // console.log("weightUnit 저장됨: " + unitToSave);
                 }
             } catch (error) {
                 console.error('Error updating AsyncStorage:', error);
@@ -238,7 +269,7 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
     }, []);
 
     useEffect(() => {
-        console.log(exercise.mainMuscleGroup, exercise.detailMuscleGroup, exercise.exerciseType);
+        // console.log(exercise.mainMuscleGroup, exercise.detailMuscleGroup, exercise.exerciseType);
     }, [exercise]);
 
     // 운동 정보 버튼
@@ -276,7 +307,7 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
         if (newSets[index].completed) {
             newSets[index].completed = false; // 완료 상태 해제
             updateSets(newSets); // 부모 상태 업데이트
-            console.log(`SET ${index + 1} 완료 해제`);
+            // console.log(`SET ${index + 1} 완료 해제`);
         }
     };
 
@@ -291,7 +322,7 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
                 if (newSets[i].completed) {
                     newSets[i].completed = false; // 완료 상태 해제
                     updateSets(newSets); // 부모 상태 업데이트
-                    console.log(`SET ${i + 1} 완료 해제`);
+                    // console.log(`SET ${i + 1} 완료 해제`);
 
                     // 마지막 완료된 세트 번호와 데이터를 전달
                     deleteExerciseFilter(newSets[i], i + 1); 
@@ -314,29 +345,34 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
     
     // 완료 누를시 데이터 가공
     const submitExerciseFilter = (set, index) => {
-        
-        // db "맞춤일정" 저장 목적
-        const exerciseService = 1;
 
         const setNumber = index;
 
-        console.log("전송할 세트 번호" + setNumber)
+        // console.log("전송할 세트 번호" + setNumber)
 
         
         submitExerciseRecord(memberId, exerciseService, setNumber, set, exercise, exerciseType, volume, weightUnit, kmUnit)
     };
 
-    // 완료 누를시 데이터 가공
+    // 완료 누를 시 데이터 가공 및 삭제 처리
     const deleteExerciseFilter = (set, index) => {
-
         const setNumber = index;
 
-        const exerciseService = 1;
+        // 오늘 날짜 가져오기 (YYYY-MM-DD 형식)
+        const today = moment().format('YYYY-MM-DD');
 
-        console.log("전송할 세트 번호" + setNumber)
-        deleteExerciseRecord(memberId, setNumber, exercise, exerciseService)
+        console.log('삭제 요청 날짜:', today);
+
+        // 서버와 Redux/AsyncStorage에서 데이터 삭제
+        deleteExerciseRecord(memberId, setNumber, { ...exercise, recordDate: today }, exerciseService, null, dispatch)
+            .then(() => {
+                console.log(`세트 번호 ${setNumber}가 성공적으로 삭제되었습니다.`);
+            })
+            .catch((error) => {
+                console.error('운동 기록 삭제 중 오류 발생:', error);
+            });
     };
-    
+
     // 모든 세트를 완료로 설정하고 submitExerciseFilter 호출
     const completeAllSets = () => {
         // 새로운 배열 생성 (불변성 유지)
@@ -449,7 +485,7 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, onPress}) => {
                         <ExerciseInfoComponent exercise={exercise} />
                     ) : showPreviousRecord ? (
                         // 이전 기록 컴포넌트
-                        <PreviousRecordComponent previousRecords={exercise.previousRecords || []} />
+                        <PreviousRecordComponent exercise={exercise} memberId={memberId} exerciseService={exerciseService}/>
                     ) : (
                         <View style={styles.record}>
                             <Text style={styles.recordTitle}>record</Text>

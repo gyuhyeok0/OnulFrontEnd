@@ -112,6 +112,8 @@ export const callFetchScheduleAPI = () => {
                 },
             });
 
+            console.log("이게 뭐야?"+ response);
+
             if (!response.ok) {
                 if (response.status === 401) { // 상태 코드가 401 (Unauthorized)일 경우
                     console.log('Access token expired, attempting to refresh token...');
