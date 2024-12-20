@@ -17,7 +17,10 @@ import {
   myShouldersReducer
 } from './MyExerciseSclice'; // 각각의 슬라이스 리듀서 가져오기
 
-// import reorderedExercisesReducer from './ReorderedExercisesSlice'; // reorderedExercises 리듀서 가져오기
+import schedulExerciseReducer from './ExerciseStateSlice/SchedulExerciseState';
+
+import stateExerciseReducer from './StateExerciseSlice'; // 리듀서 가져오기
+
 
 const rootReducer = combineReducers({
   member: memberReducer,
@@ -34,7 +37,10 @@ const rootReducer = combineReducers({
   lowerBodyExercises: myLowerBodyReducer, // 하체 운동 리듀서
   shouldersExercises: myShouldersReducer, // 어깨 운동 리듀서
   exerciseRecord: exerciseRecordReducer, // 운동 기록 리듀서 추가
-  // reorderedExercises: reorderedExercisesReducer, // reorderedExercises 리듀서 추가
+  schedulExerciseState: schedulExerciseReducer, // 이름 변경된 리듀서 등록
+
+
+  stateExercise: stateExerciseReducer, // reorderedExercises 리듀서 추가
 });
 
 export default rootReducer;

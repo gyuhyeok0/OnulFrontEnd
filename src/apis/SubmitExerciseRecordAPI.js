@@ -38,6 +38,9 @@ export const submitExerciseRecord = async (memberId, exerciseService, setNumber,
             }),
         });
 
+    
+
+
         if (!response.ok) {
             if (response.status === 401) { // 상태 코드가 401 (Unauthorized)일 경우
                 const newAccessToken = await refreshAccessToken();
@@ -99,8 +102,12 @@ export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerci
         }
 
         // 서버 요청이 성공하면 Redux 상태에서 데이터 삭제
-        dispatch(deleteExerciseRecordSuccess({ id: setNumber }));
-
+        dispatch(deleteExerciseRecordSuccess({
+            exerciseId: exercise.id, 
+            memberId, 
+            exerciseService, 
+            recordDate: recordDate.join('-'),
+        }));
         // AsyncStorage에서 데이터 삭제
         const storageKey = `${exercise.id}_${memberId}_${exerciseService}_${recordDate.join('-')}`;
         await AsyncStorage.removeItem(storageKey);

@@ -18,34 +18,14 @@ import KgInput from './keyboard/KgInput';
 import { submitExerciseRecord, deleteExerciseRecord } from '../../src/apis/SubmitExerciseRecordAPI';
 import moment from 'moment'; // 날짜 형식화를 위한 moment 라이브러리
 
-// 완료 누를 시 데이터 가공 및 삭제 처리
-const deleteExerciseFilter = (set, index) => {
-    const setNumber = index;
-
-    // 오늘 날짜 가져오기 (YYYY-MM-DD 형식)
-    const today = moment().format('YYYY-MM-DD');
-
-    console.log('삭제 요청 날짜:', today);
-
-    // 서버와 Redux/AsyncStorage에서 데이터 삭제
-    deleteExerciseRecord(memberId, setNumber, { ...exercise, recordDate: today }, exerciseService, null, dispatch)
-        .then(() => {
-            console.log(`세트 번호 ${setNumber}가 성공적으로 삭제되었습니다.`);
-        })
-        .catch((error) => {
-            console.error('운동 기록 삭제 중 오류 발생:', error);
-        });
-};
+import { updateExerciseSetsInRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 
 
-const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceNumber, onPress}) => {
+const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
 
     const [memberId, setMemberId] = useState(null);
 
-    // 운동 단위 기본값 지정
-    const [weightUnit, setWeightUnit] = useState('kg'); // 기본값 'kg'
-    const [kmUnit, setKmUnit] = useState('km'); // 기본값 'km
     const [volume, setVolume] = useState(0); // volume을 상태로 관리
 
 
@@ -70,6 +50,18 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
     // Redux의 dispatch를 가져오기
     const dispatch = useDispatch();
 
+    const sets = useSelector((state) =>
+        state.stateExercise.exerciseSets[exercise.id]?.sets || []
+    );
+
+    // 운동 세트 상태 업데이트
+    const updateSets = (updatedSets) => {
+        // console.log("뭐로 보내니?", JSON.stringify(updatedSets, null, 2));
+
+        
+        dispatch(updateExerciseSetsInRedux({ exerciseId: exercise.id, updatedSets }));
+    };
+
     // 회원아이디 가지고 오기
     useEffect(() => {
         const fetchMemberId = async () => {
@@ -87,6 +79,7 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
     useEffect(() => {            
         setExerciseService(exerciseServiceNumber);
     }, []);
+
     
     // 볼륨 시간 인트로 변환
     const convertTimeToSeconds = (timeString) => {
@@ -194,39 +187,6 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
     }, [sets, exercise?.id, number, time, kmAndTime]);
 
     
-    //키보드에서 unit 변경시 스토리지 저장
-    useEffect(() => {
-        const updateStorage = async () => {
-            try {
-                if (kmUnit) {
-                    // console.log("kmUnit 변경됨 = " + kmUnit);
-    
-                    // kmUnit에 따라 heightUnit 값 설정
-                    const heightUnit = kmUnit === 'km' ? 'cm' : 'feet';
-    
-                    // AsyncStorage에 저장
-                    await AsyncStorage.setItem('heightUnit', heightUnit);
-                    // console.log("heightUnit 저장됨: " + heightUnit);
-                }
-    
-                if (weightUnit) {
-                    // console.log("weightUnit 변경됨 = " + weightUnit);
-    
-                    // weightUnit 값 설정
-                    const unitToSave = weightUnit === 'kg' ? 'kg' : 'lbs';
-    
-                    // AsyncStorage에 저장
-                    await AsyncStorage.setItem('weightUnit', unitToSave);
-                    // console.log("weightUnit 저장됨: " + unitToSave);
-                }
-            } catch (error) {
-                console.error('Error updating AsyncStorage:', error);
-            }
-        };
-    
-        updateStorage();
-    }, [kmUnit, weightUnit]);
-    
 
     const addSet = () => {
         updateSets([
@@ -242,38 +202,12 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
     };
 
 
-    // 무게 단위 가져오기
-    useEffect(() => {
-        const fetchWeightUnit = async () => {
-            try {
-                const unitKg = await AsyncStorage.getItem('weightUnit');
-                const unitKm = await AsyncStorage.getItem('heightUnit');
-                setWeightUnit(unitKg || 'kg'); // 저장된 값이 없으면 기본값 'kg'
-
-               // heightUnit이 feet인 경우 MI로 저장, cm인 경우 KM로 저장
-                if (unitKm === 'feet') {
-                    setKmUnit('mi');
-                } else if (unitKm === 'cm') {
-                    setKmUnit('km');
-                } else {
-                    setKmUnit(unitKm || 'km');
-                }
-
-
-            } catch (error) {
-                console.error('Error fetching weight unit:', error);
-            }
-        };
-
-        fetchWeightUnit();
-    }, []);
-
-    useEffect(() => {
-        // console.log(exercise.mainMuscleGroup, exercise.detailMuscleGroup, exercise.exerciseType);
-    }, [exercise]);
-
     // 운동 정보 버튼
     const handleExerciseInfoPress = () => {
+
+        // console.log(sets);
+
+        // dispatch(resetState({ exerciseId: 25 }));
         setIsInfoButtonPressed((prev) => !prev);
         setShowExerciseInfo((prev) => !prev); // 상태를 토글
     
@@ -282,6 +216,9 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
             setIsPreviousRecordButtonPressed(false);
             setShowPreviousRecord(false);
         }
+
+        console.log(sets);
+
     };
 
     // 버튼 상태 토글
@@ -291,6 +228,9 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
 
     // 이전 기록 버튼
     const handlePreviousRecordPress = () => {
+
+        // console.log(sets)
+
         setIsPreviousRecordButtonPressed((prev) => !prev);
         setShowPreviousRecord((prev) => !prev); // 상태를 토글
 
@@ -300,41 +240,35 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
             setShowExerciseInfo(false);
         }
     };
+    
 
-    // 완료 상태에 숫자 입력시 해제
-    const resetCompleteState = (index) => {
-        const newSets = [...sets];
-        if (newSets[index].completed) {
-            newSets[index].completed = false; // 완료 상태 해제
-            updateSets(newSets); // 부모 상태 업데이트
-            // console.log(`SET ${index + 1} 완료 해제`);
-        }
-    };
 
-    // 완료 또는 해제 버튼시 기능
+   
     const handleCompletePress = (index) => {
+        // 현재 세트를 복사합니다
         const newSets = [...sets];
     
-        // 완료 버튼 다시 누를 시 해제
+        // 완료 버튼을 다시 누를 경우 완료 상태를 해제
         if (newSets[index].completed) {
-            // 마지막 완료된 세트 찾기
+            // 마지막으로 완료된 세트를 찾고 완료 상태를 해제
             for (let i = sets.length - 1; i >= 0; i--) {
                 if (newSets[i].completed) {
-                    newSets[i].completed = false; // 완료 상태 해제
+                    // 완료 상태를 해제
+                    newSets[i] = { ...newSets[i], completed: false }; 
                     updateSets(newSets); // 부모 상태 업데이트
-                    // console.log(`SET ${i + 1} 완료 해제`);
-
+    
                     // 마지막 완료된 세트 번호와 데이터를 전달
-                    deleteExerciseFilter(newSets[i], i + 1); 
+                    deleteExerciseFilter(newSets[i], i + 1);
                     return; // 함수 종료
                 }
             }
         } else {
-            // 완료 버튼 누를 시 완료 추가
+            // 완료 버튼 누를 때 완료 상태 추가
             if (index === 0 || newSets[index - 1].completed) {
-                newSets[index].completed = true; // 완료 상태로 설정
+                // 완료 상태로 설정
+                newSets[index] = { ...newSets[index], completed: true }; 
                 updateSets(newSets); // 부모 상태 업데이트
-
+    
                 // 완료된 세트만 넘기기
                 submitExerciseFilter(newSets[index], index + 1); // index + 1을 세트 번호로 전달
             } else {
@@ -343,52 +277,53 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
         }
     };
     
+    
+    
     // 완료 누를시 데이터 가공
     const submitExerciseFilter = (set, index) => {
 
         const setNumber = index;
-
-        // console.log("전송할 세트 번호" + setNumber)
-
         
         submitExerciseRecord(memberId, exerciseService, setNumber, set, exercise, exerciseType, volume, weightUnit, kmUnit)
     };
 
-    // 완료 누를 시 데이터 가공 및 삭제 처리
+
     const deleteExerciseFilter = (set, index) => {
+        console.log("deleteExerciseFilter 호출됨", { set, index });
+    
+        // 기존 로직 유지
         const setNumber = index;
-
-        // 오늘 날짜 가져오기 (YYYY-MM-DD 형식)
         const today = moment().format('YYYY-MM-DD');
-
-        console.log('삭제 요청 날짜:', today);
-
-        // 서버와 Redux/AsyncStorage에서 데이터 삭제
+    
         deleteExerciseRecord(memberId, setNumber, { ...exercise, recordDate: today }, exerciseService, null, dispatch)
             .then(() => {
-                console.log(`세트 번호 ${setNumber}가 성공적으로 삭제되었습니다.`);
+                // console.log(`세트 번호 ${setNumber}가 성공적으로 삭제되었습니다.`);
             })
             .catch((error) => {
                 console.error('운동 기록 삭제 중 오류 발생:', error);
             });
     };
+    
 
     // 모든 세트를 완료로 설정하고 submitExerciseFilter 호출
     const completeAllSets = () => {
-        // 새로운 배열 생성 (불변성 유지)
-        const newSets = sets.map((set) => ({
-            ...set,  // 기존 데이터를 복사
-            completed: true,  // completed 상태를 true로 설정
+        // 모든 세트를 완료 상태로 설정
+        const updatedSets = sets.map((set) => ({
+            ...set, // 기존 데이터를 복사
+            completed: true, // completed 상태를 true로 설정
         }));
-
+    
         // 상태를 먼저 업데이트
-        updateSets(newSets);
-
-        // 상태가 업데이트된 후 submitExerciseFilter 호출
-        newSets.forEach((set, index) => {
-            submitExerciseFilter(set, index+1);
+        updateSets(updatedSets);
+    
+        // 완료된 세트를 순차적으로 처리
+        updatedSets.forEach((set, index) => {
+            if (set.completed) {
+                submitExerciseFilter(set, index + 1); // 세트 번호는 1부터 시작
+            }
         });
     };
+    
 
     // 조건 평가
     const kmAndTime = isKmAndTime(exercise.exerciseName || '');
@@ -576,10 +511,10 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
                                                 set={set}
                                                 index={index}
                                                 sets={sets}
-                                                setSets={(newSets) => {
-                                                    resetCompleteState(index); // 완료 상태 해제
+                                                setSets={(newSets) => {                                    
                                                     updateSets(newSets);
                                                 }}
+                                                deleteExerciseFilter={deleteExerciseFilter}
                                                 style={styles.input}
                                                 selectedIndex={selectedIndex}
                                                 setSelectedIndex={setSelectedIndex} // 상위 상태를 전달
@@ -591,10 +526,10 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
                                                 set={set}
                                                 index={index}
                                                 sets={sets}
-                                                setSets={(newSets) => {
-                                                    resetCompleteState(index); // 완료 상태 해제
+                                                setSets={(newSets) => {                                    
                                                     updateSets(newSets);
                                                 }}
+                                                deleteExerciseFilter={deleteExerciseFilter}                                           
                                                 style={styles.input}
                                                 selectedIndex={selectedIndex}
                                                 setSelectedIndex={setSelectedIndex} // 상위 상태를 전달
@@ -606,10 +541,10 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
                                                     set={set}
                                                     index={index}
                                                     sets={sets}
-                                                    setSets={(newSets) => {
-                                                        resetCompleteState(index); // 완료 상태 해제
+                                                    setSets={(newSets) => {                                    
                                                         updateSets(newSets);
                                                     }}
+                                                    deleteExerciseFilter={deleteExerciseFilter}
                                                     style={styles.input}
                                                     selectedIndex={selectedIndex}
                                                     kmUnit={kmUnit} // unitKm 추가 전달
@@ -622,10 +557,10 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
                                                     set={set}
                                                     index={index}
                                                     sets={sets}
-                                                    setSets={(newSets) => {
-                                                        resetCompleteState(index); // 완료 상태 해제
+                                                    setSets={(newSets) => {                                    
                                                         updateSets(newSets);
                                                     }}
+                                                    deleteExerciseFilter={deleteExerciseFilter}
                                                     style={styles.input}
                                                     selectedIndex={selectedIndex}
                                                     setSelectedIndex={setSelectedIndex} // 상위 상태를 전달
@@ -638,10 +573,10 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
                                                     set={set}
                                                     index={index}
                                                     sets={sets}
-                                                    setSets={(newSets) => {
-                                                        resetCompleteState(index); // 완료 상태 해제
+                                                    setSets={(newSets) => {                                    
                                                         updateSets(newSets);
                                                     }}
+                                                    deleteExerciseFilter={deleteExerciseFilter}
                                                     style={styles.input}
                                                     selectedIndex={selectedIndex}
                                                     weightUnit={weightUnit} // unitKm 추가 전달
@@ -650,13 +585,13 @@ const EachExercise = ({ exercise, isSelected, sets, updateSets, exerciseServiceN
                                                 />
                                                 
                                                 <NumberInput
-                                                    set={set}
                                                     index={index}
+                                                    set={set}
                                                     sets={sets}
-                                                    setSets={(newSets) => {
-                                                        resetCompleteState(index); // 완료 상태 해제
+                                                    setSets={(newSets) => {                                    
                                                         updateSets(newSets);
                                                     }}
+                                                    deleteExerciseFilter={deleteExerciseFilter}
                                                     style={styles.input}
                                                     selectedIndex={selectedIndex}
                                                     setSelectedIndex={setSelectedIndex} // 상위 상태를 전달

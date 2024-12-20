@@ -102,6 +102,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
+    refreshInnerPressed: {
+        backgroundColor: '#2C3749', // 눌렀을 때 어두운 색
+    },
 
 });
 

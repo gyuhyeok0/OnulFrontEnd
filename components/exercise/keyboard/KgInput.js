@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, InputAccessoryView, Platform, Pressable, Text, TextInput } from 'react-native';
 
 
-const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit }) => {
+const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, deleteExerciseFilter }) => {
     const [inputValue, setInputValue] = useState(set.weightUnit); // km 값을 상태로 관리
     const [isTyping, setIsTyping] = useState(false);
     const inputRef = useRef(null);
@@ -15,6 +15,14 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit }
         }
     };
 
+    useEffect(() => {
+        const currentSet = sets[index];
+        if (currentSet && currentSet[weightUnit] !== undefined) {
+            setInputValue(currentSet[weightUnit]?.toString() || ''); // kg 또는 lbs 값 설정
+        }
+    }, [sets, index, weightUnit]);
+    
+
      // 단위 변환 함수
     const convertWeight = (value, fromUnit, toUnit) => {
         if (fromUnit === toUnit) return value; // 동일 단위일 경우 변환 필요 없음
@@ -25,6 +33,7 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit }
         }
         return value;
     };
+
 
     const handleTextChange = (text) => {        
         // 숫자와 소수점만 허용, 소수점은 최대 1개
@@ -43,16 +52,37 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit }
     
         setInputValue(formattedValue); // 로컬 상태 업데이트
         
-    
-        const updatedSets = [...sets];
-        updatedSets[index][weightUnit] = formattedValue; // 현재 단위 값 업데이트
-        updatedSets[index][weightUnit === 'kg' ? 'lbs' : 'kg'] = convertWeight(
-            parseFloat(formattedValue || 0),
-            weightUnit,
-            weightUnit === 'kg' ? 'lbs' : 'kg'
-        ); // 반대 단위로 변환된 값 업데이트
+   
+        // 상태를 복사한 후 업데이트
+    const updatedSets = sets.map((item, i) => {
+        if (i === index) {
+            // 세트 복사 후 값을 업데이트하고, completed가 true일 경우 false로 변경
+            const updatedItem = {
+                ...item, // 기존 세트 복사
+                [weightUnit]: formattedValue, // 현재 단위 값 업데이트
+                [weightUnit === 'kg' ? 'lbs' : 'kg']: convertWeight(
+                    parseFloat(formattedValue || 0),
+                    weightUnit,
+                    weightUnit === 'kg' ? 'lbs' : 'kg'
+                ), // 반대 단위 값 업데이트
+            };
+
+            // set.completed가 true이면 false로 설정
+            if (updatedItem.completed) {
+                updatedItem.completed = false; // 값이 변경되면 완료 상태를 false로 변경
+                deleteExerciseFilter(updatedSets, index+1);
+            }
+
+            return updatedItem;
+        }
+        return item; // 다른 세트는 그대로 유지
+    });
+
         setSets(updatedSets); // 부모 상태 업데이트
+        
+        
     };
+    
     
     
     useEffect(() => {

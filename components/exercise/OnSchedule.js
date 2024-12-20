@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef} from 'react';
 import { View, StyleSheet, Text, Pressable, Animated, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -26,6 +26,8 @@ import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExerciseModal';
 import { useFocusEffect } from '@react-navigation/native';
+import { addDefaultSetsToRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
+import _ from 'lodash';
 
 
 const OnSchedule = () => {
@@ -33,7 +35,10 @@ const OnSchedule = () => {
     const dispatch = useDispatch();
     const [memberId, setMemberId] = useState(null);
     const scheduleData = useSelector(state => state.schedule?.schedule || []);
+
     const { isSwapped, todayIndex } = useCurrentWeekAndDay();
+    const [selectedWeekType, setSelectedWeekType] = useState();
+    const [selectedDay, setSelectedDay] = useState();
     const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
     const todayKorean = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][todayIndex];
 
@@ -52,22 +57,18 @@ const OnSchedule = () => {
     const [animationHeight] = useState(new Animated.Value(0));
 
     const [selectedParts, setSelectedParts] = useState({});
-    const [selectedWeekType, setSelectedWeekType] = useState();
-    const [selectedDay, setSelectedDay] = useState();
     const [selectedExercise, setSelectedExercise] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [reorderedExercises, setReorderedExercises] = useState([]); // 순서 변경된 운동 리스트
-    
+    // const [reorderedExercises, setReorderedExercises] = useState([]); // 순서 변경된 운동 리스트
+    const [reorderedExercises, setReorderedExercises] = useState([]); // **상위에서 관리**
 
-    const [exerciseSets, setExerciseSets] = useState({}); // 모든 운동의 세트 정보를 저장
+        // 운동 단위 기본값 지정
+    const [weightUnit, setWeightUnit] = useState(null); 
+    const [kmUnit, setKmUnit] = useState(null); 
 
-      // 운동 세트 상태 업데이트 함수
-    const updateExerciseSets = (exerciseId, updatedSets) => {
-        setExerciseSets((prev) => ({
-            ...prev,
-            [exerciseId]: updatedSets,
-        }));
-    };
+    const [isReadyWeight, setIsReadyWeight] = useState(false); // 로딩 상태 추가
+    const [isReadyKm, setIsReadyKm] = useState(false); // 로딩 상태 추가
+
 
     useEffect(() => {
 
@@ -84,40 +85,22 @@ const OnSchedule = () => {
 
     // 날짜가 변경되었을때 세트 상태 초기화
     useEffect(() => {
-        const resetAllSets = () => {
-            setExerciseSets(() => {
-                const resetSets = {};
-                reorderedExercises.forEach((exercise) => {
-                    resetSets[exercise.id] = [
-                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-                    ];
-                });
-                return resetSets;
-            });
-        };
-    
-        resetAllSets(); // 초기화 실행
+        dispatch(resetState());
+
     }, [todayIndex]); // `todayIndex`가 바뀔 때마다 실행
 
-     // 초기화 - 운동 목록이 바뀔 때 기본 세트 추가
+    // reorderedExercises가 변경될 때 Redux에 기본 세트 추가
     useEffect(() => {
-        setExerciseSets((prev) => {
-            const updated = { ...prev };
-            reorderedExercises.forEach((exercise) => {
-                if (!updated[exercise.id]) {
-                    updated[exercise.id] = [
-                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-                        { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-                    ];
-                }
-            });
-            return updated;
-        });
+        if (reorderedExercises.length > 0) {
+            const exercisesWithId = reorderedExercises.map((exercise) => ({
+                id: exercise.exerciseId, // exerciseId 포함
+                ...exercise,
+            }));
+            dispatch(addDefaultSetsToRedux(exercisesWithId));
+        }
+    }, [reorderedExercises, dispatch]);
+    
 
-    }, [reorderedExercises]);
 
     // 스케쥴에서 운동 제거 또는 추가시 reorderedExercises 갱신
     useEffect(() => {
@@ -147,12 +130,18 @@ const OnSchedule = () => {
         }, []);
 
         setReorderedExercises((prev) => {
-            const updated = [...newExercises];
-            return updated.filter(
+            const updated = [...newExercises].filter(
                 (exercise, index, self) =>
                     index === self.findIndex((ex) => ex.id === exercise.id) // 중복 제거
             );
+        
+            if (_.isEqual(prev, updated)) {
+                return prev; // 상태 변경 불필요
+            }
+        
+            return updated;
         });
+
     }, [
         chestExercises,
         backExercises,
@@ -165,32 +154,52 @@ const OnSchedule = () => {
         selectedParts,
     ]);
 
-    // 스케쥴에서 순서 변경시 적용
-    useFocusEffect(
-        React.useCallback(() => {            
-            if (selectedWeekType && selectedDay) {
-                const initializeReorderedExercises = async () => {
-                    try {
-                        const savedData = await AsyncStorage.getItem('reorderedExercises');
-                        console.log(savedData)
-                        if (savedData) {
-                            const parsedData = JSON.parse(savedData);
-                            if (
-                                parsedData.weekType === selectedWeekType &&
-                                parsedData.day === selectedDay
-                            ) {
-                                console.log(parsedData.exercises)
-                                setReorderedExercises(parsedData.exercises);
-                            }
-                        }
-                    } catch (error) {
-                        console.error("운동 목록 초기화 중 오류 발생:", error);
-                    }
-                };
+
+    const initializeReorderedExercises = async (retryCount = 0) => {
+
+        try {
+            const savedData = await AsyncStorage.getItem('reorderedExercises');
     
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+    
+                if (
+                    parsedData.weekType === selectedWeekType &&
+                    parsedData.day === selectedDay
+                ) {
+                    if (parsedData.exercises && parsedData.exercises.length > 0) {
+                        setReorderedExercises(parsedData.exercises);
+                        return; // 성공적으로 데이터를 가져왔으면 종료
+                    } else {
+                        // console.log("exercises가 빈 배열임. 다시 시도.");
+                    }
+                } else {
+                    setReorderedExercises([]);
+                    return;
+                }
+            } else {
+                // console.log("저장된 데이터가 없음. 다시 시도.");
+            }
+    
+            // 최대 10번 재시도
+            if (retryCount < 3) {
+                setTimeout(() => initializeReorderedExercises(retryCount + 1), 500); // 500ms 후 재시도
+            } else {
+                // console.error("최대 재시도 횟수를 초과했습니다. 데이터를 가져오지 못했습니다.");
+            }
+        } catch (error) {
+            console.error("운동 목록 초기화 중 오류 발생:", error);
+            setReorderedExercises([]);
+        }
+    };
+    
+    // useFocusEffect에서 호출
+    useFocusEffect(
+        React.useCallback(() => {
+            if (selectedWeekType && selectedDay) {
                 initializeReorderedExercises();
             }
-        }, [selectedWeekType, selectedDay]) // `selectedWeekType`과 `selectedDay`를 의존성에 추가
+        }, [selectedWeekType, selectedDay])
     );
     
 
@@ -210,14 +219,14 @@ const OnSchedule = () => {
                 const parsedData = JSON.parse(savedData);
                 const { exercises, weekType, day } = parsedData;
     
-                console.log("조건 비교:", weekType, selectedWeekType, day, selectedDay);
+                // console.log("조건 비교:", weekType, selectedWeekType, day, selectedDay);
     
                 // 조건이 일치하면 운동 목록 업데이트
                 if (weekType === selectedWeekType && day === selectedDay) {
-                    console.log("조건 일치. 운동 목록 업데이트.");
+                    // console.log("조건 일치. 운동 목록 업데이트.");
                     setReorderedExercises(exercises);
                 } else {
-                    console.log("조건 불일치. 목록 업데이트 없음.");
+                    // console.log("조건 불일치. 목록 업데이트 없음.");
                 }
 
             } else {
@@ -250,7 +259,8 @@ const OnSchedule = () => {
             if (currentData) {
                 const parsedData = JSON.parse(currentData);
                 if (JSON.stringify(parsedData) === JSON.stringify(dataToSave)) {
-                    return;
+                    // console.log("데이터 동일, 저장 안함.");
+                    return; // 저장 불필요
                 }
             }
     
@@ -264,7 +274,9 @@ const OnSchedule = () => {
     
     // 상태가 변경될 때만 저장
     useEffect(() => {
-        saveReorderedExercises(); // 빈 배열 포함 모든 경우 저장
+        if (reorderedExercises.length > 0) {
+            saveReorderedExercises();
+        }
     }, [reorderedExercises, saveReorderedExercises]);
 
     useEffect(() => {
@@ -299,6 +311,67 @@ const OnSchedule = () => {
     }, []);
 
 
+    //키보드에서 unit 변경시 스토리지 저장
+    useEffect(() => {
+        const updateStorage = async () => {
+            try {
+                if (kmUnit) {
+                    console.log("kmUnit 변경됨 = " + kmUnit);
+    
+                    // kmUnit에 따라 heightUnit 값 설정
+                    const heightUnit = kmUnit === 'km' ? 'cm' : 'feet';
+    
+                    // AsyncStorage에 저장
+                    await AsyncStorage.setItem('heightUnit', heightUnit);
+                    console.log("heightUnit 저장됨: " + heightUnit);
+                }
+    
+                if (weightUnit) {
+                    // console.log("weightUnit 변경됨 = " + weightUnit);
+    
+                    // weightUnit 값 설정
+                    const unitToSave = weightUnit === 'kg' ? 'kg' : 'lbs';
+    
+                    // AsyncStorage에 저장
+                    await AsyncStorage.setItem('weightUnit', unitToSave);
+                    console.log("weightUnit 저장됨: " + unitToSave);
+                }
+            } catch (error) {
+                console.error('Error updating AsyncStorage:', error);
+            }
+        };
+    
+        updateStorage();
+    }, [kmUnit, weightUnit]);
+    
+
+    //무게 단위 로드
+    useEffect(() => {
+        const fetchUnits = async () => {
+            try {
+                // 무게 단위 로드
+                const unitKg = await AsyncStorage.getItem('weightUnit');
+                setWeightUnit(unitKg || 'kg');
+                setIsReadyWeight(true); // 무게 단위 로딩 완료
+                
+                // 거리 단위 로드
+                const unitKm = await AsyncStorage.getItem('heightUnit');
+                if (unitKm === 'feet') {
+                    setKmUnit('mi');
+                } else if (unitKm === 'cm') {
+                    setKmUnit('km');
+                } else {
+                    setKmUnit(unitKm || 'km');
+                }
+                setIsReadyKm(true); // 거리 단위 로딩 완료
+            } catch (error) {
+                console.error('Error fetching units:', error);
+            }
+        };
+    
+        fetchUnits();
+    }, []);
+
     const exerciseMap = {
         '가슴': chestExercises,
         '등': backExercises,
@@ -310,20 +383,25 @@ const OnSchedule = () => {
         '커스텀': customExercises,
     };
 
-    const renderExerciseList = (part) => {
-        const exercises = exerciseMap[part];
-        if (!Array.isArray(exercises) || exercises.length === 0) return null;
-        return exercises.map((exercise, index) => (
-            <EachExercise key={exercise.id || index} exercise={exercise} />
-        ));
+    // 안쓰는코드
+
+    // const renderExerciseList = (part) => {
+    //     const exercises = exerciseMap[part];
+    //     if (!Array.isArray(exercises) || exercises.length === 0) return null;
+    //     return exercises.map((exercise, index) => (
+    //         <EachExercise key={exercise.id || index} exercise={exercise} />
+    //     ));
+    // };
+
+    // const todaySchedules = React.useMemo(() => {
+    //     const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
+    //     return scheduleData.filter(item => item.day === today && item.weekType === currentWeekType);
+    // }, [scheduleData, today, isSwapped, refreshKey]);
+
+    const handleRefresh = () => {
+        setRefreshKey(prevKey => prevKey + 1); // 상태값 업데이트로 강제 재렌더링 트리거
+        initializeReorderedExercises(); // 추가 작업 실행
     };
-
-    const todaySchedules = React.useMemo(() => {
-        const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
-        return scheduleData.filter(item => item.day === today && item.weekType === currentWeekType);
-    }, [scheduleData, today, isSwapped, refreshKey]);
-
-    const handleRefresh = () => setRefreshKey(prevKey => prevKey + 1);
 
     const toggleVisibility = () => {
         setIsVisible(prevState => !prevState);
@@ -401,19 +479,30 @@ const OnSchedule = () => {
     }, []);
     
 
+    if (!isReadyWeight || !isReadyKm) {
+        return <Text>Loading...</Text>;
+    }
+
+    
     return (
         
         
         <View style={[styles.container, { minHeight: scheduleHeight + 250 }]}>
             <View style={styles.header}>
                 <View style={styles.headerContent}>
-                    <Pressable style={styles.refreshButton} onPress={handleRefresh}>
-                        <View style={styles.refreshInner}>
-                            <Text style={styles.refreshText}>{todayKorean}</Text>
+                    <View style={styles.refreshButton}>
+                        <Pressable
+                            onPress={handleRefresh}
+                            style={({ pressed }) => [
+                                styles.refreshInner, // 기본 스타일
+                                pressed && styles.refreshInnerPressed // 눌렀을 때 스타일 추가
+                            ]}
+                        >
+                                <Text style={styles.refreshText}>{todayKorean}</Text>
                             <Icon name="rotate-cw" size={15} color="white" style={styles.refreshIcon} />
-                        </View>
+                        </Pressable>
                         <Text style={styles.refreshLabel}>맞춤운동</Text>
-                    </Pressable>
+                    </View>
                     <Pressable style={styles.caretButton} onPress={toggleVisibility}>
                         <Icon2 name={isVisible ? "caret-up" : "caret-down"} size={28} color="white" />
                     </Pressable>
@@ -445,9 +534,11 @@ const OnSchedule = () => {
                     <EachExercise
                         key={`${exercise.id}-${index}`} // 고유 key로 설정
                         exercise={exercise}
-                        sets={exerciseSets[exercise.id] || []}
-                        updateSets={(updatedSets) => updateExerciseSets(exercise.id, updatedSets)}
                         exerciseServiceNumber = {1}
+                        weightUnit = {weightUnit}
+                        setWeightUnit ={setWeightUnit}
+                        kmUnit = {kmUnit}
+                        setKmUnit ={setKmUnit}
                     />
                                                 
 

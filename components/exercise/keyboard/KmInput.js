@@ -2,12 +2,16 @@ import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, InputAccessoryView, Platform, Pressable, Text, TextInput } from 'react-native';
 
 
-const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit }) => {
+const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit, deleteExerciseFilter }) => {
     const [inputValue, setInputValue] = useState(set.km); // km 값을 상태로 관리
     const [isTyping, setIsTyping] = useState(false);
     const inputRef = useRef(null);
     const inputAccessoryViewID = `inputKm-${index}`; // 고유 ID 설정
 
+    // 초기화 및 업데이트 시 동기화
+    useEffect(() => {
+        console.log("단위가 뭐니?" + kmUnit)
+    }, []);
 
     const handleSelectionChange = (event) => {
         const { start, end } = event.nativeEvent.selection;
@@ -28,10 +32,10 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit }) => {
     };
     
 
-    const handleTextChange = (text) => {        
+    const handleTextChange = (text) => {
         // 숫자와 소수점만 허용, 소수점은 최대 1개
-        let sanitizedText = text.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); // `let`으로 선언
-
+        let sanitizedText = text.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    
         // 소수점으로 시작하면 "0."으로 변환
         if (sanitizedText.startsWith('.')) {
             sanitizedText = `0${sanitizedText}`;
@@ -41,20 +45,40 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit }) => {
         const [integerPart, decimalPart] = sanitizedText.split('.');
         const formattedValue = decimalPart !== undefined
             ? `${integerPart.slice(0, 5)}.${decimalPart.slice(0, 2)}`
-            : integerPart.slice(0, 3); // 정수부는 최대 5자리
+            : integerPart.slice(0, 5); // 정수부는 최대 5자리
     
         setInputValue(formattedValue); // 로컬 상태 업데이트
     
-        const updatedSets = [...sets];
-        updatedSets[index][kmUnit] = formattedValue; // 현재 단위 값 업데이트
-        updatedSets[index][kmUnit === 'km' ? 'mi' : 'km'] = convertDistance(
-            parseFloat(formattedValue || 0),
-            kmUnit,
-            kmUnit === 'km' ? 'mi' : 'km'
-        ); // 반대 단위로 변환된 값 업데이트
+         // 상태를 복사한 후 업데이트
+        const updatedSets = sets.map((item, i) => {
+            if (i === index) {
+                
+                // 만약 set.completed가 true이면 false로 변경
+                const updatedItem = {
+                    ...item, // 기존 세트 복사
+                    [kmUnit]: formattedValue, // 현재 단위 값 업데이트
+                    [kmUnit === 'km' ? 'mi' : 'km']: convertDistance(
+                        parseFloat(formattedValue || 0),
+                        kmUnit,
+                        kmUnit === 'km' ? 'mi' : 'km'
+                    ), // 반대 단위 값 업데이트
+                };
+
+                // set.completed가 true이면 false로 설정
+                if (updatedItem.completed) {
+                    updatedItem.completed = false; // 값이 변경되면 완료 상태를 false로 변경
+                    deleteExerciseFilter(updatedSets, index+1);
+                }
+
+                return updatedItem;
+            }
+            return item; // 다른 세트는 그대로 유지
+        });
+    
         setSets(updatedSets); // 부모 상태 업데이트
 
     };
+    
     
     const handleUnitChange = (unit) => {
         setKmUnit(unit); // 단위 상태 업데이트
@@ -71,6 +95,7 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit }) => {
             }
         });
         setSets(updatedSets); // 부모 상태 업데이트
+
         setInputValue(updatedSets[index][kmUnit] || ''); // 현재 세트에 맞는 값 업데이트
     }, [kmUnit]);
     
