@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, InputAccessoryView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelectedIndex }) => {
+const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelectedIndex, deleteExerciseFilter}) => {
     const [inputValue, setInputValue] = useState(set.time);
     const [tempValue, setTempValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -46,8 +46,19 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
     
         // 로컬 상태와 부모 상태를 업데이트
         setInputValue(finalValue);
-        const updatedSets = [...sets];
-        updatedSets[index].time = finalValue; // 부모 상태 업데이트
+
+
+         // 리듀서 복제
+        const updatedSets = sets.map((item, i) => {
+            if (i === index) {
+                return {
+                    ...item, // 기존 세트 복사
+                    time: finalValue, // time 값 업데이트
+                };
+            }
+            return item; // 다른 세트는 그대로 유지
+        });
+
         setSets(updatedSets);
     
         // 상태 초기화
@@ -82,22 +93,41 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
         const sanitizedText = text.replace(/[^\d]/g, '').slice(0, 6);
         setTempValue(sanitizedText);
         setInputValue(sanitizedText);
-        setTimeout(() => setIsTyping(false), 500);
-        const updatedSets = [...sets];
-        updatedSets[index].time = sanitizedText; // 부모 상태 업데이트
+    
+        // 리듀서 복제
+        const updatedSets = sets.map((item, i) => {
+            if (i === index) {
+                // 세트 복사 후 time 값을 업데이트하고, completed가 true일 경우 false로 변경
+                const updatedItem = {
+                    ...item, // 기존 세트 복사
+                    time: sanitizedText, // time 값 업데이트
+                };
 
-        console.log("TextInput 내에서 업데이트 완료")
+                // set.completed가 true이면 false로 설정
+                if (updatedItem.completed) {
+                    updatedItem.completed = false; // 값이 변경되면 완료 상태를 false로 변경
+                    deleteExerciseFilter(updatedSets, index+1);
+                }
+
+                return updatedItem;
+            }
+            return item; // 다른 세트는 그대로 유지
+        });
+    
+        console.log("TextInput 내에서 업데이트 완료");
         setSets(updatedSets);
+        setTimeout(() => setIsTyping(false), 500);
     };
+    
 
     
-    const handleTimeAdjustment = (adjustment) => {
 
+    const handleTimeAdjustment = (adjustment) => {
         if (!isFocused) {
             console.log('현재 포커스된 TextInput이 아닙니다.');
             return;
         }
-        
+    
         console.log('handleTimeAdjustment 호출됨');
         console.log('현재 selectedIndexRef 상태:', selectedIndexRef.current);
     
@@ -105,8 +135,7 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
             console.log('선택된 TextInput이 없습니다.');
             return;
         }
-
-
+    
         // 현재 선택된 index의 time 값 가져오기
         const currentSet = sets[selectedIndex];
         console.log(`선택된 인덱스: ${selectedIndex}`);
@@ -129,10 +158,27 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
         console.log(`포맷된 시간 값: ${formattedTime}`);
     
         setAdjustedTime(formattedTime);
+    
+        // sets 배열 업데이트 (Array.map 사용)
+        const updatedSets = sets.map((item, i) => {
+            if (i === selectedIndex) {
+                // 만약 set.completed가 true이면 false로 변경
+                const updatedItem = {
+                    ...item, // 기존 세트 복사
+                    time: formattedTime, // 선택된 세트의 time 값 업데이트
+                };
 
-        // sets 배열 업데이트
-        const updatedSets = [...sets];
-        updatedSets[selectedIndex].time = formattedTime;
+                // set.completed가 true이면 false로 설정
+                if (updatedItem.completed) {
+                    updatedItem.completed = false; // 값이 변경되면 완료 상태를 false로 변경
+                    deleteExerciseFilter(updatedSets, index+1);
+                }
+
+                return updatedItem;
+            }
+            return item; // 다른 세트는 그대로 유지
+        });
+    
         setSets(updatedSets);
     
         // 현재 선택된 TextInput의 값을 업데이트
@@ -144,6 +190,7 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
         // 최종 업데이트 로그
         console.log('업데이트된 세트:', updatedSets);
     };
+    
     
     
 
@@ -218,4 +265,3 @@ const styles = StyleSheet.create({
 });
 
 export default TimeInput;
-

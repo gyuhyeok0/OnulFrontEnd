@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef} from 'react';
 import { View, ScrollView, Image, Text, StyleSheet, Pressable } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Footer from '../common/Footer';
-import { useSelector } from 'react-redux';
 import { checkOnboardingStatus } from '../../hooks/HendleOnboarding';
 import { handlerLogOut } from '../../hooks/HandleLogout';
 import AutoAdapt from '../../../components/exercise/AutoAdapt';
 import OnSchedule from '../../../components/exercise/OnSchedule';
 import Custom from '../../../components/exercise/Custom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useCurrentWeekAndDay } from '../../hooks/useCurrentWeekAndDay';
+import { addDefaultSetsToRedux } from '../../modules/StateExerciseSlice'; // Redux 액션
+
 
 const Exercise = ({ navigation }) => {
     const userId = useSelector((state) => state.member.userInfo?.memberId); // Optional chaining 사용
@@ -16,55 +19,48 @@ const Exercise = ({ navigation }) => {
     const [selectedOption, setSelectedOption] = useState('AutoAdapt');
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });
 
+    const hasExecuted = useRef(false); // 실행 여부를 추적하는 useRef
+
+
     useEffect(() => {
         console.log("==========운동페이지 입니다============")
+        // console.log(exerciseSets);
     }, []);
 
-    useEffect(() => {
-        const checkAndSaveDate = async () => {
-            try {
-                const storedDate = await AsyncStorage.getItem('todayRenderDate');
-                const today = new Date().toISOString().split('T')[0];
+    // const dispatch = useDispatch();
 
-                // const today = '2024-09-11';
-    
-                // 저장된 어제 날짜가 없으면 오늘 날짜를 lastRenderDate에 저장
-                if (!storedDate) {
-                    console.log("어제 저장된 날짜가 없습니다. 오늘 날짜를 lastRenderDate에 저장합니다.");
-                    await AsyncStorage.setItem('lastRenderDate', today);
-                    await AsyncStorage.setItem('todayRenderDate', today);
-                }
-    
-                // 어제 저장된 "오늘 날짜"가 오늘날짜가 아닌경우 실행
-                if (storedDate && storedDate !== today) {
-                    console.log("마지막 저장된 오늘날짜가 오늘날짜와 다릅니다.");
-    
-                    await AsyncStorage.setItem('lastRenderDate', storedDate);
-                    console.log("마지막 저장된 오늘 날짜를 마지막 저장 날짜로 저장했습니다.");
-    
-                    await AsyncStorage.setItem('todayRenderDate', today);
-                    console.log("오늘날짜를 초기화 했습니다.");
-                }
+      // Redux 상태 가져오기
+    // const reduxExerciseSets = useSelector((state) => state.stateExercise.exerciseSets);
 
-                console.log("마지막 저장된 날짜가 오늘과 같습니다.")
-            } catch (error) {
-                console.error(error);
-            }
-        };
-    
-        checkAndSaveDate(); // 컴포넌트 첫 렌더 시 실행
-    }, []);
+    // // Redux 상태가 변경되면 로컬 상태를 업데이트
+    // useEffect(() => {
+    //     if (reduxExerciseSets !== exerciseSets) {
+    //         setExerciseSets(reduxExerciseSets);
+    //     }
+    // }, [reduxExerciseSets]);
+
+    // 기존 상태관리
+    const [exerciseSets, setExerciseSets] = useState({});
     
 
 
-    // 온보딩 체크 여부 확인
-    useEffect(() => {
-        if (userId && accessToken) {
-            checkOnboardingStatus(userId, accessToken, navigation);
-        } else {
-            handlerLogOut(navigation);
-        }
-    }, [userId, accessToken]);
+    // // Default Sets 추가 함수 (한 번만 업데이트)
+    // const addDefaultSets = (reorderedExercises) => {
+    //     setExerciseSets((prev) => {
+    //         const updated = { ...prev };
+    //         reorderedExercises.forEach((exercise) => {
+    //             if (!updated[exercise.id]) {
+    //                 updated[exercise.id] = [
+    //                     { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+    //                     { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+    //                     { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
+    //                 ];
+    //             }
+    //         });
+    //         return updated;
+    //     });
+    // };
+
 
     // 운동 버튼 누를시 말풍선
     const handlePress = (option, message) => {
@@ -89,7 +85,19 @@ const Exercise = ({ navigation }) => {
             case 'AutoAdapt':
                 return <AutoAdapt />;
             case 'OnSchedule':
-                return <OnSchedule />;
+                return (
+                    <OnSchedule
+                        // exerciseSets={exerciseSets} // 운동 세트 전달
+                        // addDefaultSets={addDefaultSets} // 세트 추가 함수 전달
+                        // setExerciseSets={setExerciseSets}
+                        // isSwapped={isSwapped}
+                        // todayIndex={todayIndex}
+                        // selectedWeekType={selectedWeekType}
+                        // selectedDay={selectedDay}
+                        // today={today}
+                        // todayKorean={todayKorean}
+                    />
+                );
             case 'Custom':
                 return <Custom />;
             default:
@@ -251,3 +259,4 @@ const styles = StyleSheet.create({
 });
 
 export default Exercise;
+
