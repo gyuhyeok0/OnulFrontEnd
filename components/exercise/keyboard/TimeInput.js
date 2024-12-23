@@ -22,7 +22,7 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
 
     useEffect(() => {
         selectedIndexRef.current = selectedIndex;
-        console.log(`selectedIndexRef가 업데이트됨: ${selectedIndex}`);
+        // console.log(`selectedIndexRef가 업데이트됨: ${selectedIndex}`);
     }, [selectedIndex]);
     
 
@@ -78,7 +78,7 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
 
         selectedIndexRef.current = index; // Ref에 현재 인덱스 저장
         setSelectedIndex(index); // 상태도 업데이트
-        console.log(`selectedIndexRef 업데이트됨: ${selectedIndexRef.current}`);
+        // console.log(`selectedIndexRef 업데이트됨: ${selectedIndexRef.current}`);
     };
 
     const handleSelectionChange = (event) => {

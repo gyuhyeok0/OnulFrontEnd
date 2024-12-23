@@ -20,12 +20,12 @@ import moment from 'moment'; // 날짜 형식화를 위한 moment 라이브러�
 
 import { updateExerciseSetsInRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 
+import { useQuery } from '@tanstack/react-query';
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
 
     const [memberId, setMemberId] = useState(null);
-
     const [volume, setVolume] = useState(0); // volume을 상태로 관리
 
 
@@ -46,7 +46,27 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     const [exerciseService, setExerciseService] = useState();
 
-    
+
+    // const [isRetrying, setIsRetrying] = useState(false); // 요청을 반복하는지 여부
+    // const { data, error, isLoading, refetch } = useQuery({
+    //     queryKey: ['exerciseData'],
+    //     // queryFn: fetchExerciseData,
+    //     enabled: false, // 처음에는 자동 요청이 실행되지 않도록 설정
+    //     refetchInterval: isRetrying ? 5000 : false, // 데이터가 끊겼을 때 5초마다 요청을 반복
+    //     onError: () => {
+    //         // 데이터 요청 실패 시 로딩 반복 상태로 변경
+    //         setIsRetrying(true);
+    //     },
+    //     onSuccess: () => {
+    //         // 데이터가 정상적으로 돌아오면 로딩 상태 종료
+    //         setIsRetrying(false);
+    //     },
+    // });
+
+    // const handleFetchData = () => {
+    //     refetch(); // 버튼 클릭 시 데이터를 요청하고 로딩 시작
+    // };
+
     // Redux의 dispatch를 가져오기
     const dispatch = useDispatch();
 
@@ -420,7 +440,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                         <ExerciseInfoComponent exercise={exercise} />
                     ) : showPreviousRecord ? (
                         // 이전 기록 컴포넌트
-                        <PreviousRecordComponent exercise={exercise} memberId={memberId} exerciseService={exerciseService}/>
+                        <PreviousRecordComponent exercise={exercise} memberId={memberId} exerciseService={exerciseService} kmUnit={kmUnit} weightUnit={weightUnit}/>
                     ) : (
                         <View style={styles.record}>
                             <Text style={styles.recordTitle}>record</Text>

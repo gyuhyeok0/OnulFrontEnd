@@ -8,11 +8,6 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit, deleteEx
     const inputRef = useRef(null);
     const inputAccessoryViewID = `inputKm-${index}`; // 고유 ID 설정
 
-    // 초기화 및 업데이트 시 동기화
-    useEffect(() => {
-        console.log("단위가 뭐니?" + kmUnit)
-    }, []);
-
     const handleSelectionChange = (event) => {
         const { start, end } = event.nativeEvent.selection;
         if (!isTyping && (start !== 0 || end !== inputValue.length)) {

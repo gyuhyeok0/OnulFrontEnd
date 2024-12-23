@@ -9,9 +9,8 @@ import { fetchExerciseRecordSuccess, fetchExercisesRecordFailure } from '../modu
 // 스토리지 기간 1년으로 설정
 export const callFetchExercisesRecordAPI = (exerciseId, memberId, exerciseService, recordDate) => {
     return async (dispatch) => { 
-        console.log('조회 및 스토리지 그리고 리듀서 등록을 시작합니다.:', exerciseId, memberId, exerciseService, recordDate);
 
-        const storageKey = `${exerciseId}_${memberId}_${exerciseService}_${recordDate}`;
+        const storageKey = `${exerciseId}_${exerciseService}_${recordDate}`;
 
         try {
             // AsyncStorage에서 데이터 가져오기
@@ -20,10 +19,9 @@ export const callFetchExercisesRecordAPI = (exerciseId, memberId, exerciseServic
                 console.log("스토리지에 기록이 있습니다. 리듀서 업데이트만 진행합니다.");
                 dispatch(fetchExerciseRecordSuccess({
                     exerciseId, 
-                    memberId, 
                     exerciseService, 
                     recordDate, 
-                    data: JSON.parse(storedData) 
+                    data: JSON.parse(storedData)
                 }));
                 return JSON.parse(storedData);
             }
@@ -55,7 +53,6 @@ export const callFetchExercisesRecordAPI = (exerciseId, memberId, exerciseServic
 
                     dispatch(fetchExerciseRecordSuccess({
                         exerciseId, 
-                        memberId, 
                         exerciseService, 
                         recordDate, 
                         data: result 

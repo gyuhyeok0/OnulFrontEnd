@@ -36,7 +36,9 @@ const OnSchedule = () => {
     const [memberId, setMemberId] = useState(null);
     const scheduleData = useSelector(state => state.schedule?.schedule || []);
 
-    const { isSwapped, todayIndex } = useCurrentWeekAndDay();
+    // const { isSwapped, todayIndex } = useSelector((state) => state.week);
+    const { isSwapped, todayIndex, isDateChanged } = useCurrentWeekAndDay();
+
     const [selectedWeekType, setSelectedWeekType] = useState();
     const [selectedDay, setSelectedDay] = useState();
     const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
@@ -69,25 +71,23 @@ const OnSchedule = () => {
     const [isReadyWeight, setIsReadyWeight] = useState(false); // 로딩 상태 추가
     const [isReadyKm, setIsReadyKm] = useState(false); // 로딩 상태 추가
 
-
+    
     useEffect(() => {
+        // 날짜가 변경되었을 때만 실행
+        if (isDateChanged) {
+            console.log("날짜가 실제로 변경되었습니다!");
+        
+            const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
+        
+            setSelectedWeekType(currentWeekType);
+            setSelectedDay(today);
+        
+            dispatch(resetState());
+        }
 
-        console.log("날짜가 변경돼 set 업데이트 실행했습니다.")
+      }, [isDateChanged]); // isDateChanged가 true일 때만 실행
+    
 
-        const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
-        const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
-
-        setSelectedWeekType(currentWeekType);
-        setSelectedDay(today);
-
-        console.log("변경된 날짜"+ currentWeekType, today)
-    }, [isSwapped, todayIndex]);
-
-    // 날짜가 변경되었을때 세트 상태 초기화
-    useEffect(() => {
-        dispatch(resetState());
-
-    }, [todayIndex]); // `todayIndex`가 바뀔 때마다 실행
 
     // reorderedExercises가 변경될 때 Redux에 기본 세트 추가
     useEffect(() => {
@@ -316,14 +316,14 @@ const OnSchedule = () => {
         const updateStorage = async () => {
             try {
                 if (kmUnit) {
-                    console.log("kmUnit 변경됨 = " + kmUnit);
+                    // console.log("kmUnit 변경됨 = " + kmUnit);
     
                     // kmUnit에 따라 heightUnit 값 설정
                     const heightUnit = kmUnit === 'km' ? 'cm' : 'feet';
     
                     // AsyncStorage에 저장
                     await AsyncStorage.setItem('heightUnit', heightUnit);
-                    console.log("heightUnit 저장됨: " + heightUnit);
+                    // console.log("heightUnit 저장됨: " + heightUnit);
                 }
     
                 if (weightUnit) {
@@ -334,7 +334,7 @@ const OnSchedule = () => {
     
                     // AsyncStorage에 저장
                     await AsyncStorage.setItem('weightUnit', unitToSave);
-                    console.log("weightUnit 저장됨: " + unitToSave);
+                    // console.log("weightUnit 저장됨: " + unitToSave);
                 }
             } catch (error) {
                 console.error('Error updating AsyncStorage:', error);

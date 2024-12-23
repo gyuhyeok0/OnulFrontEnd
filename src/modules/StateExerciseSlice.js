@@ -34,13 +34,13 @@ const stateExerciseSlice = createSlice({
         },
 
         updateExerciseSetsInRedux: (state, action) => {
-            console.log("디스패치 업데이트 됨");
+            // console.log("디스패치 업데이트 됨");
         
             const { exerciseId, updatedSets } = action.payload;
         
-            // 디버깅 로그 추가
-            console.log("받은 exerciseId:", exerciseId);
-            console.log("받은 updatedSets:", updatedSets);
+            // // 디버깅 로그 추가
+            // console.log("받은 exerciseId:", exerciseId);
+            // console.log("받은 updatedSets:", updatedSets);
         
             if (!updatedSets) {
                 console.error("updatedSets가 undefined입니다. action.payload:", action.payload);
