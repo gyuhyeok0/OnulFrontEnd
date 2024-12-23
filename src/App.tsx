@@ -12,6 +12,7 @@ import Timer from '../components/header/Timer';  // Timer 컴포넌트 가져오
 import { View} from 'react-native';
 import Header from './screens/common/Header';
 import InitializationWrapper from './InitializationWrapper';  // 초기화 컴포넌트 가져오기
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 //Screens
 // Common
@@ -50,6 +51,12 @@ import Page from './screens/menu/Page';
 import RegistChest from '../components/schedule/InModalComponent/RegistChest';
 
 
+import LoadingOverlay from '../components/LoadingOverlay'; // 추가
+
+
+// QueryClient 생성
+const queryClient = new QueryClient();
+
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +66,12 @@ function MainApp() {
   const [isTimerRunning, setIsTimerRunning] = useState(false); // 타이머 실행 상태
   const [initializationComplete, setInitializationComplete] = useState(false);
 
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const handleRetry = () => {
+    setErrorMessage(null);
+    queryClient.refetchQueries(); // 모든 쿼리를 다시 요청
+  };
   
   if (!initializationComplete) {
     return (
@@ -71,6 +84,7 @@ function MainApp() {
   }
 
   return (
+    <>
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isLoggedIn ? "Exercise" : "Login"}>
         {/* 로그인 페이지 */}
@@ -266,16 +280,24 @@ function MainApp() {
 
       </Stack.Navigator>
     </NavigationContainer>
+     <LoadingOverlay
+        visible={false} // 기본값 false
+        errorMessage={errorMessage}
+        onRetry={handleRetry}
+      />
+     </> 
   );
 }
 
 function App() {
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <MainApp />
-      </PersistGate>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <MainApp />
+        </PersistGate>
+      </Provider>
+    </QueryClientProvider>
   );
 }
 

@@ -104,14 +104,14 @@ export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerci
         // 서버 요청이 성공하면 Redux 상태에서 데이터 삭제
         dispatch(deleteExerciseRecordSuccess({
             exerciseId: exercise.id, 
-            memberId, 
             exerciseService, 
             recordDate: recordDate.join('-'),
         }));
         // AsyncStorage에서 데이터 삭제
-        const storageKey = `${exercise.id}_${memberId}_${exerciseService}_${recordDate.join('-')}`;
+        const storageKey = `${exercise.id}_${exerciseService}_${recordDate.join('-')}`;
         await AsyncStorage.removeItem(storageKey);
         console.log('운동 기록이 성공적으로 삭제되었습니다.');
+        
     } catch (error) {
         Alert.alert('서버와 통신 중 오류가 발생했습니다.');
         console.error('Error deleting data from server:', error);

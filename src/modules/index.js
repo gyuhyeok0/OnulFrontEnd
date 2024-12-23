@@ -20,6 +20,8 @@ import {
 import schedulExerciseReducer from './ExerciseStateSlice/SchedulExerciseState';
 
 import stateExerciseReducer from './StateExerciseSlice'; // 리듀서 가져오기
+import weekReducer from './WeekReducer'; // weekReducer import
+// import apiReducer from './ApiSlice'; // 아래에서 생성할 API slice
 
 
 const rootReducer = combineReducers({
@@ -41,6 +43,10 @@ const rootReducer = combineReducers({
 
 
   stateExercise: stateExerciseReducer, // reorderedExercises 리듀서 추가
+
+  week: weekReducer, // week 상태 관리
+  // api: apiReducer, // 전역 상태에 API slice 추가
+
 });
 
 export default rootReducer;

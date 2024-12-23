@@ -1,138 +1,234 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
-
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import moment from 'moment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import Icon from 'react-native-vector-icons/Ionicons'; // Ionicons 사용
-
+import { useDispatch, useSelector } from 'react-redux';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { previousRecordDate } from '../../../src/apis/PreviousRecordDate';
 import { callFetchExercisesRecordAPI } from '../../../src/apis/ExerciseRecordAPI';
+import { selectExerciseRecordByDetails } from '../../../src/modules/ExerciseRecordSlice';
+import moment from 'moment';
 
-const DateChanger = ({ exercise, memberId, exerciseService }) => {
-    const [currentDate, setCurrentDate] = useState(moment().format('YYYY-MM-DD')); // 초기 날짜: 오늘
-    const dispatch = useDispatch(); // useDispatch로 dispatch 초기화
+const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }) => {
+    const [storedDates, setStoredDates] = useState([]);
+    const [renderingDate, setRenderingDate] = useState(null);
+    const [disablePrev, setDisablePrev] = useState(true);
+    const [disableNext, setDisableNext] = useState(true);
+    const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
-    const exercisesRecord = useSelector((state) => state.exerciseRecord.exercisesRecord);
-
-    const [recordData, setRecordData] = useState(null); // 상태에 기록 데이터를 저장
-
+    const dispatch = useDispatch();
     const exerciseId = exercise.id;
 
+    const [totalWidth, setTotalWidth] = useState(0);
 
-    
-    useEffect(() => {
-        
-    }, []); 
-    
+    const handleLayout = (event) => {
+        const { width } = event.nativeEvent.layout;
+        setTotalWidth((prevWidth) => prevWidth + width); // 기존 width에 더하기
+    };
+
+    const recordData = useSelector((state) =>
+        selectExerciseRecordByDetails(state, exerciseId, exerciseService, renderingDate)
+    );
+
+    const today = moment().format('YYYY-MM-DD');
 
     useEffect(() => {
-        const fetchData = async () => {
-            await selectFilter(currentDate);
+        const fetchStoredDates = async () => {
+            try {
+                const dates = await previousRecordDate(memberId, exerciseId, exerciseService);
+                const filteredDates = dates.filter(date => date !== today);
+
+                setStoredDates(filteredDates);
+                if (filteredDates.length > 0) {
+                    setRenderingDate(filteredDates[0]);
+                }
+            } catch (error) {
+                console.error('previousRecordDate 호출 중 오류:', error);
+            } finally {
+                setIsLoading(false); // 로딩 종료
+            }
         };
-        fetchData();
-    }, [currentDate]); // currentDate가 변경될 때마다 실행
+
+        fetchStoredDates();
+    }, [exerciseId, memberId, exerciseService]);
 
     useEffect(() => {
-        // exercisesRecord가 변경될 때마다 recordData를 업데이트
-        const recordKey = `${exercise.id}_${memberId}_${exerciseService}_${currentDate}`;
-        if (exercisesRecord && exercisesRecord[recordKey]) {
-            setRecordData(exercisesRecord[recordKey]);
+        if (renderingDate !== null) {
+            const currentIndex = storedDates.indexOf(renderingDate);
+            setDisablePrev(currentIndex >= storedDates.length - 1);
+            setDisableNext(currentIndex <= 0);
         }
-    }, [exercisesRecord, currentDate]); // exercisesRecord와 currentDate가 변경될 때마다 실행
-    
-    const changeDate = (direction) => {
-        const updatedDate = moment(currentDate)
-            .add(direction === 'next' ? 1 : -1, 'days')
-            .format('YYYY-MM-DD');
+    }, [renderingDate, storedDates]);
 
-        setCurrentDate(updatedDate);
-        selectFilter(updatedDate);
-    };
-
-    const handlePreviousDate = () => changeDate('prev');
-    const handleNextDate = () => changeDate('next');
-
-    const selectFilter = async (date) => {
-        const recordDate = date;
-    
-        console.log(recordData);
-        try {
-            // 상태에서 해당 키로 데이터가 있는지 확인
-            const recordKey = `${exerciseId}_${memberId}_${exerciseService}_${recordDate}`;
-            if (exercisesRecord && exercisesRecord[recordKey]) {
-                console.log('리듀서에 이전 기록이 등록되어 있습니다.');
-                // 해당 데이터를 상태에 저장하여 화면에 표시
-                setRecordData(exercisesRecord[recordKey]);
-                return; // 데이터가 이미 있으면 API 호출 생략
-            }
-    
-            // 상태에 데이터가 없으면 API 호출
-            const result = await dispatch(callFetchExercisesRecordAPI(exerciseId, memberId, exerciseService, recordDate));
-    
-            // 빈 배열인 경우 처리
-            if (Array.isArray(result) && result.length === 0) {
-                console.log('운동 기록이 없습니다.');
-                setRecordData(null); // 운동 기록이 없을 때
+    useEffect(() => {
+        if (renderingDate) {
+            setIsLoading(true); // 로딩 시작
+            if (!recordData) {
+                console.log("운동기록이 없습니다.")
+                dispatch(callFetchExercisesRecordAPI(exerciseId, memberId, exerciseService, renderingDate))
+                    .finally(() => setIsLoading(false)); // 로딩 끝
             } else {
-                // 운동 기록이 있을 때
-                setRecordData(result);
+                setIsLoading(false); // 로딩 끝
             }
-        } catch (error) {
-            console.error('selectFilter 오류 발생:', error);
         }
+
+        console.log("기록이 잇어 디스패치 안함")
+        console.log(recordData);
+    }, [recordData, renderingDate, dispatch, exerciseId, memberId, exerciseService]);
+
+    const changeDate = (direction) => {
+        if (storedDates.length === 0) return;
+
+        const currentIndex = storedDates.indexOf(renderingDate);
+        const updatedIndex =
+            direction === 'next'
+                ? Math.max(currentIndex - 1, 0)
+                : Math.min(currentIndex + 1, storedDates.length - 1);
+
+        setRenderingDate(storedDates[updatedIndex]);
     };
+
+    const renderRow = () => {
     
+        const exerciseType = recordData[0].exerciseType; // 첫 번째 데이터의 exerciseType 사용
+
+        return (
+            <View style={{flexDirection: 'row', gap:5, marginBottom: 5 }}>
+                <View style={{width: 30}}>
+                    <Text style={styles.headerText}>SET</Text>
+                </View>
+                
+                
+                {exerciseType === 1 && (
+                    <View style={{width: '40%'}}>
+                        <Text style={styles.headerText}>횟수</Text>
+                    </View>
+                )}
+                {exerciseType === 2 && (
+                    <>
+                        <View style={{width: '40%'}}>
+                            <Text style={styles.headerText}>{kmUnit === 'km' ? 'km' : 'mi'}</Text>
+                        </View>
+
+                        <View style={{width: '40%'}}>
+
+                            <Text style={styles.headerText}>시간</Text>
+                        </View>
+                    </>
+                )}
+                {exerciseType === 3 && (
+                    <>
+                        <View style={{width: '40%'}}>
+                            <Text style={styles.headerText}>{weightUnit === 'kg' ? 'kg' : 'lbs'}</Text>
+                        </View>
+
+                        <View style={{width: '40%'}}>
+                            <Text style={styles.headerText}>횟수</Text>
+                        </View>
+                    </>
+                )}
+                {exerciseType === 4 && (
+                    <View style={{width: '40%'}}>
+                        <Text style={styles.headerText}>시간</Text>
+                    </View>
+                )}
+            </View>
+        );
+    };
 
     return (
         <View style={styles.container}>
-
-            {/* 날짜 형식 */}
             <View style={styles.moment}>
-                {/* 둥글둥글한 이전 날짜 아이콘 */}
-                <TouchableOpacity onPress={handlePreviousDate} style={styles.iconButton}>
-                    <Icon name="arrow-back-outline" size={21} color="#fff" />
+                <TouchableOpacity
+                    onPress={() => changeDate('prev')}
+                    style={[styles.iconButton, disablePrev && styles.disabledButton]}
+                    disabled={disablePrev}
+                >
+                    <Icon name="arrow-back-outline" size={21} color={disablePrev ? 'gray' : '#fff'} />
                 </TouchableOpacity>
-
-                {/* 현재 날짜 */}
-                <Text style={styles.dateText}>{currentDate}</Text>
-
-                {/* 둥글둥글한 다음 날짜 아이콘 */}
-                <TouchableOpacity onPress={handleNextDate} style={styles.iconButton}>
-                    <Icon name="arrow-forward-outline" size={21} color="#fff" />
+                <Text style={renderingDate ? styles.dateText : styles.nonDateText}>
+                    {renderingDate || moment(today).subtract(1, 'days').format('YYYY-MM-DD')}
+                </Text>
+                <TouchableOpacity
+                    onPress={() => changeDate('next')}
+                    style={[styles.iconButton, disableNext && styles.disabledButton]}
+                    disabled={disableNext}
+                >
+                    <Icon name="arrow-forward-outline" size={21} color={disableNext ? 'gray' : '#fff'} />
                 </TouchableOpacity>
             </View>
-
-
-            {/* 저장된 운동 기록을 화면에 출력 */}
-            {recordData ? (
-                <>
-                
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, backgroundColor: 'red' }}>
-                    <Text
-                        style={{
-                            color: 'white',
-                            fontWeight: 'bold',
-                            fontSize: 11,
-                            width: 30,
-                            textAlign: 'center',
-                            marginRight: 5,
-                        }}
-                    >
-                        SET
-                    </Text>
+            {isLoading ? (
+                <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                    <ActivityIndicator size="large" color="#fff" />
                 </View>
-
+            ) : recordData && Object.keys(recordData).length > 0 ? (
                 <View style={styles.recordContainer}>
-                    <Text style={styles.recordText}>운동 기록: {JSON.stringify(recordData)}</Text>
-                </View>
 
-                </>
+                    {renderRow()}
+
+                    {Object.values(recordData).filter((set) => set.set).map((set, index) => (
+                        <View key={set.id} style={styles.setContainer}>
+                            <View style={styles.setSection}>
+                                <Text style={styles.recordText}>{index + 1}</Text>
+                            </View>
+
+                            {/* Exercise Type 1 */}
+                            {set.exerciseType === 1 && (
+                                <View style={styles.recordSection}>
+                                    <Text style={styles.recordText}>{set.set?.reps || '-'}</Text>
+                                </View>
+                            )}
+
+                            {/* Exercise Type 2 */}
+                            {set.exerciseType === 2 && (
+                                <>
+                                    <View style={styles.recordSection}>
+                                        {kmUnit === 'km' && (
+                                            <Text style={styles.recordText}>{set.set?.km || '-'}</Text>
+                                        )}
+                                        {kmUnit === 'mi' && (
+                                            <Text style={styles.recordText}>{set.set?.mi || '-'}</Text>
+                                        )}
+                                    </View>
+
+                                    <View style={styles.recordSection}>
+                                        <Text style={styles.recordText}>{set.set?.time || '-'}</Text>
+                                    </View>
+                                </>
+
+                            )}
+                            {/* Exercise Type 3 */}
+                            {set.exerciseType === 3 && (
+                                <>
+
+                                    <View style={styles.recordSection}>
+                                        {weightUnit === 'kg' && (
+                                            <Text style={styles.recordText}>{set.set?.kg || '-'}</Text>
+                                        )}
+                                        {weightUnit === 'lbs' && (
+                                            <Text style={styles.recordText}>{set.set?.lbs || '-'}</Text>
+                                        )}
+                                    </View>
+                                    
+                                    <View style={styles.recordSection}>
+                                        <Text style={styles.recordText}>{set.set?.reps || '-'}</Text>
+                                    </View>
+
+                                </>
+                            )}
+                            {/* Exercise Type 4 */}
+                            {set.exerciseType === 4 && (
+                                <View style={styles.recordSection}>
+                                    <Text style={styles.recordText}>{set.set?.time || '없음'}</Text>
+                                </View>
+                            )}
+                        </View>
+                    ))}
+                </View>
             ) : (
-                <View style={styles.recordContainer}>
-                    <Text style={styles.recordText}>이전 기록이 없습니다.</Text>
+                <View style={styles.setContainer}>
+                    <Text style={styles.recordText}>운동 기록이 없습니다.</Text>
                 </View>
             )}
+
         </View>
     );
 };
@@ -145,7 +241,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor:'gray'
     },
     dateText: {
         marginHorizontal: 15,
@@ -153,20 +248,65 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    nonDateText: {
+        color: 'gray',
+        marginHorizontal: 15,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     iconButton: {
-        // backgroundColor:'white',
-        padding: 2, // 클릭 영역을 넓히기 위한 여백
+        padding: 2,
+    },
+    disabledButton: {
+        opacity: 0.5,
     },
     recordContainer: {
-        marginTop: 10,
-        padding: 10,
-        backgroundColor: '#f2f2f2',
-        borderRadius: 5,
+        // backgroundColor:'red',
+        marginTop: 5,
+        flex: 1,
     },
     recordText: {
         fontSize: 14,
-        color: '#333',
+        color: '#B0BEC5',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        paddingLeft: 10,
+        paddingRight: 10
+    },
+
+    headerText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 13,
+        textAlign: 'center',
+    },
+
+    setContainer: {
+        flexDirection: 'row',
+        gap: 5,
+    },
+
+    setSection: {
+        minWidth: 30, 
+        minHeight: 30, 
+        justifyContent: 'center', 
+        borderRadius: 5, 
+        backgroundColor: '#525E77',
+        marginBottom: 5,
+    },
+
+    recordSection: {
+        minWidth: '40%', 
+        minHeight: 30, 
+        justifyContent: 'center', 
+        borderRadius: 5, 
+        // marginRight: 5,
+        backgroundColor: '#525E77',
+        marginBottom: 5,
     },
 });
+
+
+
 
 export default DateChanger;
