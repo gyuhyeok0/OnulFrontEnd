@@ -20,6 +20,7 @@ export const store = configureStore({
             // 특정 액션의 직렬화 불가능 값을 무시하도록 설정
             ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
         },
+        immutableCheck: false, // 불변성 검사 비활성화
     }),
 });
 

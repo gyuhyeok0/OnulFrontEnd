@@ -11,6 +11,7 @@ import moment from 'moment'; // moment 가져오기
 // 서버로 데이터를 전송하는 함수
 export const submitExerciseRecord = async (memberId, exerciseService, setNumber, set, exercise,  exerciseType, volume, weightUnit, kmUnit, accessToken = null) => {
     try {
+
         // 토큰이 없을 경우 AsyncStorage에서 가져오기
         if (!accessToken) {
             accessToken = await AsyncStorage.getItem('accessToken');
@@ -55,15 +56,20 @@ export const submitExerciseRecord = async (memberId, exerciseService, setNumber,
             }
         }
 
+        // 서버 응답 데이터 반환
+        const data = await response.json();
+        return data; // 반환값 추가
+
     } catch (error) {
-        Alert.alert('서버와 통신 중 오류가 발생했습니다.');
-        console.error('Error sending data to server:', error);
+        return { success: false, message: 'Unexpected error occurred' }; // 기본값 반환
     }
 };
 
 // 서버로 데이터를 전송하는 함수
 export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerciseService, accessToken = null, dispatch) => {
     try {
+
+        console.log("삭제 호출 되긴하니?")
         // 토큰이 없을 경우 AsyncStorage에서 가져오기
         if (!accessToken) {
             accessToken = await AsyncStorage.getItem('accessToken');
@@ -111,9 +117,12 @@ export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerci
         const storageKey = `${exercise.id}_${exerciseService}_${recordDate.join('-')}`;
         await AsyncStorage.removeItem(storageKey);
         console.log('운동 기록이 성공적으로 삭제되었습니다.');
+
+        // 서버 응답 데이터 반환
+        const data = await response.json();
+        return data; // 반환값 추가
         
     } catch (error) {
-        Alert.alert('서버와 통신 중 오류가 발생했습니다.');
-        console.error('Error deleting data from server:', error);
+        return { success: false, message: 'Unexpected error occurred' }; // 기본값 반환
     }
 };

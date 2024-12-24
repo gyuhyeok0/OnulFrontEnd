@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Alert, Animated, Text, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from 'react-native-splash-screen';
@@ -9,7 +10,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store'; 
 import { setToken, setIsLoggedIn } from './modules/AuthSlice';  // Redux 액션 가져오기
 import Timer from '../components/header/Timer';  // Timer 컴포넌트 가져오기
-import { View} from 'react-native';
 import Header from './screens/common/Header';
 import InitializationWrapper from './InitializationWrapper';  // 초기화 컴포넌트 가져오기
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -52,6 +52,7 @@ import RegistChest from '../components/schedule/InModalComponent/RegistChest';
 
 
 import LoadingOverlay from '../components/LoadingOverlay'; // 추가
+import NetInfo from '@react-native-community/netinfo';
 
 
 // QueryClient 생성
@@ -68,23 +69,59 @@ function MainApp() {
 
   const [errorMessage, setErrorMessage] = useState(null);
 
+  const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
+  const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
+
+
   const handleRetry = () => {
     setErrorMessage(null);
     queryClient.refetchQueries(); // 모든 쿼리를 다시 요청
   };
   
-  if (!initializationComplete) {
-    return (
-      <InitializationWrapper
-        onInitializationComplete={() => setInitializationComplete(true)}
-        setTimerTime={setTimerTime}
-        setIsTimerRunning={setIsTimerRunning}
-      />
-    );
-  }
+  // 네트워크 상태 변경을 감지
+  useEffect(() => {
+
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected ?? false); // null 값은 false로 처리
+    });
+
+    return () => unsubscribe(); // 리스너 해제
+  }, []);
+
+  // 네트워크 연결이 끊겼을 때만 경고 메시지 애니메이션 실행
+  useEffect(() => {
+    if (!isConnected) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 1200, // 천천히 페이드 인
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 1200, // 천천히 페이드 아웃
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      fadeAnim.setValue(0); // 네트워크가 연결되면 애니메이션 초기화
+    }
+  }, [isConnected, fadeAnim]);
+
+  
 
   return (
     <>
+
+    {/* 네트워크 연결 상태가 끊겼을 때만 경고 메시지 표시 */}
+    {!isConnected && (
+      <Animated.View style={[styles.warningContainer, { opacity: fadeAnim }]}>
+          <Text style={styles.warningText}>Please Connect to a Network</Text>
+      </Animated.View>
+    )}
+
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isLoggedIn ? "Exercise" : "Login"}>
         {/* 로그인 페이지 */}
@@ -280,12 +317,10 @@ function MainApp() {
 
       </Stack.Navigator>
     </NavigationContainer>
-     <LoadingOverlay
-        visible={false} // 기본값 false
-        errorMessage={errorMessage}
-        onRetry={handleRetry}
-      />
-     </> 
+      <LoadingOverlay
+          visible={false} // 기본값 false
+        />
+    </> 
   );
 }
 
@@ -300,5 +335,34 @@ function App() {
     </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  warningContainer: {
+    position: 'absolute',
+    top: '13%',
+    left: '50%',
+    backgroundColor: '#070710',
+    padding: 10,
+    alignItems: 'center',
+    zIndex: 9999,
+    width: 220,
+    height: 35,
+    borderRadius: 30,
+    transform: [
+      { translateX: -115 }, // width의 절반
+      { translateY: -20 }, // height의 절반
+    ],
+  },
+  warningText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default App;

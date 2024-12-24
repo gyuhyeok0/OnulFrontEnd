@@ -6,7 +6,6 @@ import { refreshAccessToken } from '../apis/Token';
 export const previousRecordDate = async (memberId, exerciseId, exerciseService) => {
     try {
 
-        console.log("안녕 서버 호출할게")
         // AsyncStorage에서 토큰 가져오기
         let accessToken = await AsyncStorage.getItem('accessToken');
 
@@ -46,8 +45,8 @@ export const previousRecordDate = async (memberId, exerciseId, exerciseService) 
         return data; // 반환된 데이터를 호출자에게 전달
 
     } catch (error) {
-        Alert.alert('서버와 통신 중 오류가 발생했습니다.', error.message);
-        console.error('Error sending data to server:', error);
+        // Alert.alert('서버와 통신 중 오류가 발생했습니다.', error.message);
+        // console.error('Error sending data to server:', error);
         return null; // 실패 시 null 반환
     }
 };

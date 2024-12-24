@@ -17,13 +17,6 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
     const dispatch = useDispatch();
     const exerciseId = exercise.id;
 
-    const [totalWidth, setTotalWidth] = useState(0);
-
-    const handleLayout = (event) => {
-        const { width } = event.nativeEvent.layout;
-        setTotalWidth((prevWidth) => prevWidth + width); // 기존 width에 더하기
-    };
-
     const recordData = useSelector((state) =>
         selectExerciseRecordByDetails(state, exerciseId, exerciseService, renderingDate)
     );
@@ -41,7 +34,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                     setRenderingDate(filteredDates[0]);
                 }
             } catch (error) {
-                console.error('previousRecordDate 호출 중 오류:', error);
+                // console.error('previousRecordDate 호출 중 오류:', error);
             } finally {
                 setIsLoading(false); // 로딩 종료
             }
@@ -224,7 +217,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                     ))}
                 </View>
             ) : (
-                <View style={styles.setContainer}>
+                <View style={styles.NonContainer}>
                     <Text style={styles.recordText}>운동 기록이 없습니다.</Text>
                 </View>
             )}
@@ -303,6 +296,10 @@ const styles = StyleSheet.create({
         // marginRight: 5,
         backgroundColor: '#525E77',
         marginBottom: 5,
+    },
+
+    NonContainer: {
+        marginTop: 10
     },
 });
 
