@@ -28,6 +28,7 @@ import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExe
 import { useFocusEffect } from '@react-navigation/native';
 import { addDefaultSetsToRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 import _ from 'lodash';
+import { useQuery } from '@tanstack/react-query';
 
 
 const OnSchedule = () => {

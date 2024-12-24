@@ -19,13 +19,15 @@ import { submitExerciseRecord, deleteExerciseRecord } from '../../src/apis/Submi
 import moment from 'moment'; // 날짜 형식화를 위한 moment 라이브러리
 
 import { updateExerciseSetsInRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
-
 import { useQuery } from '@tanstack/react-query';
+
+
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
 
     const [memberId, setMemberId] = useState(null);
+
     const [volume, setVolume] = useState(0); // volume을 상태로 관리
 
 
@@ -46,27 +48,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     const [exerciseService, setExerciseService] = useState();
 
-
-    // const [isRetrying, setIsRetrying] = useState(false); // 요청을 반복하는지 여부
-    // const { data, error, isLoading, refetch } = useQuery({
-    //     queryKey: ['exerciseData'],
-    //     // queryFn: fetchExerciseData,
-    //     enabled: false, // 처음에는 자동 요청이 실행되지 않도록 설정
-    //     refetchInterval: isRetrying ? 5000 : false, // 데이터가 끊겼을 때 5초마다 요청을 반복
-    //     onError: () => {
-    //         // 데이터 요청 실패 시 로딩 반복 상태로 변경
-    //         setIsRetrying(true);
-    //     },
-    //     onSuccess: () => {
-    //         // 데이터가 정상적으로 돌아오면 로딩 상태 종료
-    //         setIsRetrying(false);
-    //     },
-    // });
-
-    // const handleFetchData = () => {
-    //     refetch(); // 버튼 클릭 시 데이터를 요청하고 로딩 시작
-    // };
-
+    
     // Redux의 dispatch를 가져오기
     const dispatch = useDispatch();
 
@@ -217,7 +199,15 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     const removeSet = () => {
         if (sets.length > 1) {
-            updateSets(sets.slice(0, -1));
+            // 완료 상태가 아닌 세트만 삭제 가능
+            const lastSet = sets[sets.length - 1];
+            if (!lastSet.completed) {
+                updateSets(sets.slice(0, -1));
+            } else {
+                console.log("완료 상태인 세트는 삭제할 수 없습니다.");
+            }
+        } else {
+            console.log("더 이상 세트를 삭제할 수 없습니다.");
         }
     };
 
@@ -296,33 +286,143 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             }
         }
     };
-    
-    
-    
-    // 완료 누를시 데이터 가공
-    const submitExerciseFilter = (set, index) => {
 
-        const setNumber = index;
-        
-        submitExerciseRecord(memberId, exerciseService, setNumber, set, exercise, exerciseType, volume, weightUnit, kmUnit)
+
+    // -===================================
+
+    const [currentSetNumber, setCurrentSetNumber] = useState(false);
+    const [currentSet, setCurrentSet] = useState(false);
+
+
+    const { refetch: refetchSubmit  } = useQuery({
+        queryKey: ['submitExercise'],
+        queryFn: async () => {
+
+            console.log(currentSetNumber);
+            console.log(currentSet);
+
+            if (currentSet && currentSetNumber !== null) {
+                const result = await submitExerciseRecord(
+                    memberId,
+                    exerciseService,
+                    currentSetNumber,
+                    currentSet,
+                    exercise,
+                    exerciseType,
+                    volume,
+                    weightUnit,
+                    kmUnit
+                );
+                return result; // 서버 응답 반환
+            }
+    
+            // 기본 반환값 보장
+            return { success: false, message: 'Invalid parameters' }; // 기본값 반환
+        },
+        enabled: false,
+    });
+    
+    
+    
+    // submitExerciseFilter 함수 수정
+    const submitExerciseFilter = async (set, index) => {
+        setCurrentSetNumber(index); // 상태 업데이트
+        setCurrentSet(set);
+    
+        setTimeout(async () => {
+            try {
+                const { data } = await refetchSubmit();
+                if (data && data.success === false) {
+                    // 특정 세트만 상태 해제
+                    const updatedSets = sets.map((item, idx) => 
+                        idx === index - 1 // index는 1부터 시작하므로 -1
+                            ? { ...item, completed: false } // 해당 세트 상태 해제
+                            : item // 나머지는 유지
+                    );
+                    updateSets(updatedSets);
+    
+                    console.log(`세트 ${index} 상태가 해제되었습니다.`);
+                } else {
+                    console.log('Data successfully submitted:', data);
+                }
+            } catch (error) {
+                console.error("Unexpected error during refetch:", error);
+            }
+        }, 0); // 상태 업데이트 후 실행
     };
+    
+    
+    // -===================================
 
+    
+    // // 완료 누를시 데이터 가공
+    // const submitExerciseFilter = (set, index) => {
+
+    //     const setNumber = index;
+        
+    //     submitExerciseRecord(memberId, exerciseService, setNumber, set, exercise, exerciseType, volume, weightUnit, kmUnit)
+    // };
+
+
+    const { refetch: refetchDelete  } = useQuery({
+        queryKey: ['DeleteExercise'],
+        queryFn: async () => {
+
+            console.log("삭제 쿼리 호출합니다.")
+
+
+            console.log(currentSet, currentSetNumber);
+            if (currentSet && currentSetNumber !== null) {
+
+                console.log("api 호출준비")
+                const result = await deleteExerciseRecord(
+                    memberId, currentSetNumber, exercise, exerciseService, null, dispatch,
+                );
+                return result; // 서버 응답 반환
+            }
+    
+            // 기본 반환값 보장
+            return { success: false, message: 'Invalid parameters' }; // 기본값 반환
+        },
+        enabled: false,
+    });
 
     const deleteExerciseFilter = (set, index) => {
-        console.log("deleteExerciseFilter 호출됨", { set, index });
     
         // 기존 로직 유지
-        const setNumber = index;
-        const today = moment().format('YYYY-MM-DD');
+        setCurrentSetNumber(index); // 상태 업데이트
+        setCurrentSet(set);
+
+        setTimeout(async () => {
+            try {
+                const { data } = await refetchDelete();
+                if (data && data.success === false) {
+                    console.log("실패한거 아냐?")
+                } else {
+                    console.log('Data successfully submitted:', data);
+                }
+            } catch (error) {
+                console.error("Unexpected error during refetch:", error);
+            }
+        }, 0); 
+        }; 
+
+
+    // const deleteExerciseFilter = (set, index) => {
+    //     console.log("deleteExerciseFilter 호출됨", { set, index });
     
-        deleteExerciseRecord(memberId, setNumber, { ...exercise, recordDate: today }, exerciseService, null, dispatch)
-            .then(() => {
-                // console.log(`세트 번호 ${setNumber}가 성공적으로 삭제되었습니다.`);
-            })
-            .catch((error) => {
-                console.error('운동 기록 삭제 중 오류 발생:', error);
-            });
-    };
+    //     // 기존 로직 유지
+    //     const setNumber = index;
+    //     const today = moment().format('YYYY-MM-DD');
+    
+    //     deleteExerciseRecord(memberId, setNumber, { ...exercise, recordDate: today }, exerciseService, null, dispatch)
+    //         .then(() => {
+    //             // console.log(`세트 번호 ${setNumber}가 성공적으로 삭제되었습니다.`);
+    //         })
+    //         .catch((error) => {
+    //             console.error('운동 기록 삭제 중 오류 발생:', error);
+    //         });
+    // };
     
 
     // 모든 세트를 완료로 설정하고 submitExerciseFilter 호출
@@ -337,12 +437,20 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         updateSets(updatedSets);
     
         // 완료된 세트를 순차적으로 처리
-        updatedSets.forEach((set, index) => {
+        const processSet = (index) => {
+            if (index >= updatedSets.length) return; // 모든 세트 처리 완료
+    
+            const set = updatedSets[index];
             if (set.completed) {
-                submitExerciseFilter(set, index + 1); // 세트 번호는 1부터 시작
+                submitExerciseFilter(set, index + 1); // 현재 세트를 처리
+                setTimeout(() => processSet(index + 1), 50); // 다음 세트로 이동
             }
-        });
+        };
+    
+        processSet(0); // 첫 번째 세트부터 처리 시작
     };
+    
+    
     
 
     // 조건 평가

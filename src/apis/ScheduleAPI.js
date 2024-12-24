@@ -43,9 +43,12 @@ export const sendDataToServer = async (part, memberId, weekType, day, accessToke
             }
         }
 
+        const data = await response.json();
+        return data; // 반환값 추가
+
+
     } catch (error) {
-        Alert.alert('서버와 통신 중 오류가 발생했습니다.');
-        console.error('Error sending data to server:', error);
+        return { success: false, message: 'Unexpected error occurred' }; // 기본값 반환
     }
 };
 
@@ -88,10 +91,12 @@ export const deleteDataFromServer = async (part, memberId, weekType, day, access
             }
         }
 
+        const data = await response.json();
+        return data; // 반환값 추가
+
 
     } catch (error) {
-        Alert.alert('서버와 통신 중 오류가 발생했습니다.');
-        console.error('Error deleting data from server:', error);
+        return { success: false, message: 'Unexpected error occurred' }; // 기본값 반환
     }
 };
 
@@ -114,7 +119,6 @@ export const callFetchScheduleAPI = () => {
                 },
             });
 
-            console.log("이게 뭐야?"+ response);
 
             if (!response.ok) {
                 if (response.status === 401) { // 상태 코드가 401 (Unauthorized)일 경우
@@ -146,7 +150,7 @@ export const callFetchScheduleAPI = () => {
             dispatch(fetchScheduleSuccess(result));
 
         } catch (error) {
-            Alert.alert('서버와 통신 중 오류가 발생했습니다.');
+            Alert.alert('error');
             console.error('[ScheduleAPICalls] callFetchScheduleAPI ERROR : ', error.message);
             dispatch(fetchScheduleFailure(error.message));
         }

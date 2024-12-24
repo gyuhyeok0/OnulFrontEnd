@@ -27,41 +27,6 @@ const Exercise = ({ navigation }) => {
         // console.log(exerciseSets);
     }, []);
 
-    // const dispatch = useDispatch();
-
-      // Redux 상태 가져오기
-    // const reduxExerciseSets = useSelector((state) => state.stateExercise.exerciseSets);
-
-    // // Redux 상태가 변경되면 로컬 상태를 업데이트
-    // useEffect(() => {
-    //     if (reduxExerciseSets !== exerciseSets) {
-    //         setExerciseSets(reduxExerciseSets);
-    //     }
-    // }, [reduxExerciseSets]);
-
-    // 기존 상태관리
-    const [exerciseSets, setExerciseSets] = useState({});
-    
-
-
-    // // Default Sets 추가 함수 (한 번만 업데이트)
-    // const addDefaultSets = (reorderedExercises) => {
-    //     setExerciseSets((prev) => {
-    //         const updated = { ...prev };
-    //         reorderedExercises.forEach((exercise) => {
-    //             if (!updated[exercise.id]) {
-    //                 updated[exercise.id] = [
-    //                     { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-    //                     { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-    //                     { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
-    //                 ];
-    //             }
-    //         });
-    //         return updated;
-    //     });
-    // };
-
-
     // 운동 버튼 누를시 말풍선
     const handlePress = (option, message) => {
         setSelectedOption(option);
@@ -86,17 +51,7 @@ const Exercise = ({ navigation }) => {
                 return <AutoAdapt />;
             case 'OnSchedule':
                 return (
-                    <OnSchedule
-                        // exerciseSets={exerciseSets} // 운동 세트 전달
-                        // addDefaultSets={addDefaultSets} // 세트 추가 함수 전달
-                        // setExerciseSets={setExerciseSets}
-                        // isSwapped={isSwapped}
-                        // todayIndex={todayIndex}
-                        // selectedWeekType={selectedWeekType}
-                        // selectedDay={selectedDay}
-                        // today={today}
-                        // todayKorean={todayKorean}
-                    />
+                    <OnSchedule/>
                 );
             case 'Custom':
                 return <Custom />;

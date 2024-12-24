@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Pressable } from 'react-native';
 import { useSelector } from 'react-redux';
 import { sendIntensityToServer } from '../../src/hooks/Intensity'; // 함수 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 가져오기
+import { useQuery } from '@tanstack/react-query';
 
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
@@ -13,19 +14,75 @@ const AutoAdapt = () => {
     const intensities = ['쉬웠음', '보통', '어려움'];
 
 
-    // 운동 강도 선택 시 서버로 전송하고, AsyncStorage에 저장합니다.
+    // useQuery 설정
+    const { refetch: refetchIntensity } = useQuery({
+        queryKey: ['submitIntensity'],
+        queryFn: async () => {
+
+            console.log(selectedIntensity);
+
+            if (selectedIntensity !== null) {
+                const result = await sendIntensityToServer(userId, intensities[selectedIntensity]);
+                return result; // 서버 응답 반환
+            }
+
+            // 기본 반환값 보장
+            return { success: false, message: 'Invalid intensity selection' };
+        },
+        enabled: false, // 초기에는 실행되지 않도록 설정
+    });
+
+        // handleIntensityPress 함수
     const handleIntensityPress = async (index) => {
+        const previousIntensity = selectedIntensity; // 선택 전 상태 저장
+
         try {
+            // 상태 업데이트
             setSelectedIntensity(index);
-            
+
+            // AsyncStorage에 저장
             await AsyncStorage.setItem('selectedIntensity', index.toString());
 
+            // 서버에 전송
+            setTimeout(async () => {
+                try {
+                    const { data } = await refetchIntensity();
+                    if (data && data.success === false) {
+                        console.log('운동 강도 저장 실패:', data.message);
 
-            sendIntensityToServer(userId, intensities[index], accessToken);
+                        // 실패한 경우, 상태 초기화 또는 다른 로직 수행
+                        setSelectedIntensity(null);
+                        await AsyncStorage.removeItem('selectedIntensity');
+                    } else {
+                        // console.log('운동 강도 저장 성공:', data);
+                    }
+                } catch (error) {
+
+                    setSelectedIntensity(previousIntensity);
+                    await AsyncStorage.setItem('selectedIntensity', previousIntensity.toString());
+
+                }
+            }, 0); // 상태 업데이트 후 실행
         } catch (error) {
-            console.error("운동 강도 저장 실패:", error);
+
+            setSelectedIntensity(previousIntensity);
+            await AsyncStorage.setItem('selectedIntensity', previousIntensity.toString());
         }
     };
+
+    // // 운동 강도 선택 시 서버로 전송하고, AsyncStorage에 저장합니다.
+    // const handleIntensityPress = async (index) => {
+    //     try {
+    //         setSelectedIntensity(index);
+            
+    //         await AsyncStorage.setItem('selectedIntensity', index.toString());
+
+
+    //         sendIntensityToServer(userId, intensities[index], accessToken);
+    //     } catch (error) {
+    //         console.error("운동 강도 저장 실패:", error);
+    //     }
+    // };
 
 
     useEffect(() => {
