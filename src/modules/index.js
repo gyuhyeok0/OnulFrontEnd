@@ -23,6 +23,8 @@ import stateExerciseReducer from './StateExerciseSlice'; // 리듀서 가져오�
 import weekReducer from './WeekReducer'; // weekReducer import
 // import apiReducer from './ApiSlice'; // 아래에서 생성할 API slice
 
+import latestExerciseRecordReducer from './LatestExerciseRecordSlice'; // 새 리듀서 가져오기
+
 
 const rootReducer = combineReducers({
   member: memberReducer,
@@ -46,6 +48,8 @@ const rootReducer = combineReducers({
 
   week: weekReducer, // week 상태 관리
   // api: apiReducer, // 전역 상태에 API slice 추가
+
+  latestExerciseRecord: latestExerciseRecordReducer, // 가장 최근 운동 기록 리듀서 추가
 
 });
 

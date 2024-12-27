@@ -7,6 +7,11 @@ import { callFetchExercisesRecordAPI } from '../../../src/apis/ExerciseRecordAPI
 import { selectExerciseRecordByDetails } from '../../../src/modules/ExerciseRecordSlice';
 import moment from 'moment';
 
+import { deleteExerciseRecordSuccess} from '../../../src/modules/ExerciseRecordSlice'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+
 const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }) => {
     const [storedDates, setStoredDates] = useState([]);
     const [renderingDate, setRenderingDate] = useState(null);
@@ -55,16 +60,13 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
         if (renderingDate) {
             setIsLoading(true); // 로딩 시작
             if (!recordData) {
-                console.log("운동기록이 없습니다.")
+                console.log("운동기록이 디스패치 합니다.")
                 dispatch(callFetchExercisesRecordAPI(exerciseId, memberId, exerciseService, renderingDate))
                     .finally(() => setIsLoading(false)); // 로딩 끝
             } else {
                 setIsLoading(false); // 로딩 끝
             }
         }
-
-        console.log("기록이 잇어 디스패치 안함")
-        console.log(recordData);
     }, [recordData, renderingDate, dispatch, exerciseId, memberId, exerciseService]);
 
     const changeDate = (direction) => {
@@ -79,6 +81,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
         setRenderingDate(storedDates[updatedIndex]);
     };
 
+    
     const renderRow = () => {
     
         const exerciseType = recordData[0].exerciseType; // 첫 번째 데이터의 exerciseType 사용
@@ -126,6 +129,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
             </View>
         );
     };
+    
 
     return (
         <View style={styles.container}>
@@ -222,6 +226,29 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                 </View>
             )}
 
+                  <TouchableOpacity
+                onPress={async () => {
+                    try {
+                        const recordDateString = renderingDate; // 날짜 포맷
+                        const storageKey = `${exerciseId}_${exerciseService}_${recordDateString}`;
+
+                        // Redux에서 데이터 삭제
+                        dispatch(deleteExerciseRecordSuccess({
+                            exerciseId,
+                            exerciseService,
+                            recordDate: recordDateString,
+                        }));
+
+                        // // AsyncStorage에서 데이터 삭제
+                        await AsyncStorage.removeItem(storageKey);
+
+                    } catch (error) {
+                        console.error('운동 기록 삭제 중 오류 발생:', error);
+                    }
+                }}
+            >
+                <Text>특정 리듀서 밑 스토리지 삭제</Text>
+            </TouchableOpacity>
         </View>
     );
 };

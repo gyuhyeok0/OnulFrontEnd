@@ -1,7 +1,7 @@
 {
   "welcome_message": "우리 앱에 오신 것을 환영합니다!",
-
   "app_name": "ONE TOUCH FIT",
   "start_fresh": "새로 시작하기",
-  "continue_with_account": "회원정보로 시작하기"
+  "continue_with_account": "회원정보로 시작하기",
+  "languageSwitcher": "<strong>{{lng}}</strong>에서 변경:"
 }

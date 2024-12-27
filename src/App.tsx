@@ -111,6 +111,16 @@ function MainApp() {
   }, [isConnected, fadeAnim]);
 
   
+  // 초기화가 완료되지 않은 경우 `InitializationWrapper` 렌더링
+  if (!initializationComplete) {
+    return (
+      <InitializationWrapper
+        onInitializationComplete={() => setInitializationComplete(true)}
+        setTimerTime={setTimerTime}
+        setIsTimerRunning={setIsTimerRunning}
+      />
+    );
+  }
 
   return (
     <>

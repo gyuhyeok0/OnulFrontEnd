@@ -51,7 +51,7 @@ export const isNumber = (exerciseName) => {
             '허리 돌리기', 
             '팔벌려뛰기', 
             '토즈 투바', 
-            '마운틴 클라이머', 
+            // '마운틴 클라이머', 
             '러시안 트위스트', 
             '시티드 트위스트', 
             '바벨 스탠딩 트위스트', 
@@ -140,7 +140,7 @@ export const isNumber = (exerciseName) => {
             '윗몸일으키기', 
             '시티드 니 업', 
             '러시안 트위스트', 
-            '마운틴 클라이머', 
+            // '마운틴 클라이머', 
             '땅바닥 짚기'].includes(exerciseName)
     );
 };

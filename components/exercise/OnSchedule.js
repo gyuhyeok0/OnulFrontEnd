@@ -28,13 +28,18 @@ import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExe
 import { useFocusEffect } from '@react-navigation/native';
 import { addDefaultSetsToRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 import _ from 'lodash';
-import { useQuery } from '@tanstack/react-query';
+import {callVolumeExerciseRecord} from '../../src/apis/ExerciseRecordAPI'
 
 
 const OnSchedule = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    const [memberId, setMemberId] = useState(null);
+    // const [memberId, setMemberId] = useState(null);
+    // selectors.js 또는 memberSlice.js 안에 추가
+    const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+
+
+    // const memberId = useSelector(state => state.memberId?.schedule || []);
     const scheduleData = useSelector(state => state.schedule?.schedule || []);
 
     // const { isSwapped, todayIndex } = useSelector((state) => state.week);
@@ -72,23 +77,66 @@ const OnSchedule = () => {
     const [isReadyWeight, setIsReadyWeight] = useState(false); // 로딩 상태 추가
     const [isReadyKm, setIsReadyKm] = useState(false); // 로딩 상태 추가
 
+
+    const prevExercises = useRef(reorderedExercises);
+
+    const [mostRecordExercise, setMostRecordExercise] = useState();
+
+    useEffect(() => {
+        let addedExercises = []; // 상위 스코프에 선언
+    
+        if (reorderedExercises.length > 0) {
+            // 추가된 항목
+            addedExercises = reorderedExercises.filter(
+                (exercise) => !prevExercises.current.some((prev) => prev.id === exercise.id)
+            );
+    
+            if (addedExercises.length > 0) {
+                console.log("추가된 운동:", addedExercises.map((exercise) => exercise.id));
+            }
+        }
+    
+        // addedExercises를 기반으로 상태 업데이트
+        setMostRecordExercise(addedExercises.map((exercise) => exercise.id));
+    
+        // 현재 상태를 이전 상태로 저장
+        prevExercises.current = reorderedExercises;
+    }, [reorderedExercises]);
+
+    useEffect(() => {
+        if (mostRecordExercise && mostRecordExercise.length > 0) {
+            console.log("전송용 아이디" + mostRecordExercise);
+
+            const exerciseServiceNumber = 1;
+
+            const payload = {
+                memberId,
+                exerciseServiceNumber,
+                exerciseIds: mostRecordExercise, // 배열 형태로 묶어서 전송
+            };
+
+            dispatch(callVolumeExerciseRecord(payload));            
+        }
+    }, [mostRecordExercise]);
+    
+
     
     useEffect(() => {
         // 날짜가 변경되었을 때만 실행
         if (isDateChanged) {
             console.log("날짜가 실제로 변경되었습니다!");
-        
-            const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
-        
-            setSelectedWeekType(currentWeekType);
-            setSelectedDay(today);
-        
             dispatch(resetState());
         }
-
       }, [isDateChanged]); // isDateChanged가 true일 때만 실행
     
 
+    useEffect(() => {
+        const currentWeekType = isSwapped ? 'twoWeek' : 'oneWeek';
+        const today = ['Su', 'Mn', 'Tu', 'Ws', 'Th', 'Fr', 'Sa'][todayIndex];
+
+        setSelectedWeekType(currentWeekType);
+        setSelectedDay(today);
+    }, [isSwapped, todayIndex]);
 
     // reorderedExercises가 변경될 때 Redux에 기본 세트 추가
     useEffect(() => {
@@ -298,19 +346,6 @@ const OnSchedule = () => {
             console.warn('scheduleData is not an array');
         }
     }, [dispatch, scheduleData, today, isSwapped]);
-
-    useEffect(() => {
-        const fetchMemberId = async () => {
-            try {
-                const id = await AsyncStorage.getItem('memberId');
-                if (id) setMemberId(id);
-            } catch (error) {
-                console.error('Error fetching memberId:', error);
-            }
-        };
-        fetchMemberId();
-    }, []);
-
 
     //키보드에서 unit 변경시 스토리지 저장
     useEffect(() => {

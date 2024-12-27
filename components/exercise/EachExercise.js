@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
 import { View, StyleSheet, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,15 +20,24 @@ import moment from 'moment'; // 날짜 형식화를 위한 moment 라이브러�
 
 import { updateExerciseSetsInRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 import { useQuery } from '@tanstack/react-query';
-
-
+import { selectExerciseRecordByDetails } from '../../src/modules/ExerciseRecordSlice';
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
 
-    const [memberId, setMemberId] = useState(null);
+    const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+
+    const recordDate = useSelector((state) => state.latestExerciseRecord[exercise.id]);
+
+    const recordData = useSelector((state) =>
+        selectExerciseRecordByDetails(state, exercise.id, exerciseServiceNumber, recordDate)
+    );
+
+    const exerciseRecordData = useSelector((state) => state.exerciseRecord.exercisesRecord);
 
     const [volume, setVolume] = useState(0); // volume을 상태로 관리
+    // const [preVolume, setPreVolume] = useState(0); // volume을 상태로 관리
+    const [volumeDifference, setVolumeDifference] = useState(0); // volume을 상태로 관리
 
 
     //운동 정보 토글
@@ -48,7 +57,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     const [exerciseService, setExerciseService] = useState();
 
-    
     // Redux의 dispatch를 가져오기
     const dispatch = useDispatch();
 
@@ -56,27 +64,122 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         state.stateExercise.exerciseSets[exercise.id]?.sets || []
     );
 
+    const preVolume = useRef(null);
+
+    useEffect(() => {
+        if (!recordData || recordData.length === 0) return;  // Prevent execution if recordData is empty or undefined
+
+        // console.log(recordData);
+
+        let volume = null;
+
+    // 배열의 마지막 항목에서 exerciseType을 가져옵니다.
+        const lastSet = recordData[recordData.length - 1];
+
+        const exerciseType = lastSet ? lastSet.exerciseType : null;
+    
+        switch (exerciseType) {
+            case 1: // repsVolume
+                volume = lastSet.repsVolume;
+                break;
+            case 2: // kmVolume 또는 miVolume
+                volume = kmUnit === 'km' ? lastSet.kmVolume : lastSet.miVolume;
+                break;
+            case 3: // kgVolume 또는 lbsVolume
+                volume = weightUnit === 'kg' ? lastSet.kgVolume : lastSet.lbsVolume;
+                break;
+            case 4: // timeVolume
+                volume = lastSet.timeVolume;
+                break;
+            default:
+                console.warn("Unknown exerciseType:", lastSet.exerciseType);
+        }
+
+        // preVolume의 값을 설정합니다.
+        preVolume.current = volume;
+
+    }, [kmUnit, weightUnit]); // AsyncStorage에서 가져온 값 추가
+    
+
+    // 볼륨이 달라질때마다 계산
+    useEffect(() => {            
+        // console.log(exercise.id+" "+preVolume.current);
+        volumeDifferenceCalculation();
+    }, [volume]);
+
+    const timeToSeconds = (timeString) => {
+        if (!timeString || typeof timeString !== "string") return 0;
+    
+        const [minutes, seconds] = timeString.split(":").map((part) => parseInt(part, 10));
+        return (minutes || 0) * 60 + (seconds || 0);
+    };
+    
+    const secondsToTime = (seconds) => {
+        if (isNaN(seconds) || seconds <= 0) return "00:00";
+    
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+    
+        return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+    };
+    
+    // 볼륨 차이 계산
+    const volumeDifferenceCalculation = () => {
+
+        let volumeInSeconds = 0;
+        let preVolumeInSeconds = 0;
+    
+        // preVolume.current가 null일 때 기본값을 설정
+        if (preVolume.current == null) {
+            preVolumeInSeconds = 0;
+        } else {
+            preVolumeInSeconds = preVolume.current;
+        }
+
+        console.log("이전값"+preVolumeInSeconds);
+
+        
+
+        if (typeof volume === "string" && volume.includes(":")) {
+            // volume이 시간 형식일 경우
+            volumeInSeconds = timeToSeconds(volume);
+        } else if (typeof volume === "number") {
+            // volume이 숫자일 경우
+            volumeInSeconds = volume;
+        }
+    
+        if (typeof preVolumeInSeconds === "string" && preVolumeInSeconds.includes(":")) {
+            // preVolume이 시간 형식일 경우
+            preVolumeInSeconds = timeToSeconds(preVolumeInSeconds);
+        } else if (typeof preVolumeInSeconds === "number") {
+            // preVolume이 숫자일 경우
+            preVolumeInSeconds = preVolumeInSeconds;
+        }
+    
+        // 차이 계산
+        let difference = volumeInSeconds >= preVolumeInSeconds 
+            ? volumeInSeconds - preVolumeInSeconds 
+            : 0;
+
+        difference = parseFloat(difference.toFixed(2));
+
+        // 결과 출력
+        if (typeof volume === "string" || typeof preVolume === "string") {
+            // 시간 형식으로 변환하여 출력
+            setVolumeDifference(secondsToTime(difference));
+        } else {
+            // 숫자로 출력
+            setVolumeDifference(difference);
+        }
+    };
+    
+    
+
     // 운동 세트 상태 업데이트
     const updateSets = (updatedSets) => {
         // console.log("뭐로 보내니?", JSON.stringify(updatedSets, null, 2));
-
-        
         dispatch(updateExerciseSetsInRedux({ exerciseId: exercise.id, updatedSets }));
     };
-
-    // 회원아이디 가지고 오기
-    useEffect(() => {
-        const fetchMemberId = async () => {
-            try {
-                const id = await AsyncStorage.getItem('memberId');
-                if (id) setMemberId(id);
-
-            } catch (error) {
-                console.error('Error fetching memberId:', error);
-            }
-        };
-        fetchMemberId();
-    }, []);
 
     useEffect(() => {            
         setExerciseService(exerciseServiceNumber);
@@ -253,7 +356,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     
 
 
-   
     const handleCompletePress = (index) => {
         // 현재 세트를 복사합니다
         const newSets = [...sets];
@@ -502,7 +604,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
                         <View style={styles.weightChangeContainer}>
                             <Text style={styles.weightChangeText}>up</Text>
-                            <Text style={styles.weightChangeValue}>--</Text>
+                            <Text style={styles.weightChangeValue}>{volumeDifference}</Text>
                             <Text style={styles.weightChangeUnit}>
                                 {kmAndTime 
                                     ? kmUnit
