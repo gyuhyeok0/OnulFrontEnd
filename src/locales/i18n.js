@@ -10,7 +10,7 @@ const locales = Localization.getLocales();
 const deviceLanguageTag = locales[0].languageTag;
 
 const resources = {
-    en: {
+    en: { 
         translation: translationEN
     },
     ko: {
@@ -20,16 +20,22 @@ const resources = {
 
 const initializeI18n = async () => {
     const getStoredLanguage = async () => {
+
+        console.log("호출 되긴해?")
         try {
             const storedLanguage = await AsyncStorage.getItem('user-language');
-            return storedLanguage || deviceLanguageTag;
+            return storedLanguage || deviceLanguageTag; // 저장된 언어가 없으면 기기 언어 사용
         } catch (error) {
             console.error('Failed to load language from storage:', error);
-            return deviceLanguageTag;
+            return deviceLanguageTag; // 저장된 언어를 불러올 수 없는 경우에도 기본값 반환
         }
     };
 
     const storedLanguage = await getStoredLanguage();
+
+    console.log("================= 언어 초기화 ==================");
+    console.log(locales); // 기기 언어
+    console.log(storedLanguage); // 저장된 언어
 
     await i18n
         .use(initReactI18next)
@@ -42,9 +48,8 @@ const initializeI18n = async () => {
             },
         });
 
-    console.log("================= 언어 초기화 ==================")
-    console.log(locales)
-    console.log(storedLanguage); 
+        console.log("================= i18n 초기화 완료 ==================");
+
 };
 
 export default initializeI18n;

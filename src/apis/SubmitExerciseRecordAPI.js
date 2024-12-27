@@ -4,12 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { refreshAccessToken } from '../apis/Token';
 
-import { deleteExerciseRecordSuccess} from '../modules/ExerciseRecordSlice'
+import { deleteExerciseRecordSuccess, registExerciseRecordSuccess} from '../modules/ExerciseRecordSlice'
 import moment from 'moment'; // moment 가져오기
 
 
 // 서버로 데이터를 전송하는 함수
-export const submitExerciseRecord = async (memberId, exerciseService, setNumber, set, exercise,  exerciseType, volume, weightUnit, kmUnit, accessToken = null) => {
+export const submitExerciseRecord = async (memberId, exerciseService, setNumber, set, exercise,  exerciseType, volume, weightUnit, kmUnit, accessToken = null, dispatch) => {
     try {
 
         // 토큰이 없을 경우 AsyncStorage에서 가져오기
@@ -47,7 +47,7 @@ export const submitExerciseRecord = async (memberId, exerciseService, setNumber,
                 const newAccessToken = await refreshAccessToken();
                 if (newAccessToken) {
                     // 새 토큰으로 다시 시도
-                    return await submitExerciseRecord(memberId, exerciseService, setNumber, set, exercise, exerciseType, volume, weightUnit, kmUnit, newAccessToken);
+                    return await submitExerciseRecord(memberId, exerciseService, setNumber, set, exercise, exerciseType, volume, weightUnit, kmUnit, newAccessToken, dispatch);
                 } else {
                     throw new Error('새로운 토큰을 가져오지 못했습니다.');
                 }
