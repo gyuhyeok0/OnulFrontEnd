@@ -61,8 +61,9 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const dispatch = useDispatch();
 
     const sets = useSelector((state) =>
-        state.stateExercise.exerciseSets[exercise.id]?.sets || []
+        state.stateExercise.exerciseSets[`${exercise.id}-${exerciseServiceNumber}`]?.sets || []
     );
+    
 
     const preVolume = useRef(null);
 
@@ -178,7 +179,11 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     // 운동 세트 상태 업데이트
     const updateSets = (updatedSets) => {
         // console.log("뭐로 보내니?", JSON.stringify(updatedSets, null, 2));
-        dispatch(updateExerciseSetsInRedux({ exerciseId: exercise.id, updatedSets }));
+        dispatch(updateExerciseSetsInRedux({ 
+            exerciseId: exercise.id, 
+            exerciseServiceNumber,
+            updatedSets
+        }));
     };
 
     useEffect(() => {            
@@ -368,7 +373,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                     // 완료 상태를 해제
                     newSets[i] = { ...newSets[i], completed: false }; 
                     updateSets(newSets); // 부모 상태 업데이트
-    
+
                     // 마지막 완료된 세트 번호와 데이터를 전달
                     deleteExerciseFilter(newSets[i], i + 1);
                     return; // 함수 종료
@@ -474,6 +479,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
 
             console.log(currentSet, currentSetNumber);
+
             if (currentSet && currentSetNumber !== null) {
 
                 console.log("api 호출준비")
@@ -507,7 +513,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                 console.error("Unexpected error during refetch:", error);
             }
         }, 0); 
-        }; 
+    }; 
 
 
     // const deleteExerciseFilter = (set, index) => {

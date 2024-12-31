@@ -8,6 +8,11 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
     const inputRef = useRef(null);
     const inputAccessoryViewID = `inputKg-${index}`; // 고유 ID 설정
 
+    useEffect(() => {
+        console.log("Current weightUnit in Custom:", weightUnit);
+    }, [weightUnit]);
+
+
     const handleSelectionChange = (event) => {
         const { start, end } = event.nativeEvent.selection;
         if (!isTyping && (start !== 0 || end !== inputValue.length)) {
@@ -82,7 +87,7 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
         
         
     };
-    
+
     
     
     useEffect(() => {

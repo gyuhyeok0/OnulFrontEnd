@@ -1,5 +1,48 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// 자유 운동 슬라이스
+const myFreeSlice = createSlice({
+    name: 'myFree',
+    initialState: {
+        myExercises: [],
+        status: 'idle',
+        error: null,
+    },
+
+    reducers: {
+        fetchMyFreeExercisesSuccess: (state, action) => {
+            state.myExercises = action.payload;
+            state.status = 'succeeded';
+        },
+        fetchMyFreeExercisesFailure: (state, action) => {
+            state.error = action.payload;
+            state.status = 'failed';
+        },
+        
+        reorderMyFreeExercises: (state, action) => {
+            const { sourceIndex, destinationIndex } = action.payload;
+        
+            // 전달된 페이로드 출력
+            // console.log("페이로드 값:", action.payload);
+        
+            if (sourceIndex !== destinationIndex) {
+                const updatedExercises = [...state.myExercises]; // 배열 복사
+                const [removed] = updatedExercises.splice(sourceIndex, 1);
+                updatedExercises.splice(destinationIndex, 0, removed);
+        
+                // 새로운 상태 객체 반환
+                state.myExercises = updatedExercises;
+            }
+        
+            // 상태 변경 후 로그
+            // console.log("변경 후 상태:", state.myExercises);
+        },
+        
+        
+        
+    },
+});
+
 // 가슴 운동 슬라이스
 const myChestSlice = createSlice({
     name: 'myChest',
@@ -178,6 +221,7 @@ export const { fetchMyCustomExercisesSuccess, fetchMyCustomExercisesFailure } = 
 export const { fetchMyEtcExercisesSuccess, fetchMyEtcExercisesFailure } = myEtcSlice.actions;
 export const { fetchMyLowerBodyExercisesSuccess, fetchMyLowerBodyExercisesFailure } = myLowerBodySlice.actions;
 export const { fetchMyShouldersExercisesSuccess, fetchMyShouldersExercisesFailure } = myShouldersSlice.actions;
+export const { fetchMyFreeExercisesSuccess, fetchMyFreeExercisesFailure, reorderMyFreeExercises } = myFreeSlice.actions;
 
 // 리듀서 내보내기
 export const myChestReducer = myChestSlice.reducer;
@@ -188,3 +232,4 @@ export const myCustomReducer = myCustomSlice.reducer;
 export const myEtcReducer = myEtcSlice.reducer;
 export const myLowerBodyReducer = myLowerBodySlice.reducer;
 export const myShouldersReducer = myShouldersSlice.reducer;
+export const myFreeReducer = myFreeSlice.reducer;
