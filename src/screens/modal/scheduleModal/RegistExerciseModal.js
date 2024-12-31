@@ -10,6 +10,7 @@ import RegistArms from '../../../../components/schedule/InModalComponent/RegistA
 import RegistCustom from '../../../../components/schedule/InModalComponent/RegistCustom';
 import RegistLowerBody from '../../../../components/schedule/InModalComponent/RegistLowerBody';
 import RegistShoulders from '../../../../components/schedule/InModalComponent/RegistShoulders';
+import RegistFree from '../../../../components/schedule/InModalComponent/RegistFree';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -77,6 +78,8 @@ const RegistExerciseModal = ({ isVisible, onClose, exercise, onSelectExercise })
                 return <RegistShoulders onSelectExercise={handleSelectExercise} />;
             case '커스텀':
                 return <RegistCustom onSelectExercise={handleSelectExercise} />;
+            case '자유':
+                return <RegistFree onSelectExercise={handleSelectExercise} />;
             default:
                 return null;
         }

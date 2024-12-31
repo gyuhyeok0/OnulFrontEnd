@@ -181,10 +181,6 @@ export const callVolumeExerciseRecord = (payload) => {
 
                     const recordDate = `${formattedDate[0]}-${String(formattedDate[1]).padStart(2, '0')}-${String(formattedDate[2]).padStart(2, '0')}`;
 
-                    // console.log(exerciseId);
-                    // console.log(exerciseService);
-                    // console.log(recordDate);
-                    // console.log(records); // 각 record 출력
 
                     dispatch(fetchExerciseRecordSuccess({
                         exerciseId, 
@@ -193,8 +189,21 @@ export const callVolumeExerciseRecord = (payload) => {
                         data: records 
                     }));
                         
+                    const storageKey = `${exerciseId}_${exerciseService}_${recordDate}`;
+
+                     // 만료일을 1년 후로 설정
+                    const expirationDate = new Date();
+                    expirationDate.setFullYear(expirationDate.getFullYear() + 1);  // 1년 후로 설정
+                    // 저장할 데이터에 만료일 추가
+                    const dataToStore = {
+                        ...result,
+                        expirationDate: expirationDate.toISOString(),
+                    };
+
+                    AsyncStorage.setItem(storageKey, JSON.stringify(dataToStore));
+                    console.log('데이터가 AsyncStorage에 저장되었습니다.');
+
                 });
-                    
             
             } else if (response.status === 401) {
                 try {

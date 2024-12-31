@@ -14,7 +14,8 @@ import {
   myCustomReducer,
   myEtcReducer,
   myLowerBodyReducer,
-  myShouldersReducer
+  myShouldersReducer,
+  myFreeReducer,
 } from './MyExerciseSclice'; // 각각의 슬라이스 리듀서 가져오기
 
 import schedulExerciseReducer from './ExerciseStateSlice/SchedulExerciseState';
@@ -42,6 +43,8 @@ const rootReducer = combineReducers({
   shouldersExercises: myShouldersReducer, // 어깨 운동 리듀서
   exerciseRecord: exerciseRecordReducer, // 운동 기록 리듀서 추가
   schedulExerciseState: schedulExerciseReducer, // 이름 변경된 리듀서 등록
+  
+  freeExercises: myFreeReducer,
 
 
   stateExercise: stateExerciseReducer, // reorderedExercises 리듀서 추가

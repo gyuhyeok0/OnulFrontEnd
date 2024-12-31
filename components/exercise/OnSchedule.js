@@ -143,6 +143,7 @@ const OnSchedule = () => {
         if (reorderedExercises.length > 0) {
             const exercisesWithId = reorderedExercises.map((exercise) => ({
                 id: exercise.exerciseId, // exerciseId 포함
+                exerciseServiceNumber: 1,
                 ...exercise,
             }));
             dispatch(addDefaultSetsToRedux(exercisesWithId));
@@ -350,9 +351,10 @@ const OnSchedule = () => {
     //키보드에서 unit 변경시 스토리지 저장
     useEffect(() => {
         const updateStorage = async () => {
+
             try {
                 if (kmUnit) {
-                    // console.log("kmUnit 변경됨 = " + kmUnit);
+                    console.log("kmUnit 변경됨= " + kmUnit);
     
                     // kmUnit에 따라 heightUnit 값 설정
                     const heightUnit = kmUnit === 'km' ? 'cm' : 'feet';
@@ -363,7 +365,7 @@ const OnSchedule = () => {
                 }
     
                 if (weightUnit) {
-                    // console.log("weightUnit 변경됨 = " + weightUnit);
+                    console.log("weightUnit 변경됨= " + weightUnit);
     
                     // weightUnit 값 설정
                     const unitToSave = weightUnit === 'kg' ? 'kg' : 'lbs';
@@ -565,7 +567,7 @@ const OnSchedule = () => {
             {reorderedExercises.length > 0 ? (
                 <View style={styles.schedule} onLayout={(event) => setScheduleHeight(event.nativeEvent.layout.height)}>
                     {reorderedExercises.map((exercise, index) => (
-                        <View style={{ position: 'relative' }} key={index}>
+                        <View style={{ position: 'relative' }} key={`${exercise.id}-${index}`}>
 
                     <EachExercise
                         key={`${exercise.id}-${index}`} // 고유 key로 설정

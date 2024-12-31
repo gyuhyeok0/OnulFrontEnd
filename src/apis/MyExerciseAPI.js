@@ -18,7 +18,10 @@ import {
     fetchMyLowerBodyExercisesSuccess,
     fetchMyLowerBodyExercisesFailure,
     fetchMyShouldersExercisesSuccess,
-    fetchMyShouldersExercisesFailure
+    fetchMyShouldersExercisesFailure,
+    fetchMyFreeExercisesSuccess,
+    fetchMyFreeExercisesFailure,
+
 } from '../modules/MyExerciseSclice';
 
 export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
@@ -58,6 +61,9 @@ export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
             case '어깨':
                 dispatch(fetchMyShouldersExercisesSuccess(response.data));
                 break;
+            case '자유':
+                dispatch(fetchMyFreeExercisesSuccess(response.data));
+                break;
             default:
                 throw new Error(`알 수 없는 근육 그룹: ${muscleGroup}`);
         }
@@ -94,6 +100,9 @@ export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
                     case '어깨':
                         dispatch(fetchMyShouldersExercisesFailure('토큰 갱신 실패'));
                         break;
+                    case '자유':
+                        dispatch(fetchMyFreeExercisesFailure('토큰 갱신 실패'));
+                        break;
                     default:
                         throw new Error(`알 수 없는 근육 그룹: ${muscleGroup}`);
                 }
@@ -123,6 +132,9 @@ export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
                     break;
                 case '어깨':
                     dispatch(fetchMyShouldersExercisesFailure(error.message));
+                    break;
+                case '자유':
+                    dispatch(fetchMyFreeExercisesFailure(error.message));
                     break;
                 default:
                     throw new Error(`알 수 없는 근육 그룹: ${muscleGroup}`);
