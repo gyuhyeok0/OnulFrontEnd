@@ -149,6 +149,7 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
                 value={inputValue} // 로컬 상태로부터 값 연동
                 onSelectionChange={handleSelectionChange}
                 inputAccessoryViewID={inputAccessoryViewID}
+                selectTextOnFocus={true} // 클릭 시 전체 텍스트 선택
             />
 
             {Platform.OS === 'ios' ? (

@@ -61,6 +61,7 @@ const NumberInput = ({ set, index, sets, setSets, style, deleteExerciseFilter}) 
                 placeholderTextColor="#B0B0B0"
                 keyboardType="numeric"
                 value={inputValue} // 로컬 상태로부터 값 연동
+                selectTextOnFocus={true} // 클릭 시 전체 텍스트 선택
             />
         </View>
     );

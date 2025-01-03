@@ -545,6 +545,7 @@ const OnSchedule = () => {
                         <Icon2 name={isVisible ? "caret-up" : "caret-down"} size={28} color="white" />
                     </Pressable>
                 </View>
+                
                 <Animated.View style={[styles.hiddenContent, { height: animationHeight }]}>
                     {isVisible && (
                         <View style={styles.buttonContainer}>

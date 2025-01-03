@@ -54,17 +54,6 @@ const Custom = () => {
         [reorderedExercises]
     );
 
-    useEffect(() => {
-        if (freeExercises.length > 0) {
-            setIsVisible(true);
-            Animated.timing(animationHeight, {
-                toValue: minHeight + 30,
-                duration: 300,
-                useNativeDriver: false,
-            }).start();
-        }
-    }, [freeExercises, minHeight]);
-
     
     const handleDragStart = (index) => {
         setActiveIndex(index);
@@ -201,7 +190,16 @@ const Custom = () => {
     const closeModal = useCallback(() => {
         setIsModalVisible(false); // 모달 닫기
         setSelectedExercise(''); // 선택된 운동 이름 초기화
-    }, []);
+    
+        if (freeExercises.length > 0) {
+            setIsVisible(true);
+            Animated.timing(animationHeight, {
+                toValue: minHeight + 30,
+                duration: 300,
+                useNativeDriver: false,
+            }).start();
+        }
+    }, [freeExercises, minHeight, animationHeight]);
 
 
     const toggleVisibility = () => {
