@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 const MenuTranslation = ({navigation}) => {
 
     const { myExercises } = useSelector((state) => state.myExercises || {});
+    const status = useSelector(state => state.bodyData.status);
 
 
     useEffect(() => {
