@@ -57,6 +57,25 @@ const exerciseRecordSlice = createSlice({
                 }
             }
         },
+
+        deleteExpiredRecords: (state, action) => {
+            const expiredKeys = action.payload;
+            console.log("만료되어 삭제 잘 됩니다!~")
+            expiredKeys.forEach((key) => {
+                const [exerciseId, exerciseService, recordDate] = key.split('_');
+                if (state.exercisesRecord[exerciseId]?.[exerciseService]?.[recordDate]) {
+                    delete state.exercisesRecord[exerciseId][exerciseService][recordDate];
+
+                    // 그룹 내 데이터가 없으면 상위 그룹도 삭제
+                    if (Object.keys(state.exercisesRecord[exerciseId][exerciseService]).length === 0) {
+                        delete state.exercisesRecord[exerciseId][exerciseService];
+                    }
+                    if (Object.keys(state.exercisesRecord[exerciseId]).length === 0) {
+                        delete state.exercisesRecord[exerciseId];
+                    }
+                }
+            });
+        },
     },
 });
 
@@ -65,6 +84,7 @@ export const {
     fetchExerciseRecordSuccess,
     fetchExercisesRecordFailure,
     deleteExerciseRecordSuccess,
+    deleteExpiredRecords,
 } = exerciseRecordSlice.actions;
 
 // 리듀서 내보내기

@@ -8,7 +8,6 @@ import Food from '../../../components/management/Food';
 
 const Management = ({ navigation }) => {
     const [weightUnit, setWeightUnit] = useState(null);
-    const [volumeUnit, setVolumeUnit] = useState(null);
 
     useEffect(() => {
         console.log("=====================관리 페이지 ========================");
@@ -21,13 +20,6 @@ const Management = ({ navigation }) => {
                 const unitKg = await AsyncStorage.getItem('weightUnit');
                 setWeightUnit(unitKg || 'kg'); // 기본값: 'kg'
 
-                let unitMl = await AsyncStorage.getItem('volumeUnit');
-                if (!unitMl) {
-                    const defaultVolumeUnit = unitKg === 'lbs' ? 'oz' : 'ml';
-                    unitMl = defaultVolumeUnit;
-                    await AsyncStorage.setItem('volumeUnit', unitMl);
-                }
-                setVolumeUnit(unitMl);
             } catch (error) {
                 console.error('Error fetching units:', error);
             }
@@ -40,11 +32,6 @@ const Management = ({ navigation }) => {
     useEffect(() => {
         const updateStorage = async () => {
             try {
-                if (volumeUnit) {
-                    // console.log("volumeUnit 변경됨= " + volumeUnit);
-                    const changeVolumeUnit = volumeUnit === 'ml' ? 'ml' : 'oz';
-                    await AsyncStorage.setItem('volumeUnit', changeVolumeUnit);
-                }
 
                 if (weightUnit) {
                     // console.log("weightUnit 변경됨= " + weightUnit);
@@ -57,7 +44,7 @@ const Management = ({ navigation }) => {
         };
 
         updateStorage();
-    }, [volumeUnit, weightUnit]); // 의존성 배열 수정
+    }, [weightUnit]); // 의존성 배열 수정
 
     return (
         <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: '#1A1C22' }}>
@@ -67,7 +54,7 @@ const Management = ({ navigation }) => {
                 {/* weightUnit과 setWeightUnit을 Body에 전달 */}
                 <Body weightUnit={weightUnit} setWeightUnit={setWeightUnit} />
                 {/* volumeUnit과 setVolumeUnit을 Food에 전달 */}
-                <Food volumeUnit={volumeUnit} setVolumeUnit={setVolumeUnit} />
+                <Food />
                 
             </ScrollView>
             <Footer navigation={navigation} />
