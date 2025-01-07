@@ -5,12 +5,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
 import {resetBodyData} from '../../src/modules/BodySlice'
 import {saveBodyData} from '../../src/apis/BodyApi'
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 import { selectBodyDataByDate } from '../../src/modules/BodySlice';
-
+import {fetchExerciseRecordSuccess} from '../../src/modules/ExerciseRecordSlice';
 
 const Body = ({ weightUnit, setWeightUnit }) => {
     const dispatch = useDispatch();
+
+    
 
     // 오늘 날짜 계산 (dateKey)
     const today = new Date()
@@ -25,6 +28,9 @@ const Body = ({ weightUnit, setWeightUnit }) => {
     const bodyData = useSelector((state) => selectBodyDataByDate(state, dateKey));
 
     const { isDateChanged } = useCurrentWeekAndDay();
+
+    const [pressedButtons, setPressedButtons] = useState([]); // 여러 버튼의 상태 추적
+
 
     const [tempState, setTempState] = useState(() => ({
         ...bodyData || {
@@ -47,12 +53,19 @@ const Body = ({ weightUnit, setWeightUnit }) => {
     
     
 
+  
     const validateAndSet = (field, value) => {
+        // 숫자 형식 검증 및 최대값 제한
         if (/^\d*\.?\d{0,1}$/.test(value)) {
-            const numericValue = parseFloat(value) || 0;
+            let numericValue = parseFloat(value) || 0;
+    
+            // 최대값 제한 (9999 미만)
+            if (numericValue >= 9999) {
+                numericValue = 9999;
+            }
     
             setTempState((prev) => {
-                const updatedState = { ...prev, [field]: value };
+                const updatedState = { ...prev, [field]: numericValue.toString() };
     
                 // 동적으로 다른 단위를 업데이트
                 switch (field) {
@@ -82,6 +95,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
             });
         }
     };
+    
     
     useEffect(() => {
         if (isDateChanged) {
@@ -149,7 +163,15 @@ const Body = ({ weightUnit, setWeightUnit }) => {
         ));
     };
 
-    const handleComplete = () => {
+    const handleComplete = (field) => {
+
+        setPressedButtons((prev) => {
+            if (!prev.includes(field)) {
+                return [...prev, field]; // 새로운 버튼을 배열에 추가
+            }
+            return prev; // 중복 방지
+        });
+
         const bodyData = {
             weight: tempState.weight || '0', // kg 단위
             weightInLbs: tempState.weightInLbs || '0', // lbs 단위
@@ -172,6 +194,8 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                 <View style={styles.body}>
                     <Text style={styles.titleText}>신체</Text>
 
+                    <Text style={{marginLeft:10, color:'#B8BFD1', fontWeight:'bold', fontSize: 13}}>오늘의 신체 데이터를 기록해주세요</Text>
+
                     <View style={[styles.rowCommon, styles.row1]}>    
 
                         <View style={styles.recordContainer}>
@@ -193,7 +217,13 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>{weightUnit}</Text>
                             </View>
 
-                            <Pressable style={styles.recordButton} onPress={handleComplete}>
+                            <Pressable
+                                style={[
+                                    styles.recordButton,
+                                    pressedButtons.includes('weight') && styles.pressedCompleteButton, // 포함된 버튼은 초록색
+                                ]}
+                                onPress={() => handleComplete('weight')}
+                            >
                                 <Text style={styles.recordButtonText}>완료</Text>
                             </Pressable>
                         </View>
@@ -218,9 +248,16 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>{weightUnit}</Text>
                             </View>
 
-                            <Pressable style={styles.recordButton} onPress={handleComplete}>
+                            <Pressable
+                                style={[
+                                    styles.recordButton,
+                                    pressedButtons.includes('skeletalMuscleMass') && styles.pressedCompleteButton,
+                                ]}
+                                onPress={() => handleComplete('skeletalMuscleMass')}
+                            >
                                 <Text style={styles.recordButtonText}>완료</Text>
                             </Pressable>
+
                         </View>
                     </View>
 
@@ -233,7 +270,11 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 
                             <TextInput
                                 style={styles.weightDisplay}
-                                value={String(tempState.bodyFatPercentage)}
+                                value={
+                                    tempState.bodyFatPercentage !== undefined
+                                        ? String(tempState.bodyFatPercentage) // 값이 있으면 그대로 사용
+                                        : null // undefined일 경우 placeholder가 보이도록 설정
+                                }
                                 onChangeText={(text) => validateAndSet('bodyFatPercentage', text, setTempState)}
                                 placeholder="00.0"
                                 placeholderTextColor="#A0A8BC"
@@ -241,12 +282,21 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 selectTextOnFocus={true}
                             />
 
+
+                            
+
                                 <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>%</Text>
                             </View>
-
-                            <Pressable style={styles.recordButton} onPress={handleComplete}>
+                            <Pressable
+                                style={[
+                                    styles.recordButton,
+                                    pressedButtons.includes('bodyFatPercentage') && styles.pressedCompleteButton,
+                                ]}
+                                onPress={() => handleComplete('bodyFatPercentage')}
+                            >
                                 <Text style={styles.recordButtonText}>완료</Text>
                             </Pressable>
+
                         </View>
 
                         <View style={styles.recordContainer}>
@@ -268,9 +318,16 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                     <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>{weightUnit}</Text>
                                 </View>
 
-                            <Pressable style={styles.recordButton} onPress={handleComplete}>
-                                <Text style={styles.recordButtonText}>완료</Text>
-                            </Pressable>
+                                <Pressable
+                                    style={[
+                                        styles.recordButton,
+                                        pressedButtons.includes('bodyFatMass') && styles.pressedCompleteButton,
+                                    ]}
+                                    onPress={() => handleComplete('bodyFatMass')}
+                                >
+                                    <Text style={styles.recordButtonText}>완료</Text>
+                                </Pressable>
+
                         </View>
                     </View>
                 </View>
@@ -308,7 +365,7 @@ const styles = StyleSheet.create({
 
     titleText: {
         color:'white',
-        fontSize: 17,
+        fontSize: 20,
         fontWeight:'bold',
         margin:10
     },
@@ -322,7 +379,7 @@ const styles = StyleSheet.create({
     },
 
     row1:{
-        marginTop:30,
+        marginTop:7,
     },
 
     recordContainer:{
@@ -392,6 +449,10 @@ const styles = StyleSheet.create({
     selectedButtonText: {
         color: 'white', // 선택된 버튼 텍스트 색
         fontWeight: 'bold',
+    },
+
+    pressedCompleteButton: {
+        backgroundColor: '#34C759', // 초록색
     },
 
 });

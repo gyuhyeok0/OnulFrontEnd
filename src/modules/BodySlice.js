@@ -39,14 +39,24 @@ const bodySlice = createSlice({
             state.status = 'failed';
         },
 
-        deleteBodyData: (state, action) => {
-            const { date } = action.payload;
 
-            if (state.bodyData[date]) {
-                delete state.bodyData[date];
-                console.log(`Redux bodyData updated after deletion:`, JSON.stringify(state.bodyData, null, 2));
+        deleteBodyData: (state, action) => {
+            const { dates } = action.payload; // 삭제할 날짜 배열
+        
+            if (Array.isArray(dates)) {
+                dates.forEach((date) => {
+                    if (state.bodyData[date]) {
+                        delete state.bodyData[date];
+                        console.log(`삭제된 데이터: ${date}`);
+                    }
+                });
+        
+                console.log(`Redux bodyData 상태 업데이트 후:`, JSON.stringify(state.bodyData, null, 2));
+            } else {
+                console.error("삭제할 날짜가 배열 형태가 아닙니다.");
             }
         },
+        
     },
 });
 
