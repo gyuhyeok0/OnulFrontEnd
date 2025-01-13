@@ -7,7 +7,7 @@ import { saveBodyData } from '../../src/apis/BodyApi';
 
 import { selectBodyDataByDate } from '../../src/modules/BodySlice';
 import Foodmodal from '../../src/screens/modal/foodModal/Foodmodal';
-import { fetchTotalFoodSuccess } from '../../src/modules/TotalFoodSlice';
+import { fetchTotalFoodSuccess, selectTodayFoodData } from '../../src/modules/TotalFoodSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Food = () => {
@@ -15,20 +15,14 @@ const Food = () => {
 
     const { isDateChanged } = useCurrentWeekAndDay();
     
-    // 새로운 방식: YYYY-M-D 형식
-    const dateKey = new Date()
-        .toLocaleDateString('en-CA', { year: 'numeric', month: 'numeric', day: 'numeric' }); // YYYY-M-D 형식
-
     // Redux에서 오늘 날짜 기준 데이터를 조회
-    const todayFoodData = useSelector((state) => state.totalFood.foodRecords[dateKey] || {});
+    const todayFoodData = useSelector(selectTodayFoodData); // 수정된 부분
 
     const [unit, setUnit] = useState('g'); // 기본 단위는 'g'
 
     const [mealType, setMealType] = useState(''); // 현재 선택된 식사 타입
 
     const [isModalVisible, setModalVisible] = useState(false);
-
-    const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 
 
     useEffect(() => {
@@ -42,22 +36,20 @@ const Food = () => {
         };
 
         fetchUnit(); // 비동기 함수 호출
-    }, [isModalVisible]); // 빈 배열: 컴포넌트가 마운트될 때만 실행
-
-    useEffect(() => {
+    }, []); // 빈 배열: 컴포넌트가 마운트될 때만 실행
 
 
+useEffect(() => {
+    if (todayFoodData && unit) {
         const conversionFactor = 0.03527396; // g to oz 변환 계수
 
-        // 상태 업데이트
         setMealData((prevData) => {
-            const updatedData = { ...prevData };
+            const updatedData = { ...prevData }; // 이전 상태 복사
 
             Object.keys(todayFoodData).forEach((mealType) => {
                 const nutrition = todayFoodData[mealType]?.totalNutrition;
 
                 if (nutrition) {
-                    // 단위가 oz라면 변환하고 소수점 1자리까지 반올림
                     updatedData[mealType] = {
                         totalNutrition: {
                             carbs: unit === 'oz' ? roundToOneDecimal(nutrition.carbs * conversionFactor) : nutrition.carbs,
@@ -72,7 +64,11 @@ const Food = () => {
 
             return updatedData;
         });
-    }, [todayFoodData, unit]); // unit도 의존성에 추가
+    }
+}, [todayFoodData, unit]); // todayFoodData와 unit이 변경될 때만 실행
+
+    
+    
 
     // 소수점 1자리까지 반올림하는 함수
     const roundToOneDecimal = (value) => {
@@ -99,21 +95,13 @@ const Food = () => {
         if (isDateChanged) {
             // 날짜가 변경된 경우 상태 초기화
             setMealData({
-                breakfast: {
-                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
-                },
-                lunch: {
-                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
-                },
-                dinner: {
-                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
-                },
-                snack: {
-                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
-                },
+                breakfast: { totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 } },
+                lunch: { totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 } },
+                dinner: { totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 } },
+                snack: { totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 } },
             });
         }
-    }, [isDateChanged]); // isDateChanged 의존성 추가
+    }, [isDateChanged]);
 
     const openFindPasswordModal = (type) => {
         setMealType(type); // 선택된 타입 설정

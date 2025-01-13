@@ -1,11 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
 
+// 초기 상태
 const initialState = {
-    foodRecords: [], // 저장된 음식 데이터
+    foodRecords: {}, // 객체로 초기화 (날짜별 데이터 관리)
     status: 'idle', // idle | loading | succeeded | failed
     error: null, // 에러 메시지
 };
 
+// 슬라이스 정의
 const exerciseRecordSlice = createSlice({
     name: 'totalFood',
     initialState,
@@ -13,11 +16,6 @@ const exerciseRecordSlice = createSlice({
 
         fetchTotalFoodSuccess(state, action) {
             const { date, mealType, totalNutrition } = action.payload;
-        
-            // 기존 데이터를 완전히 삭제 (초기화)
-            if (Array.isArray(state.foodRecords)) {
-                state.foodRecords = {}; // 객체로 초기화
-            }
         
             // 날짜 키가 없으면 새 객체 생성
             if (!state.foodRecords[date]) {
@@ -37,11 +35,11 @@ const exerciseRecordSlice = createSlice({
             state.status = 'succeeded';
         },
         
-        
         fetchTotalFoodFailure(state, action) {
             state.status = 'failed';
             state.error = action.payload; // 에러 메시지 저장
         },
+        
         resetFoodStatus(state) {
             state.status = 'idle';
             state.error = null; // 상태 초기화
@@ -59,8 +57,6 @@ const exerciseRecordSlice = createSlice({
                 });
         
                 console.log(`Redux foodRecords 상태 업데이트 후:`, JSON.stringify(state.foodRecords, null, 2));
-            } else {
-                // console.error("삭제할 날짜가 배열 형태가 아닙니다.");
             }
         
             state.status = 'succeeded'; // 상태를 'succeeded'로 업데이트
@@ -68,6 +64,12 @@ const exerciseRecordSlice = createSlice({
         
     },
 });
+
+// selectTodayFoodData 셀렉터 예시 (확인해보세요)
+export const selectTodayFoodData = createSelector(
+    (state) => state.totalFood.foodRecords, // 상태에서 foodRecords를 가져옵니다.
+    (foodRecords) => foodRecords[new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'numeric', day: 'numeric' })] || {} // 오늘 날짜 기준으로 데이터 반환
+);
 
 export const { fetchTotalFoodSuccess, fetchTotalFoodFailure, resetFoodStatus, deleteFoodData} = exerciseRecordSlice.actions;
 
