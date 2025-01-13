@@ -7,15 +7,113 @@ import { saveBodyData } from '../../src/apis/BodyApi';
 
 import { selectBodyDataByDate } from '../../src/modules/BodySlice';
 import Foodmodal from '../../src/screens/modal/foodModal/Foodmodal';
-
+import { fetchTotalFoodSuccess } from '../../src/modules/TotalFoodSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Food = () => {
     const dispatch = useDispatch();
+
+    const { isDateChanged } = useCurrentWeekAndDay();
+    
+    // 새로운 방식: YYYY-M-D 형식
+    const dateKey = new Date()
+        .toLocaleDateString('en-CA', { year: 'numeric', month: 'numeric', day: 'numeric' }); // YYYY-M-D 형식
+
+    // Redux에서 오늘 날짜 기준 데이터를 조회
+    const todayFoodData = useSelector((state) => state.totalFood.foodRecords[dateKey] || {});
+
+    const [unit, setUnit] = useState('g'); // 기본 단위는 'g'
+
     const [mealType, setMealType] = useState(''); // 현재 선택된 식사 타입
 
     const [isModalVisible, setModalVisible] = useState(false);
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+
+
+    useEffect(() => {
+        const fetchUnit = async () => {
+            try {
+                const storedUnit = await AsyncStorage.getItem('gOrOzUnit') || 'g';
+                setUnit(storedUnit); // 단위 상태 업데이트
+            } catch (error) {
+                console.error('Failed to fetch unit:', error);
+            }
+        };
+
+        fetchUnit(); // 비동기 함수 호출
+    }, [isModalVisible]); // 빈 배열: 컴포넌트가 마운트될 때만 실행
+
+    useEffect(() => {
+
+
+        const conversionFactor = 0.03527396; // g to oz 변환 계수
+
+        // 상태 업데이트
+        setMealData((prevData) => {
+            const updatedData = { ...prevData };
+
+            Object.keys(todayFoodData).forEach((mealType) => {
+                const nutrition = todayFoodData[mealType]?.totalNutrition;
+
+                if (nutrition) {
+                    // 단위가 oz라면 변환하고 소수점 1자리까지 반올림
+                    updatedData[mealType] = {
+                        totalNutrition: {
+                            carbs: unit === 'oz' ? roundToOneDecimal(nutrition.carbs * conversionFactor) : nutrition.carbs,
+                            fat: unit === 'oz' ? roundToOneDecimal(nutrition.fat * conversionFactor) : nutrition.fat,
+                            grams: unit === 'oz' ? roundToOneDecimal(nutrition.grams * conversionFactor) : nutrition.grams,
+                            kcal: nutrition.kcal, // kcal은 변환하지 않음
+                            protein: unit === 'oz' ? roundToOneDecimal(nutrition.protein * conversionFactor) : nutrition.protein,
+                        },
+                    };
+                }
+            });
+
+            return updatedData;
+        });
+    }, [todayFoodData, unit]); // unit도 의존성에 추가
+
+    // 소수점 1자리까지 반올림하는 함수
+    const roundToOneDecimal = (value) => {
+        return Math.round(value * 10) / 10;
+    };
+
+    // 기본 상태 (기본값 0)
+    const [mealData, setMealData] = useState({
+        breakfast: {
+            totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+        },
+        lunch: {
+            totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+        },
+        dinner: {
+            totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+        },
+        snack: {
+            totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+        },
+    });
+
+    useEffect(() => {
+        if (isDateChanged) {
+            // 날짜가 변경된 경우 상태 초기화
+            setMealData({
+                breakfast: {
+                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+                },
+                lunch: {
+                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+                },
+                dinner: {
+                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+                },
+                snack: {
+                    totalNutrition: { carbs: 0, fat: 0, grams: 0, kcal: 0, protein: 0 },
+                },
+            });
+        }
+    }, [isDateChanged]); // isDateChanged 의존성 추가
 
     const openFindPasswordModal = (type) => {
         setMealType(type); // 선택된 타입 설정
@@ -37,211 +135,59 @@ const Food = () => {
 
                     <View style={[styles.rowCommon, styles.row1]}>    
 
-                        <TouchableOpacity style={styles.recordContainer}                            
-                            onPress={() => openFindPasswordModal('breakfast')}
-                        >
-                            <Text style={styles.subTitle}>아침</Text>
-                            
-                            <View style={styles.rowCenter}>
+                        {['breakfast', 'lunch', 'dinner', 'snack'].map((meal, index) => (
+                            <TouchableOpacity
+                                key={meal}
+                                style={styles.recordContainer}
+                                onPress={() => openFindPasswordModal(meal)}
+                            >
+                                <Text style={styles.subTitle}>{meal === 'breakfast' ? '아침' : meal === 'lunch' ? '점심' : meal === 'dinner' ? '저녁' : '간식'}</Text>
 
-                                <View style={styles.recordBox}>
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>kcal</Text>
-                                    </View>
-                                    <View style={styles.divider} />
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>g</Text>
-                                    </View>
-                                </View>
+                                <View style={styles.rowCenter}>
 
-
-                                <View style={styles.marginLeft8}>
-
-                                    <View style={styles.recordStatusContainer}>
-                                        <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
-                                    </View>
-                                    
-                                    <View style={styles.macroContainer}>
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
+                                    <View style={styles.recordBox}>
+                                        <View style={styles.rowFlexStart}>
+                                            <Text style={styles.valueText}>{mealData[meal].totalNutrition.kcal}</Text>
+                                            <Text style={styles.unitText}>kcal</Text>
                                         </View>
-
-                                        <View style={styles.divider2} />
-
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
-
-                                        <View style={styles.divider2} />
-
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>지방</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
+                                        <View style={styles.divider} />
+                                        <View style={styles.rowFlexStart}>
+                                            <Text style={styles.valueText}>{mealData[meal].totalNutrition.grams}</Text>
+                                            <Text style={styles.unitText}>{unit}</Text>
                                         </View>
                                     </View>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
 
-
-                        <TouchableOpacity
-                            style={styles.recordContainer}
-                            onPress={() => openFindPasswordModal('lunch')}
-                        >                            
-                            <Text style={styles.subTitle}>점심</Text>
-                            
-                            <View style={styles.rowCenter}>
-
-                                <View style={styles.recordBox}>
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>kcal</Text>
-                                    </View>
-                                    <View style={styles.divider} />
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>g</Text>
-                                    </View>
-                                </View>
-
-
-                                <View style={styles.marginLeft8}>
-
-                                    <View style={styles.recordStatusContainer}>
-                                        <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
-                                    </View>
-                                    
-                                    <View style={styles.macroContainer}>
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
+                                    <View style={styles.marginLeft8}>
+                                        <View style={styles.recordStatusContainer}>
+                                            <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
                                         </View>
 
-                                        <View style={styles.divider2} />
+                                        <View style={styles.macroContainer}>
+                                            <View style={styles.macroItem}>
+                                                <Text style={styles.macroLabel}>탄수화물</Text>
+                                                <Text style={styles.macroValue}>{mealData[meal].totalNutrition.carbs} {unit}</Text>
+                                            </View>
 
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
+                                            <View style={styles.divider2} />
 
-                                        <View style={styles.divider2} />
+                                            <View style={styles.macroItem}>
+                                                <Text style={styles.macroLabel}>단백질</Text>
+                                                <Text style={styles.macroValue}>{mealData[meal].totalNutrition.protein} {unit}</Text>
+                                            </View>
 
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>지방</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
+                                            <View style={styles.divider2} />
+
+                                            <View style={styles.macroItem}>
+                                                <Text style={styles.macroLabel}>지방</Text>
+                                                <Text style={styles.macroValue}>{mealData[meal].totalNutrition.fat} {unit}</Text>
+                                            </View>
                                         </View>
                                     </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                        ))}
 
-                        <TouchableOpacity
-                            style={styles.recordContainer}
-                            onPress={() => openFindPasswordModal('dinner')}
-                        >
-                            <Text style={styles.subTitle}>저녁</Text>
-                            
-                            <View style={styles.rowCenter}>
-
-                                <View style={styles.recordBox}>
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>kcal</Text>
-                                    </View>
-                                    <View style={styles.divider} />
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>g</Text>
-                                    </View>
-                                </View>
-
-
-                                <View style={styles.marginLeft8}>
-
-                                    <View style={styles.recordStatusContainer}>
-                                        <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
-                                    </View>
-                                    
-                                    <View style={styles.macroContainer}>
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
-
-                                        <View style={styles.divider2} />
-
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
-
-                                        <View style={styles.divider2} />
-
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>지방</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.recordContainer}
-                            onPress={() => openFindPasswordModal('snack')}
-                        >                            
-                            <Text style={styles.subTitle}>간식</Text>
-                            
-                            <View style={styles.rowCenter}>
-
-                                <View style={styles.recordBox}>
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>kcal</Text>
-                                    </View>
-                                    <View style={styles.divider} />
-                                    <View style={styles.rowFlexStart}>
-                                        <Text style={styles.valueText}>00.0</Text>
-                                        <Text style={styles.unitText}>g</Text>
-                                    </View>
-                                </View>
-
-
-                                <View style={styles.marginLeft8}>
-
-                                    <View style={styles.recordStatusContainer}>
-                                        <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
-                                    </View>
-                                    
-                                    <View style={styles.macroContainer}>
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
-
-                                        <View style={styles.divider2} />
-
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>탄수화물</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
-
-                                        <View style={styles.divider2} />
-
-                                        <View style={styles.macroItem}>
-                                            <Text style={styles.macroLabel}>지방</Text>
-                                            <Text style={styles.macroValue}>0g</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
                     </View>
-
 
                 </View>
             </View>            
@@ -394,7 +340,7 @@ const styles = StyleSheet.create({
     macroValue: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 14,
         marginTop: 3,
     },
     flexRowMargin5: {

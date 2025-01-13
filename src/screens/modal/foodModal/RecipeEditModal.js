@@ -15,8 +15,19 @@ import {saveFoodData} from '../../../apis/FoodApi'
 import { useSelector } from 'react-redux';
 
 
-const RecipeEditModal = ({ isVisible, onClose, id }) => {
-    const [rows, setRows] = useState([]);
+const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipeName = '' }) => {
+    const [rows, setRows] = useState([
+        {
+            id: Date.now(), // 기본 상태
+            foodName: '',
+            quantity: '',
+            calories: '',
+            protein: '',
+            carbs: '',
+            fat: '',
+        },
+    ]);
+        
     const [unit, setUnit] = useState('g');
     const [recipeName, setRecipeName] = useState('');
     const [foodName, setFoodName] = useState('');
@@ -28,8 +39,37 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
     const maxLength = 40; // 최대 50자 제한
 
     useEffect(() => {
-        console.log('수정할 레시피 ID:', id);
-    }, [id]);
+
+        console.log("이펙트 실행")
+        const initializeRows = async () => {
+            try {
+                const storedUnit = await AsyncStorage.getItem('gOrOzUnit') || 'g'; // 단위 가져오기, 기본값은 'g'
+    
+                if (foodItems && foodItems.length > 0) {
+                    console.log("뭔가있어")
+                    const mappedRows = foodItems.map((item) => ({
+                        id: Date.now() + Math.random(), // 고유 ID 생성
+                        foodName: item.foodName || '',
+                        quantity: storedUnit === 'oz' ? (parseFloat(item.quantity) / 28.3495).toFixed(1) : item.quantity || '',
+                        calories: item.calories || '',
+                        protein: storedUnit === 'oz' ? (parseFloat(item.protein) / 28.3495).toFixed(1) : item.protein || '',
+                        carbs: storedUnit === 'oz' ? (parseFloat(item.carbs) / 28.3495).toFixed(1) : item.carbs || '',
+                        fat: storedUnit === 'oz' ? (parseFloat(item.fat) / 28.3495).toFixed(1) : item.fat || '',
+                    }));
+                    setRows(mappedRows); // 변환된 값 설정
+                } else {
+                    console.log("없어")
+                }
+    
+                setRecipeName(initialRecipeName); // 레시피 이름 설정
+            } catch (error) {
+                console.error('Failed to initialize rows:', error);
+            }
+        };
+    
+        initializeRows();
+    }, []);
+    
 
     useEffect(() => {
         const fetchUnits = async () => {
@@ -75,11 +115,17 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
     };
 
     const handleUnitChange = async (newUnit) => {
+
+        // 현재 단위와 동일하면 아무 작업도 하지 않음
+        if (newUnit === unit) {
+            return;
+        }
+
         const conversionFactor = newUnit === 'oz' ? 1 / 28.3495 : 28.3495; // g ↔ oz 변환 계수
         const updatedRows = rows.map((row) => ({
             ...row,
             quantity: convertUnits(row.quantity, newUnit),
-            calories: row.calories ? (parseFloat(row.calories) * conversionFactor).toFixed(1) : '',
+            // calories: row.calories ? (parseFloat(row.calories) * conversionFactor).toFixed(1) : '',
             protein: row.protein ? (parseFloat(row.protein) * conversionFactor).toFixed(1) : '',
             carbs: row.carbs ? (parseFloat(row.carbs) * conversionFactor).toFixed(1) : '',
             fat: row.fat ? (parseFloat(row.fat) * conversionFactor).toFixed(1) : '',
@@ -110,9 +156,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
             quantity: unit === 'oz'
                 ? (parseFloat(quantity) * 28.3495 || 0).toFixed(1) // oz → g 변환 후 값이 없으면 0
                 : quantity || "0", // 값이 없으면 0
-            calories: unit === 'oz'
-                ? (parseFloat(calories) * 28.3495 || 0).toFixed(1)
-                : calories || "0",
+            calories: calories || "0", // 칼로리는 변환 없이 그대로 사용
             protein: unit === 'oz'
                 ? (parseFloat(protein) * 28.3495 || 0).toFixed(1)
                 : protein || "0",
@@ -127,7 +171,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
         try {
             await saveFoodData(memberId, id, recipeName, foodItems);
             console.log('데이터 저장 성공!');
-            // onClose(); // 성공 시 모달 닫기
+            onClose(); // 성공 시 모달 닫기
         } catch (error) {
             console.error('데이터 저장 실패:', error);
         }
@@ -152,6 +196,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
                             style={styles.input}
                             placeholder="레시피 이름"
                             maxLength={maxLength}
+                            value={recipeName} // recipeName이 있으면 표시
                             onChangeText={(text) => setRecipeName(sanitizeInput(text))}
                         />
 
@@ -214,6 +259,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
                                             const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, quantity: handleNumericInput(text) } : r));
                                             setRows(updatedRows);
                                         }}
+                                        selectTextOnFocus={true}
                                     />
                                 </View>
 
@@ -231,6 +277,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
                                                     const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, calories: handleNumericInput(text) } : r));
                                                     setRows(updatedRows);
                                                 }}
+                                                selectTextOnFocus={true}
                                             />
 
                                             <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>단백질</Text>
@@ -244,6 +291,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
                                                     const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, protein: handleNumericInput(text) } : r));
                                                     setRows(updatedRows);
                                                 }}
+                                                selectTextOnFocus={true}
                                             />
                                         </View>
 
@@ -259,6 +307,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
                                                     const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, carbs: handleNumericInput(text) } : r));
                                                     setRows(updatedRows);
                                                 }}
+                                                selectTextOnFocus={true}
                                             />
 
                                             <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>지방</Text>
@@ -272,6 +321,7 @@ const RecipeEditModal = ({ isVisible, onClose, id }) => {
                                                     const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, fat: handleNumericInput(text) } : r));
                                                     setRows(updatedRows);
                                                 }}
+                                                selectTextOnFocus={true}
                                             />
                                         </View>
                                     </View>

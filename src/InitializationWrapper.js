@@ -6,7 +6,7 @@ import { setToken, setIsLoggedIn } from './modules/AuthSlice';  // Redux 액션 
 import initializeI18n from './locales/i18n'; // i18n 초기화 함수 가져오기
 import { deleteExpiredRecords } from './modules/ExerciseRecordSlice'; // Redux 액션 가져오기
 import { deleteBodyData } from './modules/BodySlice'; // Redux 액션 가져오기
-
+import { deleteFoodData } from './modules/TotalFoodSlice';
 
 const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTimerRunning }) => {
     const [isInitialized, setIsInitialized] = useState(false);
@@ -17,7 +17,7 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
         .toLocaleDateString('en-CA', { year: 'numeric', month: 'numeric', day: 'numeric' }); // YYYY-M-D 형식
 
     const bodyData = useSelector((state) => state.body);
-
+    const foodData = useSelector((state) => state.totalFood);
 
     useEffect(() => {
         const initialize = async () => {
@@ -57,7 +57,7 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
                     setIsTimerRunning(false); // 타이머 실행 상태 초기화
                 }
 
-                   // 모든 키 가져오기
+                // 모든 키 가져오기
                 const allKeys = await AsyncStorage.getAllKeys();
                 console.log('전체 키:', allKeys);
 
@@ -135,11 +135,34 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
 
                 // console.log('삭제할 오래된 키:', oldKeys);
 
-
-                // Redux 및 AsyncStorage에서 삭제
+                // Redux 에서 삭제
                 if (oldKeys.length > 0) {
                     dispatch(deleteBodyData({ dates: oldKeys })); // Redux에서 삭제
                     console.log('Redux 상태 업데이트 완료');
+                }
+
+
+                // foodData 오래된 데이터 삭제
+                const foodDataEntries = Object.entries(foodData.foodRecords || {});
+
+                // 필터링 전에 현재 상태 확인
+                console.log('현재 foodRecords:', foodData.foodRecords);
+
+                const oldFoodKeys = (
+                    foodDataEntries
+                        .filter(([dateKey]) => {
+                            const [year, month, day] = dateKey.split('-').map(Number);
+                            const recordDate = new Date(Date.UTC(year, month - 1, day));
+                            return recordDate < cutoffDate; // 기준 날짜 이전 데이터
+                        })
+                        .map(([dateKey]) => dateKey)
+                ) || []; // 기본값 빈 배열
+                
+                console.log('삭제 대상 날짜:', oldFoodKeys);
+                
+                if (oldFoodKeys.length > 0) {
+                    dispatch(deleteFoodData(oldFoodKeys));
+                    console.log('Food data에서 오래된 데이터 삭제:', oldFoodKeys);
                 }
 
                 console.log('초기화 완료');
