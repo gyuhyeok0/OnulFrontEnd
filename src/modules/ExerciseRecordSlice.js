@@ -9,23 +9,21 @@ const exerciseRecordSlice = createSlice({
     },
     reducers: {
         // 성공적으로 운동 기록을 가져왔을 때
-        fetchExerciseRecordSuccess: (state, action) => {
-            console.log("운동 기록을 리덕스 상태에 저장합니다.");
-
-            const { exerciseId, exerciseService, recordDate, data } = action.payload;
-
-            // exerciseId 그룹 생성
-            if (!state.exercisesRecord[exerciseId]) {
-                state.exercisesRecord[exerciseId] = {};
+        fetchTotalFoodSuccess(state, action) {
+            const newRecord = action.payload;
+            const { date, mealType } = newRecord;
+        
+            // 해당 날짜가 기존 상태에 없으면 새로 추가
+            if (!state.foodRecords[date]) {
+                state.foodRecords[date] = {};
             }
-
-            // exerciseService 그룹 생성
-            if (!state.exercisesRecord[exerciseId][exerciseService]) {
-                state.exercisesRecord[exerciseId][exerciseService] = {};
-            }
-
-            // recordDate 데이터를 저장
-            state.exercisesRecord[exerciseId][exerciseService][recordDate] = data;
+        
+            // 해당 날짜에 mealType이 존재하면 업데이트, 아니면 추가
+            state.foodRecords[date][mealType] = {
+                ...state.foodRecords[date][mealType], // 기존 데이터 병합
+                ...newRecord, // 새로운 데이터 적용
+            };
+        
             state.status = 'succeeded';
         },
 

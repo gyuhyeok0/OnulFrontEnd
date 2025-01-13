@@ -27,6 +27,7 @@ import weekReducer from './WeekReducer'; // weekReducer import
 import latestExerciseRecordReducer from './LatestExerciseRecordSlice'; // 새 리듀서 가져오기
 import intensityReducer from './IntensitySlice'; // 새로 만든 intensity 리듀서 가져오기
 import bodyReducer from './BodySlice';
+import totalFoodReducer from './TotalFoodSlice'; // 새로 만든 totalFood 리듀서 가져오기
 
 
 const rootReducer = combineReducers({
@@ -57,6 +58,7 @@ const rootReducer = combineReducers({
   latestExerciseRecord: latestExerciseRecordReducer, // 가장 최근 운동 기록 리듀서 추가
   intensity: intensityReducer, // 새로 추가한 intensity 리듀서
   body: bodyReducer, // body 키에 bodyReducer를 연결
+  totalFood: totalFoodReducer, // totalFood 리듀서 추가
 
 });
 
