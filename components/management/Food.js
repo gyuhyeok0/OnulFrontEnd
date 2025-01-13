@@ -36,10 +36,11 @@ const Food = () => {
         };
 
         fetchUnit(); // 비동기 함수 호출
-    }, []); // 빈 배열: 컴포넌트가 마운트될 때만 실행
+    }, [isModalVisible]); // 빈 배열: 컴포넌트가 마운트될 때만 실행
 
 
 useEffect(() => {
+    console.log(todayFoodData);
     if (todayFoodData && unit) {
         const conversionFactor = 0.03527396; // g to oz 변환 계수
 
@@ -146,9 +147,14 @@ useEffect(() => {
                                     </View>
 
                                     <View style={styles.marginLeft8}>
-                                        <View style={styles.recordStatusContainer}>
+                                        
+                                    <View style={styles.recordStatusContainer}>
+                                        {todayFoodData && todayFoodData[meal]?.recipeNames && todayFoodData[meal].recipeNames.length > 0 ? (
+                                            <Text style={styles.recordStatusText}>{todayFoodData[meal].recipeNames.join(", ")}</Text> // 레시피 이름 표시
+                                        ) : (
                                             <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
-                                        </View>
+                                        )}
+                                    </View>
 
                                         <View style={styles.macroContainer}>
                                             <View style={styles.macroItem}>

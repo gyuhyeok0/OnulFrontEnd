@@ -132,7 +132,7 @@ export const getAllFoodData = async (memberId, accessToken = null) => {
 
 
 
-export const saveTotalFoodData = async (memberId, mealType, formattedDate, totalNutrition, accessToken = null, dispatch) => {
+export const saveTotalFoodData = async (memberId, mealType, formattedDate, totalNutrition, recipeNames, accessToken = null, dispatch) => {
     try {
         if (!accessToken) {
             accessToken = await AsyncStorage.getItem('accessToken');
@@ -149,6 +149,7 @@ export const saveTotalFoodData = async (memberId, mealType, formattedDate, total
                 mealType: mealType,            // mealType 추가
                 date: formattedDate,           // 날짜 추가
                 totalNutrition: totalNutrition, // totalNutrition 추가
+                recipeNames: recipeNames
             }),
         });
 
@@ -156,15 +157,18 @@ export const saveTotalFoodData = async (memberId, mealType, formattedDate, total
             const responseData = await response.json();
             console.log("성공:", responseData);
 
-            const { date: rawDate, mealType, totalNutrition } = responseData;
+            const { date: rawDate, mealType, totalNutrition, recipeNames } = responseData;
 
             // 날짜를 "0000-00-00" 형식으로 변환
             const date = `${rawDate[0]}-${String(rawDate[1]).padStart(2, '0')}-${String(rawDate[2]).padStart(2, '0')}`;
+
+            console.log(recipeNames);
 
             dispatch(fetchTotalFoodSuccess({
                 date, 
                 mealType, 
                 totalNutrition,
+                recipeNames
             }));
 
             return responseData; // 요청 성공 시 응답 데이터 반환
@@ -173,7 +177,7 @@ export const saveTotalFoodData = async (memberId, mealType, formattedDate, total
             const newAccessToken = await refreshAccessToken();
             if (newAccessToken) {
                 // 새로 발급받은 토큰으로 재귀 호출
-                return await saveTotalFoodData(memberId, mealType, formattedDate, totalNutrition, newAccessToken, dispatch);
+                return await saveTotalFoodData(memberId, mealType, formattedDate, totalNutrition, recipeNames, newAccessToken, dispatch);
             } else {
                 console.error('새로운 토큰을 가져오지 못했습니다.');
                 throw new Error('Unable to refresh token');

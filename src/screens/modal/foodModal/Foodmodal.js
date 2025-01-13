@@ -36,7 +36,8 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
     const [unit, setUnit] = useState('g'); // 기본 단위는 'g'
 
     const [selectedRecipeIds, setSelectedRecipeIds] = useState([]); // 선택된 레시피 ID들 상태 관리
-    
+    const [selectedRecipeNames, setSelectedRecipeNames] = useState([]); // 클릭된 레시피 이름을 관리하는 상태
+
     const [totalNutrition, setTotalNutrition] = useState({
         grams: 0,
         kcal: 0,
@@ -143,11 +144,12 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
     }, [isVisible, memberId, isRecipeModalVisible]);
     
 
-    
     const handleRecipeClick = (id, recipeData) => {
         setSelectedRecipeIds(prevIds => {
             // 선택 해제 시, 기존 선택한 ID에서 해당 ID를 제거
             let newSelectedIds;
+            let newRecipeNames;
+
             if (prevIds.includes(id)) {
                 // 선택 해제 시 합산된 데이터에서 해당 값 빼기
                 setTotalNutrition(prevTotal => {
@@ -158,7 +160,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                         protein: prevTotal.protein - convertToGrams(recipeData.protein, unit),
                         fat: prevTotal.fat - convertToGrams(recipeData.fat, unit),
                     };
-        
+
                     // 마지막으로 소수점 첫째 자리로 반올림
                     return {
                         grams: Math.round(newTotal.grams * 10) / 10,
@@ -169,6 +171,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                     };
                 });
                 newSelectedIds = prevIds.filter(recipeId => recipeId !== id); // 선택 해제
+                newRecipeNames = selectedRecipeNames.filter(name => name !== recipeData.name); // 선택된 레시피 이름 제거
             } else {
                 // 선택 시 합산된 데이터에 값 추가
                 setTotalNutrition(prevTotal => {
@@ -179,7 +182,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                         protein: prevTotal.protein + convertToGrams(recipeData.protein, unit),
                         fat: prevTotal.fat + convertToGrams(recipeData.fat, unit),
                     };
-        
+
                     // 마지막으로 소수점 첫째 자리로 반올림
                     return {
                         grams: Math.round(newTotal.grams * 10) / 10,
@@ -190,16 +193,20 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                     };
                 });
                 newSelectedIds = [...prevIds, id]; // 선택
+                newRecipeNames = [...selectedRecipeNames, recipeData.name]; // 선택된 레시피 이름 추가
             }
-    
+
             // 선택된 레시피가 하나라도 있으면 true, 없으면 false로 상태 설정
             setIsAnyRecipeSelected(newSelectedIds.length > 0);
-    
+
+            // 선택된 레시피 이름들을 상태에 저장
+            setSelectedRecipeNames(newRecipeNames);
+
             return newSelectedIds;
         });
     };
+
     
- 
     // g 또는 oz 단위에 따라 변환하는 함수
     const convertToGrams = (value, unit) => {
         const conversionFactor = unit === 'oz' ? 28.3495 : 1; // 1oz = 28.3495g
@@ -321,12 +328,17 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
             // 원하는 형식 (YYYY-MM-DD)
             const formattedDate = `${year}-${month}-${day}`;
     
+            // console.log(selectedRecipeNames);
+            const recipeNames = selectedRecipeNames;
+            // console.log(recipeNames);
+
             try {
-                await saveTotalFoodData(memberId, mealType, formattedDate, totalNutrition, null, dispatch);
+                await saveTotalFoodData(memberId, mealType, formattedDate, totalNutrition, recipeNames, null, dispatch);
                 // 데이터 저장 성공 시 모달 닫기
             } catch (error) {
                 console.error('데이터 저장 실패:', error);
             }
+
         }
     
         // 조건에 관계없이 handleClose는 한 번만 호출
