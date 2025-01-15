@@ -40,7 +40,6 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
 
     useEffect(() => {
 
-        console.log("이펙트 실행")
         const initializeRows = async () => {
             try {
                 const storedUnit = await AsyncStorage.getItem('gOrOzUnit') || 'g'; // 단위 가져오기, 기본값은 'g'
@@ -113,6 +112,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
         if (isNaN(numericValue)) return '';
         return toUnit === 'oz' ? (numericValue / 28.3495).toFixed(1) : (numericValue * 28.3495).toFixed(1);
     };
+    
 
     const handleUnitChange = async (newUnit) => {
 

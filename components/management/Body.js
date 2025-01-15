@@ -51,9 +51,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
         }
     }, [bodyData]);
     
-    
 
-  
     const validateAndSet = (field, value) => {
         // 숫자 형식 검증 및 최대값 제한
         if (/^\d*\.?\d{0,1}$/.test(value)) {

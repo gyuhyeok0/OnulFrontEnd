@@ -18,6 +18,7 @@ import { deleteFoodData } from '../../../apis/FoodApi';
 import { getAllFoodData } from '../../../apis/FoodApi';
 import { saveTotalFoodData } from '../../../apis/FoodApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FreeFoodModal from './FreeFoodModal';
 
 
 const screenHeight = Dimensions.get('window').height;
@@ -47,6 +48,9 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
     }); // 합산된 데이터 상태 관리
     
     const [isAnyRecipeSelected, setIsAnyRecipeSelected] = useState(false); // 하나라도 선택되었는지 여부
+
+    const [isNutritionalModalVisible, setNutritionalModalVisible] = useState(false);
+    const [freeOnclose, setFreeOnclose] = useState(false);
 
     useEffect(() => {
         if (isVisible) {
@@ -332,6 +336,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
             const recipeNames = selectedRecipeNames;
             // console.log(recipeNames);
 
+            // console.log(memberId,mealType,formattedDate,totalNutrition,recipeNames);
             try {
                 await saveTotalFoodData(memberId, mealType, formattedDate, totalNutrition, recipeNames, null, dispatch);
                 // 데이터 저장 성공 시 모달 닫기
@@ -355,9 +360,29 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
         }
     };
 
+    const openFreeFoodModal = () => {
+        setNutritionalModalVisible(true); // 영양 정보 모달 띄우기
+    };
+
     const closeRecipeModal = () => {
         setRecipeModalVisible(false);
     };
+
+    const closeFoodModal = () => {
+        setNutritionalModalVisible(false);  // 모달을 닫습니다.
+    
+        // freeOnclose가 true일 때만 onClose를 호출
+        if (freeOnclose) {
+            onClose(); // 성공 시 모달 닫기
+        }
+    };
+
+    useEffect(() => {
+        if (freeOnclose) {
+            onClose(); // freeOnclose가 true일 때만 onClose 호출
+        }
+    }, [freeOnclose]); 
+    
 
     const formatNumber = (value) => {
         if (value === undefined || value === null || isNaN(value)) {
@@ -438,6 +463,10 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                             <TouchableOpacity onPress={completeButton} style={modalstyles.completeButton}>
                                 <Text style={modalstyles.completeButtonText}>완료</Text>
                             </TouchableOpacity>
+
+                            <TouchableOpacity style={modalstyles.freeCompleteButton} onPress={openFreeFoodModal}>
+                                <Text style={modalstyles.freeCompleteButtonText}>임시식단</Text>
+                            </TouchableOpacity>
                         </KeyboardAwareScrollView>
 
                          {/* Recipe Modal Content */}
@@ -448,6 +477,17 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                                 id={selectedRecipe.id} // 선택된 id 전달
                                 foodItems={selectedRecipe.foodItems} // foodItems 전달
                                 initialRecipeName={selectedRecipe.name} // 레시피 이름 전달
+                            />
+                        )}
+
+                        {/* Free Food Modal Content */}
+                        {isNutritionalModalVisible && (
+                            <FreeFoodModal
+                                isVisible={isNutritionalModalVisible}
+                                onClose={closeFoodModal}
+                                setFreeOnclose = {setFreeOnclose}
+                                mealType = {mealType}
+                                memberId = {memberId}
                             />
                         )}
 
@@ -572,6 +612,27 @@ const modalstyles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
     },
+
+    freeCompleteButton:{
+        height: 50,
+        backgroundColor: '#D5E1FF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        marginBottom:15
+    },
+    
+    completeButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+
+    freeCompleteButtonText:{
+        color: '#4E4E4E',
+        fontSize: 18,
+        fontWeight: 'bold',
+    }
 });
 
 export default Foodmodal;

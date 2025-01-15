@@ -28,45 +28,64 @@ const Food = () => {
     useEffect(() => {
         const fetchUnit = async () => {
             try {
-                const storedUnit = await AsyncStorage.getItem('gOrOzUnit') || 'g';
+                let storedUnit = await AsyncStorage.getItem('gOrOzUnit');
+    
+                if (!storedUnit) {
+                    // gOrOzUnit이 없으면 weightUnit을 확인
+                    const weightUnit = await AsyncStorage.getItem('weightUnit');
+                    
+                    // weightUnit에 따라 gOrOzUnit 설정
+                    if (weightUnit === 'kg') {
+                        storedUnit = 'g';
+                    } else if (weightUnit === 'lbs') {
+                        storedUnit = 'oz';
+                    } else {
+                        storedUnit = 'g'; // 기본값으로 'g' 설정
+                    }
+    
+                    // gOrOzUnit에 값 설정
+                    await AsyncStorage.setItem('gOrOzUnit', storedUnit);
+                }
+    
                 setUnit(storedUnit); // 단위 상태 업데이트
             } catch (error) {
                 console.error('Failed to fetch unit:', error);
             }
         };
-
+    
         fetchUnit(); // 비동기 함수 호출
-    }, [isModalVisible]); // 빈 배열: 컴포넌트가 마운트될 때만 실행
+    }, [isModalVisible]); // isModalVisible이 변경될 때마다 실행
+    
 
 
-useEffect(() => {
-    console.log(todayFoodData);
-    if (todayFoodData && unit) {
-        const conversionFactor = 0.03527396; // g to oz 변환 계수
+    useEffect(() => {
+        console.log(todayFoodData);
+        if (todayFoodData && unit) {
+            const conversionFactor = 0.03527396; // g to oz 변환 계수
 
-        setMealData((prevData) => {
-            const updatedData = { ...prevData }; // 이전 상태 복사
+            setMealData((prevData) => {
+                const updatedData = { ...prevData }; // 이전 상태 복사
 
-            Object.keys(todayFoodData).forEach((mealType) => {
-                const nutrition = todayFoodData[mealType]?.totalNutrition;
+                Object.keys(todayFoodData).forEach((mealType) => {
+                    const nutrition = todayFoodData[mealType]?.totalNutrition;
 
-                if (nutrition) {
-                    updatedData[mealType] = {
-                        totalNutrition: {
-                            carbs: unit === 'oz' ? roundToOneDecimal(nutrition.carbs * conversionFactor) : nutrition.carbs,
-                            fat: unit === 'oz' ? roundToOneDecimal(nutrition.fat * conversionFactor) : nutrition.fat,
-                            grams: unit === 'oz' ? roundToOneDecimal(nutrition.grams * conversionFactor) : nutrition.grams,
-                            kcal: nutrition.kcal, // kcal은 변환하지 않음
-                            protein: unit === 'oz' ? roundToOneDecimal(nutrition.protein * conversionFactor) : nutrition.protein,
-                        },
-                    };
-                }
+                    if (nutrition) {
+                        updatedData[mealType] = {
+                            totalNutrition: {
+                                carbs: unit === 'oz' ? roundToOneDecimal(nutrition.carbs * conversionFactor) : nutrition.carbs,
+                                fat: unit === 'oz' ? roundToOneDecimal(nutrition.fat * conversionFactor) : nutrition.fat,
+                                grams: unit === 'oz' ? roundToOneDecimal(nutrition.grams * conversionFactor) : nutrition.grams,
+                                kcal: nutrition.kcal, // kcal은 변환하지 않음
+                                protein: unit === 'oz' ? roundToOneDecimal(nutrition.protein * conversionFactor) : nutrition.protein,
+                            },
+                        };
+                    }
+                });
+
+                return updatedData;
             });
-
-            return updatedData;
-        });
-    }
-}, [todayFoodData, unit]); // todayFoodData와 unit이 변경될 때만 실행
+        }
+    }, [todayFoodData, unit]); // todayFoodData와 unit이 변경될 때만 실행
 
     
     
