@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
 
 const exerciseRecordSlice = createSlice({
     name: 'exerciseRecord',
@@ -9,21 +10,25 @@ const exerciseRecordSlice = createSlice({
     },
     reducers: {
         // 성공적으로 운동 기록을 가져왔을 때
-        fetchTotalFoodSuccess(state, action) {
-            const newRecord = action.payload;
-            const { date, mealType } = newRecord;
-        
-            // 해당 날짜가 기존 상태에 없으면 새로 추가
-            if (!state.foodRecords[date]) {
-                state.foodRecords[date] = {};
+        fetchExerciseRecordSuccess: (state, action) => {
+            console.log("운동 기록을 리덕스 상태에 저장합니다.");
+
+            // console.log(action);
+
+            const { exerciseId, exerciseService, recordDate, data } = action.payload;
+
+            // exerciseId 그룹 생성
+            if (!state.exercisesRecord[exerciseId]) {
+                state.exercisesRecord[exerciseId] = {};
             }
-        
-            // 해당 날짜에 mealType이 존재하면 업데이트, 아니면 추가
-            state.foodRecords[date][mealType] = {
-                ...state.foodRecords[date][mealType], // 기존 데이터 병합
-                ...newRecord, // 새로운 데이터 적용
-            };
-        
+
+            // exerciseService 그룹 생성
+            if (!state.exercisesRecord[exerciseId][exerciseService]) {
+                state.exercisesRecord[exerciseId][exerciseService] = {};
+            }
+
+            // recordDate 데이터를 저장
+            state.exercisesRecord[exerciseId][exerciseService][recordDate] = data;
             state.status = 'succeeded';
         },
 
@@ -58,22 +63,30 @@ const exerciseRecordSlice = createSlice({
 
         deleteExpiredRecords: (state, action) => {
             const expiredKeys = action.payload;
-            console.log("만료되어 삭제 잘 됩니다!~")
+            console.log("만료된 날짜 기록 삭제!");
+        
             expiredKeys.forEach((key) => {
                 const [exerciseId, exerciseService, recordDate] = key.split('_');
+                
+                // recordDate가 존재하면 삭제
                 if (state.exercisesRecord[exerciseId]?.[exerciseService]?.[recordDate]) {
+                    
+                    // 해당 recordDate만 삭제
                     delete state.exercisesRecord[exerciseId][exerciseService][recordDate];
-
-                    // 그룹 내 데이터가 없으면 상위 그룹도 삭제
+        
+                    // 만약 exerciseService 내에 데이터가 없다면 exerciseService도 삭제
                     if (Object.keys(state.exercisesRecord[exerciseId][exerciseService]).length === 0) {
                         delete state.exercisesRecord[exerciseId][exerciseService];
                     }
-                    if (Object.keys(state.exercisesRecord[exerciseId]).length === 0) {
-                        delete state.exercisesRecord[exerciseId];
-                    }
+                }
+        
+                // 만약 exerciseId 내에 exerciseService가 없다면 exerciseId도 삭제
+                if (Object.keys(state.exercisesRecord[exerciseId] || {}).length === 0) {
+                    delete state.exercisesRecord[exerciseId];
                 }
             });
         },
+        
     },
 });
 
@@ -99,6 +112,34 @@ export const selectExerciseRecordByDetails = (
         state.exerciseRecord.exercisesRecord[exerciseId]?.[exerciseService]?.[recordDate] || null
     );
 };
+
+// 셀렉터 정의 (메모이제이션 추가)
+export const selectExerciseRecordByDate = createSelector(
+    (state) => state.exerciseRecord.exercisesRecord,  // 상태에서 exercisesRecord 가져오기
+    (_, today) => today,  // today를 인자로 받음
+    (exercisesRecord, today) => {
+        const recordsForToday = {};
+
+        // exercisesRecord에서 오늘 날짜에 해당하는 데이터만 필터링
+        Object.keys(exercisesRecord).forEach(exerciseId => {
+            Object.keys(exercisesRecord[exerciseId]).forEach(exerciseService => {
+                Object.keys(exercisesRecord[exerciseId][exerciseService]).forEach(recordDate => {
+                    if (recordDate === today) {
+                        if (!recordsForToday[exerciseId]) {
+                            recordsForToday[exerciseId] = {};
+                        }
+                        if (!recordsForToday[exerciseId][exerciseService]) {
+                            recordsForToday[exerciseId][exerciseService] = {};
+                        }
+                        recordsForToday[exerciseId][exerciseService][recordDate] = exercisesRecord[exerciseId][exerciseService][recordDate];
+                    }
+                });
+            });
+        });
+
+        return recordsForToday;  // 오늘 날짜에 해당하는 모든 운동 기록 반환
+    }
+);
 
 // Selector 함수 사용 예시:
 // const recordData = useSelector((state) => selectExerciseRecordByDetails(state, exerciseId, exerciseService, recordDate));

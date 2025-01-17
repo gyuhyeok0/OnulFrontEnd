@@ -14,18 +14,18 @@ export const callFetchExercisesRecordAPI = (exerciseId, memberId, exerciseServic
         const storageKey = `${exerciseId}_${exerciseService}_${recordDate}`;
 
         try {
-            // AsyncStorage에서 데이터 가져오기
-            const storedData = await AsyncStorage.getItem(storageKey);
-            if (storedData) {
-                console.log("스토리지에 기록이 있습니다. 리듀서 업데이트만 진행합니다.");
-                dispatch(fetchExerciseRecordSuccess({
-                    exerciseId, 
-                    exerciseService, 
-                    recordDate, 
-                    data: JSON.parse(storedData)
-                }));
-                return JSON.parse(storedData);
-            }
+            // // AsyncStorage에서 데이터 가져오기
+            // const storedData = await AsyncStorage.getItem(storageKey);
+            // if (storedData) {
+            //     console.log("스토리지에 기록이 있습니다. 리듀서 업데이트만 진행합니다.");
+            //     dispatch(fetchExerciseRecordSuccess({
+            //         exerciseId, 
+            //         exerciseService, 
+            //         recordDate, 
+            //         data: JSON.parse(storedData)
+            //     }));
+            //     return JSON.parse(storedData);
+            // }
 
             // AsyncStorage에 데이터가 없으면 새로 요청
             return fetchData();
@@ -63,17 +63,17 @@ export const callFetchExercisesRecordAPI = (exerciseId, memberId, exerciseServic
                         data: result 
                     }));
 
-                    // 만료일을 1년 후로 설정
-                    const expirationDate = new Date();
-                    expirationDate.setFullYear(expirationDate.getFullYear() + 1);  // 1년 후로 설정
-                    // 저장할 데이터에 만료일 추가
-                    const dataToStore = {
-                        ...result,
-                        expirationDate: expirationDate.toISOString(),
-                    };
+                    // // 만료일을 1년 후로 설정
+                    // const expirationDate = new Date();
+                    // expirationDate.setFullYear(expirationDate.getFullYear() + 1);  // 1년 후로 설정
+                    // // 저장할 데이터에 만료일 추가
+                    // const dataToStore = {
+                    //     ...result,
+                    //     expirationDate: expirationDate.toISOString(),
+                    // };
 
-                    await AsyncStorage.setItem(storageKey, JSON.stringify(dataToStore));
-                    console.log('데이터가 AsyncStorage에 저장되었습니다.');
+                    // await AsyncStorage.setItem(storageKey, JSON.stringify(dataToStore));
+                    // console.log('데이터가 AsyncStorage에 저장되었습니다.');
 
                     return result;
                 } else {
@@ -226,6 +226,78 @@ export const callVolumeExerciseRecord = (payload) => {
         } catch (error) {
             console.error('운동 기록 조회 중 오류 발생:', error);
             return Promise.reject(error); // 오류를 상위로 전달
+        }
+    };
+};
+
+
+// memberId 와 recordDate 만으로 exerciseService 1,2,3 에대한 기록조회
+export const loadExerciseRecordsForDate = (memberId, recordDate) => {
+    return async (dispatch) => { 
+
+        try {
+            return fetchData();
+
+            async function fetchData() {
+                const requestURL = 'http://localhost:8080/exercisesRecord/recordsForDate';
+                const accessToken = await AsyncStorage.getItem('accessToken');
+
+                const response = await fetch(requestURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify({ memberId, recordDate }),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    // console.log(result);
+
+                    result.forEach(record => {
+                        // recordDate를 '0000-00-00' 형식으로 변환
+                        const formattedDate = Array.isArray(record.recordDate)
+                            ? `${record.recordDate[0]}-${String(record.recordDate[1]).padStart(2, '0')}-${String(record.recordDate[2]).padStart(2, '0')}`
+                            : record.recordDate;
+                    
+                        // 각 record에 대해 dispatch 호출
+                        dispatch(fetchExerciseRecordSuccess({
+                            exerciseId: record.exercise.id, 
+                            exerciseService: record.exerciseService, 
+                            recordDate: formattedDate, // 변환된 recordDate 사용
+                            data: record // 각 record 데이터를 개별적으로 전달
+                        }));
+                    });
+                    
+
+                    return result;
+                } else {
+                    if (response.status === 401) {
+                        try {
+                            const newAccessToken = await refreshAccessToken();
+                            if (newAccessToken) {
+                                console.log('새로운 토큰 발급:', newAccessToken);
+                                await AsyncStorage.setItem('accessToken', newAccessToken);
+                                return dispatch(loadExerciseRecordsForDate(memberId, recordDate));
+                            } else {
+                                console.error('토큰 갱신 실패');
+                                throw new Error('Failed to refresh access token');
+                            }
+                        } catch (refreshError) {
+                            console.error('토큰 갱신 중 오류 발생:', refreshError);
+                            throw refreshError;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            
+                console.error('운동 기록 조회 중 오류 발생:', error);
+                dispatch(fetchExercisesRecordFailure(error.message));
+                throw error;
+        
         }
     };
 };

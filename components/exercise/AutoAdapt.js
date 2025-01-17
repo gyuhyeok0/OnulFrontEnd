@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
 import { isSameDay } from 'date-fns'; // 날짜 비교를 위한 라이브러리
 import { selectBodyDataByDate } from '../../src/modules/BodySlice';
+// import { loadDummyExerciseData } from '../../src/modules/ExerciseRecordSlice';
 
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
