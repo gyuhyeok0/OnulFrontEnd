@@ -84,12 +84,13 @@ const exerciseRecordSlice = createSlice({
     },
 });
 
-// selectTodayFoodData 셀렉터 예시 (확인해보세요)
+// selectTodayFoodData 셀렉터 (오늘 날짜를 인자로 받도록 수정)
 export const selectTodayFoodData = createSelector(
     (state) => state.totalFood.foodRecords, // 상태에서 foodRecords를 가져옵니다.
-    (foodRecords) => {
-        const dateKey = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'numeric', day: 'numeric' });
-        const todayData = foodRecords[dateKey] || {}; // 오늘 날짜에 해당하는 데이터 가져오기
+    (_, today) => today,  // `today`를 인자로 받습니다.
+    (foodRecords, today) => {
+        const dateKey = today; // 전달된 today를 사용
+        const todayData = foodRecords[dateKey] || {}; // 전달된 날짜에 해당하는 데이터 가져오기
 
         // 필요한 경우 recipeNames도 반환
         return {

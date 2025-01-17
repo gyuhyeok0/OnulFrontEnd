@@ -15,9 +15,12 @@ const Food = () => {
 
     const { isDateChanged } = useCurrentWeekAndDay();
     
-    // Redux에서 오늘 날짜 기준 데이터를 조회
-    const todayFoodData = useSelector(selectTodayFoodData); // 수정된 부분
+    // 오늘 날짜 계산 (YYYY-MM-DD 형식)
+    const today = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'numeric', day: 'numeric' });
 
+    // Redux에서 오늘 날짜 기준 데이터를 조회
+    const todayFoodData = useSelector((state) => selectTodayFoodData(state, today));
+    
     const [unit, setUnit] = useState('g'); // 기본 단위는 'g'
 
     const [mealType, setMealType] = useState(''); // 현재 선택된 식사 타입
