@@ -28,7 +28,7 @@ import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExe
 import { useFocusEffect } from '@react-navigation/native';
 import { addDefaultSetsToRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 import _ from 'lodash';
-import {callVolumeExerciseRecord} from '../../src/apis/ExerciseRecordAPI'
+// import {callVolumeExerciseRecord} from '../../src/apis/ExerciseRecordAPI'
 
 
 const OnSchedule = () => {
@@ -103,21 +103,21 @@ const OnSchedule = () => {
         prevExercises.current = reorderedExercises;
     }, [reorderedExercises]);
 
-    useEffect(() => {
-        if (mostRecordExercise && mostRecordExercise.length > 0) {
-            console.log("전송용 아이디" + mostRecordExercise);
+    // useEffect(() => {
+    //     if (mostRecordExercise && mostRecordExercise.length > 0) {
+    //         console.log("전송용 아이디" + mostRecordExercise);
 
-            const exerciseServiceNumber = 1;
+    //         const exerciseServiceNumber = 1;
 
-            const payload = {
-                memberId,
-                exerciseServiceNumber,
-                exerciseIds: mostRecordExercise, // 배열 형태로 묶어서 전송
-            };
+    //         const payload = {
+    //             memberId,
+    //             exerciseServiceNumber,
+    //             exerciseIds: mostRecordExercise, // 배열 형태로 묶어서 전송
+    //         };
 
-            dispatch(callVolumeExerciseRecord(payload));            
-        }
-    }, [mostRecordExercise]);
+    //         dispatch(callVolumeExerciseRecord(payload));            
+    //     }
+    // }, [mostRecordExercise]);
     
 
     

@@ -145,9 +145,9 @@ const Record = ({ navigation }) => {
                     <View style={{ marginLeft: 15, flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ width: 8, height: 8, backgroundColor: '#00adf5', borderRadius: 10 }}></View>
                         <Text style={styles.explanationText}>운동기록</Text>
-                        <View style={{ width: 8, height: 8, backgroundColor: '#FF76CF', borderRadius: 10 }}></View>
-                        <Text style={styles.explanationText}>식단기록</Text>
                         <View style={{ width: 8, height: 8, backgroundColor: '#FAF335', borderRadius: 10 }}></View>
+                        <Text style={styles.explanationText}>식단기록</Text>
+                        <View style={{ width: 8, height: 8, backgroundColor: '#FF76CF', borderRadius: 10 }}></View>
                         <Text style={styles.explanationText}>신체기록</Text>
                     </View>
                 </View>
@@ -160,10 +160,14 @@ const Record = ({ navigation }) => {
                     ) : (
                         <>
                             {selectedDateData.exerciseExists && <ExerciseRecord selectDates={selectDates} memberId={memberId} />}
-                            {selectedDateData.foodExists && <FoodRecord selectDates={selectDates} />}
-                            {selectedDateData.bodyExists && <BodyRecord selectDates={selectDates} />}
+                            {selectedDateData.foodExists && <FoodRecord selectDates={selectDates} memberId={memberId} />}
+                            {selectedDateData.bodyExists && <BodyRecord selectDates={selectDates} memberId={memberId} />}
                         </>
                     )}
+                </View>
+
+                <View style={{height: 50}}>
+                                
                 </View>
             </ScrollView>
 

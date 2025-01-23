@@ -212,8 +212,8 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
                 style={[
                     style,
                     {
-                        backgroundColor: set.completed ? '#4BA262' : '#525E77',
-                        color: set.completed ? '#96D3A6' : 'white',
+                        backgroundColor: set.completed ? '#1EAE98' : '#525E77',
+                        color: set.completed ? '#55E3C1' : 'white',
                     },
                 ]}
                 onChangeText={handleTextChange}

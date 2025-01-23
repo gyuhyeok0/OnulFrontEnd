@@ -21,23 +21,17 @@ import moment from 'moment'; // 날짜 형식화를 위한 moment 라이브러�
 import { updateExerciseSetsInRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 import { useQuery } from '@tanstack/react-query';
 import { selectExerciseRecordByDetails } from '../../src/modules/ExerciseRecordSlice';
+import { selectLatestPreVolume, updateExerciseVolume } from '../../src/modules/VolumeSlice';
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 
-    const recordDate = useSelector((state) => state.latestExerciseRecord[exercise.id]);
-
-    const recordData = useSelector((state) =>
-        selectExerciseRecordByDetails(state, exercise.id, exerciseServiceNumber, recordDate)
-    );
-
-    const exerciseRecordData = useSelector((state) => state.exerciseRecord.exercisesRecord);
-
     const [volume, setVolume] = useState(0); // volume을 상태로 관리
     // const [preVolume, setPreVolume] = useState(0); // volume을 상태로 관리
-    const [volumeDifference, setVolumeDifference] = useState(0); // volume을 상태로 관리
+
+    const [volumeDifference, setVolumeDifference] = useState(null); // 볼륨 차이
 
 
     //운동 정보 토글
@@ -63,119 +57,89 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const sets = useSelector((state) =>
         state.stateExercise.exerciseSets[`${exercise.id}-${exerciseServiceNumber}`]?.sets || []
     );
-    
 
-    const preVolume = useRef(null);
+    const exerciseId = exercise.id;
+
+    // 가장 최근 볼륨 가져오기
+    const latestPreVolume = useSelector((state) => {
+        return selectLatestPreVolume(state, exerciseId);
+    });
+
+
 
     useEffect(() => {
-        if (!recordData || recordData.length === 0) return;  // Prevent execution if recordData is empty or undefined
+        // 초기 상태는 volumeDifference를 0으로 설정
 
-        // console.log(recordData);
-
-        let volume = null;
-
-    // 배열의 마지막 항목에서 exerciseType을 가져옵니다.
-        const lastSet = recordData[recordData.length - 1];
-
-        const exerciseType = lastSet ? lastSet.exerciseType : null;
-    
-        switch (exerciseType) {
-            case 1: // repsVolume
-                volume = lastSet.repsVolume;
-                break;
-            case 2: // kmVolume 또는 miVolume
-                volume = kmUnit === 'km' ? lastSet.kmVolume : lastSet.miVolume;
-                break;
-            case 3: // kgVolume 또는 lbsVolume
-                volume = weightUnit === 'kg' ? lastSet.kgVolume : lastSet.lbsVolume;
-                break;
-            case 4: // timeVolume
-                volume = lastSet.timeVolume;
-                break;
-            default:
-                console.warn("Unknown exerciseType:", lastSet.exerciseType);
+        console.log(latestPreVolume);
+        if (volumeDifference === null) {
+            setVolumeDifference(0);
         }
+    
+        let difference;
+    
+        // 오늘 볼륨과 어제 볼륨 값이 모두 유효한지 확인
+        if (latestPreVolume !== null && volume !== null) {
+            // volume이 시간 형식이라면, timeToSeconds 함수로 변환하여 차이 계산
+            if (typeof volume === "string" && typeof latestPreVolume === "string") {
+                difference = timeToSeconds(volume) - timeToSeconds(latestPreVolume);
+            } else {
+                // 숫자 형식이라면 그냥 차이 계산
+                difference = volume - latestPreVolume;
+            }
+    
+            console.log(difference);
+    
+            // 차이가 음수일 경우 0으로 설정
+            if (difference < 0) {
+                difference = 0;
+            }
+        } else {
+            // latestPreVolume 또는 volume이 null인 경우 기존 volume 값을 사용
+            // 만약 latestPreVolume이 null이면, difference를 0으로 설정
+            difference = volume || 0; // volume이 null일 경우 0으로 처리
 
-        // preVolume의 값을 설정합니다.
-        preVolume.current = volume;
-
-    }, [kmUnit, weightUnit]); // AsyncStorage에서 가져온 값 추가
+            console.log("null 이에요")
+        }
+    
+        setVolumeDifference(difference);
+    
+    }, [latestPreVolume, volume]);
+    
+    
     
 
     // 볼륨이 달라질때마다 계산
+    // 리듀서에 볼륨 저장
     useEffect(() => {            
-        // console.log(exercise.id+" "+preVolume.current);
-        volumeDifferenceCalculation();
+
+        console.log("볼륨이달라질때마다")
+        if (volume) {
+            const preVolume = volume;
+            const date = new Date().toISOString().split('T')[0]; // 현재 날짜 (YYYY-MM-DD 형식)
+            // Redux 상태 업데이트
+            dispatch(updateExerciseVolume({ exerciseId, date, preVolume }));
+        }
     }, [volume]);
+    
+    // 볼륨 차이 계산 및 상태 업데이트
+    useEffect(() => {
+        console.log("가장 최근 볼륨 (오늘 제외):", latestPreVolume);
+        if (latestPreVolume !== null && volume !== null) {
+            const difference =
+                typeof volume === "string" && typeof latestPreVolume === "string"
+                    ? timeToSeconds(volume) - timeToSeconds(latestPreVolume)
+                    : volume - latestPreVolume;
 
+            setVolumeDifference(difference); // 볼륨 차이 상태 업데이트
+        }
+    }, [latestPreVolume, volume]);
+
+    // 시간 → 초 변환 함수
     const timeToSeconds = (timeString) => {
-        if (!timeString || typeof timeString !== "string") return 0;
-    
-        const [minutes, seconds] = timeString.split(":").map((part) => parseInt(part, 10));
-        return (minutes || 0) * 60 + (seconds || 0);
+        const [minutes, seconds] = timeString.split(":").map(Number);
+        return minutes * 60 + seconds;
     };
     
-    const secondsToTime = (seconds) => {
-        if (isNaN(seconds) || seconds <= 0) return "00:00";
-    
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-    
-        return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
-    };
-    
-    // 볼륨 차이 계산
-    const volumeDifferenceCalculation = () => {
-
-        let volumeInSeconds = 0;
-        let preVolumeInSeconds = 0;
-    
-        // preVolume.current가 null일 때 기본값을 설정
-        if (preVolume.current == null) {
-            preVolumeInSeconds = 0;
-        } else {
-            preVolumeInSeconds = preVolume.current;
-        }
-
-        console.log("이전값"+preVolumeInSeconds);
-
-        
-
-        if (typeof volume === "string" && volume.includes(":")) {
-            // volume이 시간 형식일 경우
-            volumeInSeconds = timeToSeconds(volume);
-        } else if (typeof volume === "number") {
-            // volume이 숫자일 경우
-            volumeInSeconds = volume;
-        }
-    
-        if (typeof preVolumeInSeconds === "string" && preVolumeInSeconds.includes(":")) {
-            // preVolume이 시간 형식일 경우
-            preVolumeInSeconds = timeToSeconds(preVolumeInSeconds);
-        } else if (typeof preVolumeInSeconds === "number") {
-            // preVolume이 숫자일 경우
-            preVolumeInSeconds = preVolumeInSeconds;
-        }
-    
-        // 차이 계산
-        let difference = volumeInSeconds >= preVolumeInSeconds 
-            ? volumeInSeconds - preVolumeInSeconds 
-            : 0;
-
-        difference = parseFloat(difference.toFixed(2));
-
-        // 결과 출력
-        if (typeof volume === "string" || typeof preVolume === "string") {
-            // 시간 형식으로 변환하여 출력
-            setVolumeDifference(secondsToTime(difference));
-        } else {
-            // 숫자로 출력
-            setVolumeDifference(difference);
-        }
-    };
-    
-    
-
     // 운동 세트 상태 업데이트
     const updateSets = (updatedSets) => {
         // console.log("뭐로 보내니?", JSON.stringify(updatedSets, null, 2));
@@ -212,7 +176,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
     };
     
-    // 볼륨 계산 
+    // today 볼륨 계산 
     useEffect(() => {
         // console.log("EachExercise 세트가 변경되었습니다.");
     
@@ -435,6 +399,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const submitExerciseFilter = async (set, index) => {
         setCurrentSetNumber(index); // 상태 업데이트
         setCurrentSet(set);
+
     
         setTimeout(async () => {
             try {
@@ -610,12 +575,14 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
                         <View style={styles.weightChangeContainer}>
                             <Text style={styles.weightChangeText}>up</Text>
-                            <Text style={styles.weightChangeValue}>{volumeDifference}</Text>
+                            <Text style={styles.weightChangeValue}>
+                                {isNaN(volumeDifference) ? 0 : Math.max(volumeDifference, 0)} {/* NaN은 0으로, 음수는 0으로, 양수는 그대로 */}
+                            </Text>
                             <Text style={styles.weightChangeUnit}>
                                 {kmAndTime 
                                     ? kmUnit
                                     : time 
-                                    ? '시간' 
+                                    ? '초' 
                                     : number 
                                     ? '회' 
                                     : weightUnit}
@@ -728,11 +695,11 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                 {sets.map((set, index) => (
                                     <View key={index} style={styles.setSection}>
                                         <Pressable 
-                                            style={[styles.setButton, { backgroundColor: set.completed ? '#4BA262' : '#525E77' }]}
+                                            style={[styles.setButton, { backgroundColor: set.completed ? '#1EAE98' : '#525E77' }]}
                                         >
                                             <Text 
                                                 style={{ 
-                                                    color: set.completed ? '#96D3A6' : '#B0B0B0', 
+                                                    color: set.completed ? '#55E3C1' : '#B0B0B0', 
                                                     textAlign: 'center', 
                                                     fontWeight: 'bold' 
                                                 }}
@@ -837,12 +804,12 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
                                         <Pressable 
                                             style={[styles.input, styles.completeButton, { 
-                                                backgroundColor: set.completed ? '#4BA262' : '#525E77' 
+                                                backgroundColor: set.completed ? '#1EAE98' : '#525E77' 
                                             }]} 
                                             onPress={() => handleCompletePress(index)}
                                         >
                                             <Text style={{ 
-                                                color: set.completed ? '#96D3A6' : '#B0B0B0', 
+                                                color: set.completed ? '#55E3C1' : '#B0B0B0', 
                                                 fontWeight: 'bold', 
                                                 textAlign: 'center' 
                                             }}>완료</Text>

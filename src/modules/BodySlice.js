@@ -14,9 +14,6 @@ const bodySlice = createSlice({
 
             const { dateKey, bodyData } = action.payload;
 
-            console.log("dateKey:", dateKey);  // dateKey 출력
-            console.log("bodyData:", bodyData); // bodyData 출력
-
             if (dateKey) {
                 if (state.bodyData[dateKey]) {
                     console.log(`기존 데이터가 존재합니다. ${dateKey} 데이터를 업데이트합니다.`);
@@ -31,7 +28,6 @@ const bodySlice = createSlice({
                 console.error("DateKey is missing in the payload.");
             }
 
-            console.log("저장된 bodyData:", JSON.stringify(state.bodyData, null, 2));
         },
 
         fetchBodyDataFailure: (state, action) => {

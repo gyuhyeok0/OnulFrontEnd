@@ -21,6 +21,8 @@ const Food = () => {
     // Redux에서 오늘 날짜 기준 데이터를 조회
     const todayFoodData = useSelector((state) => selectTodayFoodData(state, today));
     
+    const totalFoodState2 = useSelector((state) => state.totalFood);
+
     const [unit, setUnit] = useState('g'); // 기본 단위는 'g'
 
     const [mealType, setMealType] = useState(''); // 현재 선택된 식사 타입
@@ -29,6 +31,7 @@ const Food = () => {
 
 
     useEffect(() => {
+
         const fetchUnit = async () => {
             try {
                 let storedUnit = await AsyncStorage.getItem('gOrOzUnit');
@@ -61,34 +64,39 @@ const Food = () => {
     
 
 
+    // 변환 함수 추가
+    const convertValue = (value, unit) => {
+        if (unit === 'oz') {
+            return parseFloat((value / 28.3495).toFixed(2)); // g -> oz 변환 후 소수점 뒤 0 제거
+        }
+        return parseFloat(value); // 기본 g 단위 그대로 반환 (소수점 뒤 0 제거)
+    };
+
+    // todayFoodData와 unit 변경 시 mealData 업데이트
     useEffect(() => {
-        console.log(todayFoodData);
+        console.log("실행")
         if (todayFoodData && unit) {
-            const conversionFactor = 0.03527396; // g to oz 변환 계수
-
             setMealData((prevData) => {
-                const updatedData = { ...prevData }; // 이전 상태 복사
-
-                Object.keys(todayFoodData).forEach((mealType) => {
+                const updatedData = { ...prevData };
+                ['breakfast', 'lunch', 'dinner', 'snack'].forEach((mealType) => {
                     const nutrition = todayFoodData[mealType]?.totalNutrition;
-
                     if (nutrition) {
                         updatedData[mealType] = {
                             totalNutrition: {
-                                carbs: unit === 'oz' ? roundToOneDecimal(nutrition.carbs * conversionFactor) : nutrition.carbs,
-                                fat: unit === 'oz' ? roundToOneDecimal(nutrition.fat * conversionFactor) : nutrition.fat,
-                                grams: unit === 'oz' ? roundToOneDecimal(nutrition.grams * conversionFactor) : nutrition.grams,
+                                carbs: convertValue(nutrition.carbs, unit),
+                                fat: convertValue(nutrition.fat, unit),
+                                grams: convertValue(nutrition.grams, unit),
                                 kcal: nutrition.kcal, // kcal은 변환하지 않음
-                                protein: unit === 'oz' ? roundToOneDecimal(nutrition.protein * conversionFactor) : nutrition.protein,
+                                protein: convertValue(nutrition.protein, unit),
                             },
                         };
                     }
                 });
-
                 return updatedData;
             });
         }
-    }, [todayFoodData, unit]); // todayFoodData와 unit이 변경될 때만 실행
+    }, [todayFoodData, unit]);
+
 
     
     
@@ -138,75 +146,95 @@ const Food = () => {
 
     return (
         <>
-            <View style={styles.container}>
-                <View style={styles.body}>
-                    <Text style={styles.titleText}>식단</Text>
+        <View style={styles.container}>
+            <View style={styles.body}>
+                <Text style={styles.titleText}>식단</Text>
 
-                    <Text style={styles.subtitle}>오늘의 식단을 추가해주세요</Text>
+                <Text style={styles.subtitle}>오늘의 식단을 추가해주세요</Text>
 
-                    <View style={[styles.rowCommon, styles.row1]}>    
+                <View style={[styles.rowCommon, styles.row1]}>    
 
-                        {['breakfast', 'lunch', 'dinner', 'snack'].map((meal, index) => (
+                    {['breakfast', 'lunch', 'dinner', 'snack'].map((meal, index) => {
+                        const mealData = todayFoodData.find((data) => data.mealType === meal);
+
+                        return (
                             <TouchableOpacity
                                 key={meal}
                                 style={styles.recordContainer}
                                 onPress={() => openFindPasswordModal(meal)}
                             >
-                                <Text style={styles.subTitle}>{meal === 'breakfast' ? '아침' : meal === 'lunch' ? '점심' : meal === 'dinner' ? '저녁' : '간식'}</Text>
+                                <Text style={styles.subTitle}>
+                                    {meal === 'breakfast' ? '아침' : meal === 'lunch' ? '점심' : meal === 'dinner' ? '저녁' : '간식'}
+                                </Text>
 
                                 <View style={styles.rowCenter}>
 
                                     <View style={styles.recordBox}>
                                         <View style={styles.rowFlexStart}>
-                                            <Text style={styles.valueText}>{mealData[meal].totalNutrition.kcal}</Text>
+                                            <Text style={styles.valueText}>
+                                                {mealData?.totalNutrition.kcal || 0}
+                                            </Text>
                                             <Text style={styles.unitText}>kcal</Text>
                                         </View>
                                         <View style={styles.divider} />
                                         <View style={styles.rowFlexStart}>
-                                            <Text style={styles.valueText}>{mealData[meal].totalNutrition.grams}</Text>
+                                            <Text style={styles.valueText}>
+                                                {convertValue(mealData?.totalNutrition.grams || 0, unit)}
+                                            </Text>
                                             <Text style={styles.unitText}>{unit}</Text>
                                         </View>
                                     </View>
 
                                     <View style={styles.marginLeft8}>
                                         
-                                    <View style={styles.recordStatusContainer}>
-                                        {todayFoodData && todayFoodData[meal]?.recipeNames && todayFoodData[meal].recipeNames.length > 0 ? (
-                                            <Text style={styles.recordStatusText}>{todayFoodData[meal].recipeNames.join(", ")}</Text> // 레시피 이름 표시
-                                        ) : (
-                                            <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
-                                        )}
-                                    </View>
+                                        <View style={styles.recordStatusContainer}>
+                                            {mealData?.recipeNames && mealData.recipeNames.length > 0 ? (
+                                                <Text style={styles.recordStatusText}>
+                                                    {mealData.recipeNames.join(", ")}
+                                                </Text> // 레시피 이름 표시
+                                            ) : (
+                                                <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
+                                            )}
+                                        </View>
 
                                         <View style={styles.macroContainer}>
                                             <View style={styles.macroItem}>
                                                 <Text style={styles.macroLabel}>탄수화물</Text>
-                                                <Text style={styles.macroValue}>{mealData[meal].totalNutrition.carbs} {unit}</Text>
+                                                <Text style={styles.macroValue}>
+                                                    {convertValue(mealData?.totalNutrition.carbs || 0, unit)} {unit}
+                                                </Text>
                                             </View>
 
                                             <View style={styles.divider2} />
 
                                             <View style={styles.macroItem}>
                                                 <Text style={styles.macroLabel}>단백질</Text>
-                                                <Text style={styles.macroValue}>{mealData[meal].totalNutrition.protein} {unit}</Text>
+                                                <Text style={styles.macroValue}>
+                                                    {convertValue(mealData?.totalNutrition.protein || 0, unit)} {unit}
+                                                </Text>
                                             </View>
 
                                             <View style={styles.divider2} />
 
                                             <View style={styles.macroItem}>
                                                 <Text style={styles.macroLabel}>지방</Text>
-                                                <Text style={styles.macroValue}>{mealData[meal].totalNutrition.fat} {unit}</Text>
+                                                <Text style={styles.macroValue}>
+                                                    {convertValue(mealData?.totalNutrition.fat || 0, unit)} {unit}
+                                                </Text>
                                             </View>
                                         </View>
                                     </View>
                                 </View>
                             </TouchableOpacity>
-                        ))}
-
-                    </View>
+                        );
+                    })}
 
                 </View>
-            </View>            
+            </View>
+        </View>
+
+
+                
 
             {/* isModalVisible이 true일 때만 Foodmodal 렌더링 */}
             {isModalVisible && (
@@ -243,9 +271,9 @@ const styles = StyleSheet.create({
     },
     recordContainer: {
         padding: 5,
-        backgroundColor: '#515C78',
+        backgroundColor: '#333845',
         minHeight: 80,
-        borderRadius: 15,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 8,
@@ -256,6 +284,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
         marginTop: 8,
+        marginBottom: 5
     },
     weightDisplay: {
         fontSize: 22,
@@ -304,7 +333,7 @@ const styles = StyleSheet.create({
         height: 75,
         padding: 8,
         backgroundColor: '#222732',
-        borderRadius: 10,
+        borderRadius: 5,
         justifyContent: 'center',
     },
     rowFlexStart: {
@@ -326,12 +355,14 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         justifyContent: 'center',
     },
+    
     recordStatusContainer: {
-        backgroundColor: '#497CF4',
+        borderBottomWidth: 2, // Add a bottom border
+        borderBottomColor: '#fff', // Set the border color
         padding: 3,
-        borderRadius: 5,
         marginBottom: 3,
     },
+
     recordStatusText: {
         color: '#fff',
         fontSize: 14,
