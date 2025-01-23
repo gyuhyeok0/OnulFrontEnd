@@ -3,8 +3,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { refreshAccessToken } from '../apis/Token';
-
-import { deleteExerciseRecordSuccess, registExerciseRecordSuccess} from '../modules/ExerciseRecordSlice'
 import moment from 'moment'; // moment 가져오기
 
 
@@ -69,16 +67,10 @@ export const submitExerciseRecord = async (memberId, exerciseService, setNumber,
 export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerciseService, accessToken = null, dispatch) => {
     try {
 
-        console.log("삭제 호출 되긴하니?")
         // 토큰이 없을 경우 AsyncStorage에서 가져오기
         if (!accessToken) {
             accessToken = await AsyncStorage.getItem('accessToken');
         }
-
-        // recordDate 확인 및 배열 형태로 변환
-        const recordDate = Array.isArray(exercise.recordDate)
-            ? exercise.recordDate
-            : moment().format('YYYY-MM-DD').split('-'); // 오늘 날짜 배열로 기본값 설정
 
         const response = await fetch('http://localhost:8080/submitExercises/delete', {
             method: 'POST',
@@ -106,17 +98,6 @@ export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerci
                 throw new Error('서버 요청이 실패했습니다.');
             }
         }
-
-        // 서버 요청이 성공하면 Redux 상태에서 데이터 삭제
-        dispatch(deleteExerciseRecordSuccess({
-            exerciseId: exercise.id, 
-            exerciseService, 
-            recordDate: recordDate.join('-'),
-        }));
-        // AsyncStorage에서 데이터 삭제
-        const storageKey = `${exercise.id}_${exerciseService}_${recordDate.join('-')}`;
-        await AsyncStorage.removeItem(storageKey);
-        console.log('운동 기록이 성공적으로 삭제되었습니다.');
 
         // 서버 응답 데이터 반환
         const data = await response.json();

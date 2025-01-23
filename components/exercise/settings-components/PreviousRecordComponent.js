@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { previousRecordDate } from '../../../src/apis/PreviousRecordDate';
-import { callFetchExercisesRecordAPI } from '../../../src/apis/ExerciseRecordAPI';
+import { callFetchExercisesRecordAPI, fetchExercisesRecord } from '../../../src/apis/ExerciseRecordAPI';
 import { selectExerciseRecordByDetails } from '../../../src/modules/ExerciseRecordSlice';
 import moment from 'moment';
 
@@ -19,12 +19,12 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
     const [disableNext, setDisableNext] = useState(true);
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
+    const [recordData, setRecordData] = useState([]); // 로딩 상태 추가
+
+
     const dispatch = useDispatch();
     const exerciseId = exercise.id;
 
-    const recordData = useSelector((state) =>
-        selectExerciseRecordByDetails(state, exerciseId, exerciseService, renderingDate)
-    );
 
     const today = moment().format('YYYY-MM-DD');
 
@@ -56,18 +56,23 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
         }
     }, [renderingDate, storedDates]);
 
+
     useEffect(() => {
-        if (renderingDate) {
-            setIsLoading(true); // 로딩 시작
-            if (!recordData) {
-                console.log("운동기록이 디스패치 합니다.")
-                dispatch(callFetchExercisesRecordAPI(exerciseId, memberId, exerciseService, renderingDate))
-                    .finally(() => setIsLoading(false)); // 로딩 끝
-            } else {
-                setIsLoading(false); // 로딩 끝
+        const fetchExerciseRecord = async () => {
+            try {
+                const result = await fetchExercisesRecord(exerciseId, memberId, exerciseService, renderingDate);
+
+                console.log("운동 기록 가져온 결과:", result);
+                // 결과에 대해 추가적인 로직을 여기서 처리할 수 있습니다.
+
+                setRecordData(result);
+            } catch (error) {
+                console.error('운동 기록 가져오기 중 오류 발생:', error);
             }
-        }
-    }, [recordData, renderingDate, dispatch, exerciseId, memberId, exerciseService]);
+        };
+
+        fetchExerciseRecord();
+    }, [renderingDate, exerciseId, memberId, exerciseService]);
 
     const changeDate = (direction) => {
         if (storedDates.length === 0) return;
@@ -83,9 +88,14 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
 
     
     const renderRow = () => {
-    
-        const exerciseType = recordData[0].exerciseType; // 첫 번째 데이터의 exerciseType 사용
 
+        if (!recordData || recordData.length === 0 || !recordData[0]) {
+            console.warn('recordData가 비어있거나 유효하지 않습니다.');
+            return null;
+        }
+    
+        const exerciseType = recordData[0]?.exerciseType; // 안전하게 접근
+    
         return (
             <View style={{flexDirection: 'row', gap:5, marginBottom: 5 }}>
                 <View style={{width: 30}}>
@@ -161,7 +171,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
 
                     {renderRow()}
 
-                    {Object.values(recordData).filter((set) => set.set).map((set, index) => (
+                    {Object.values(recordData).filter((set) => set?.set).map((set, index) => (
                         <View key={set.id} style={styles.setContainer}>
                             <View style={styles.setSection}>
                                 <Text style={styles.recordText}>{index + 1}</Text>
@@ -170,7 +180,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                             {/* Exercise Type 1 */}
                             {set.exerciseType === 1 && (
                                 <View style={styles.recordSection}>
-                                    <Text style={styles.recordText}>{set.set?.reps || '-'}</Text>
+                                    <Text style={styles.recordText}>{set?.set?.reps || '-'}</Text>
                                 </View>
                             )}
 
@@ -179,18 +189,17 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                                 <>
                                     <View style={styles.recordSection}>
                                         {kmUnit === 'km' && (
-                                            <Text style={styles.recordText}>{set.set?.km || '-'}</Text>
+                                            <Text style={styles.recordText}>{set?.set?.km || '-'}</Text>
                                         )}
                                         {kmUnit === 'mi' && (
-                                            <Text style={styles.recordText}>{set.set?.mi || '-'}</Text>
+                                            <Text style={styles.recordText}>{set?.set?.mi || '-'}</Text>
                                         )}
                                     </View>
 
                                     <View style={styles.recordSection}>
-                                        <Text style={styles.recordText}>{set.set?.time || '-'}</Text>
+                                        <Text style={styles.recordText}>{set?.set?.time || '-'}</Text>
                                     </View>
                                 </>
-
                             )}
                             {/* Exercise Type 3 */}
                             {set.exerciseType === 3 && (
@@ -198,15 +207,15 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
 
                                     <View style={styles.recordSection}>
                                         {weightUnit === 'kg' && (
-                                            <Text style={styles.recordText}>{set.set?.kg || '-'}</Text>
+                                            <Text style={styles.recordText}>{set?.set?.kg || '-'}</Text>
                                         )}
                                         {weightUnit === 'lbs' && (
-                                            <Text style={styles.recordText}>{set.set?.lbs || '-'}</Text>
+                                            <Text style={styles.recordText}>{set?.set?.lbs || '-'}</Text>
                                         )}
                                     </View>
-                                    
+
                                     <View style={styles.recordSection}>
-                                        <Text style={styles.recordText}>{set.set?.reps || '-'}</Text>
+                                        <Text style={styles.recordText}>{set?.set?.reps || '-'}</Text>
                                     </View>
 
                                 </>
@@ -214,11 +223,12 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                             {/* Exercise Type 4 */}
                             {set.exerciseType === 4 && (
                                 <View style={styles.recordSection}>
-                                    <Text style={styles.recordText}>{set.set?.time || '없음'}</Text>
+                                    <Text style={styles.recordText}>{set?.set?.time || '없음'}</Text>
                                 </View>
                             )}
                         </View>
                     ))}
+
                 </View>
             ) : (
                 <View style={styles.NonContainer}>
@@ -226,29 +236,6 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                 </View>
             )}
 
-                  <TouchableOpacity
-                onPress={async () => {
-                    try {
-                        const recordDateString = renderingDate; // 날짜 포맷
-                        const storageKey = `${exerciseId}_${exerciseService}_${recordDateString}`;
-
-                        // Redux에서 데이터 삭제
-                        dispatch(deleteExerciseRecordSuccess({
-                            exerciseId,
-                            exerciseService,
-                            recordDate: recordDateString,
-                        }));
-
-                        // // AsyncStorage에서 데이터 삭제
-                        await AsyncStorage.removeItem(storageKey);
-
-                    } catch (error) {
-                        console.error('운동 기록 삭제 중 오류 발생:', error);
-                    }
-                }}
-            >
-                <Text>특정 리듀서 밑 스토리지 삭제</Text>
-            </TouchableOpacity>
         </View>
     );
 };

@@ -91,8 +91,12 @@ const Body = ({ weightUnit, setWeightUnit }) => {
     
                 return updatedState;
             });
+    
+            // 완료 버튼 상태 해제
+            setPressedButtons((prev) => prev.filter((button) => button !== field));
         }
     };
+    
     
     
     useEffect(() => {
@@ -199,7 +203,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                         <View style={styles.recordContainer}>
                             <Text style={styles.subTitle}>체중</Text>
 
-                            <View style={{flexDirection:'row', margin:5}}>
+                            <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
                                 
                             <TextInput
                                 style={styles.weightDisplay}
@@ -212,7 +216,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 selectTextOnFocus={true}
                             />
 
-                                <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>{weightUnit}</Text>
+                                <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
                             </View>
 
                             <Pressable
@@ -230,7 +234,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                         <View style={styles.recordContainer}>
                             <Text style={styles.subTitle}>골격근량</Text>
 
-                            <View style={{flexDirection:'row', margin:5}}>
+                            <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
                                 
                             <TextInput
                                 style={styles.weightDisplay}
@@ -243,7 +247,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 selectTextOnFocus={true}
                             />
 
-                                <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>{weightUnit}</Text>
+                                <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
                             </View>
 
                             <Pressable
@@ -264,7 +268,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                         <View style={styles.recordContainer}>
                             <Text style={styles.subTitle}>체지방률</Text>
 
-                            <View style={{flexDirection:'row', margin:5}}>
+                            <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
                                 
                             <TextInput
                                 style={styles.weightDisplay}
@@ -283,7 +287,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
 
                             
 
-                                <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>%</Text>
+                                <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>%</Text>
                             </View>
                             <Pressable
                                 style={[
@@ -300,7 +304,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                         <View style={styles.recordContainer}>
                                 <Text style={styles.subTitle}>체지방량</Text>
 
-                                <View style={{flexDirection:'row', margin:5}}>
+                                <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
                                 
                                 <TextInput
                                     style={styles.weightDisplay}
@@ -313,7 +317,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                     selectTextOnFocus={true}
                                 />
 
-                                    <Text style={{fontSize:22, color:'white', fontWeight:'bold', marginLeft:5}}>{weightUnit}</Text>
+                                    <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
                                 </View>
 
                                 <Pressable
@@ -382,7 +386,7 @@ const styles = StyleSheet.create({
 
     recordContainer:{
         width: '49%',
-        backgroundColor:'#515C78',
+        backgroundColor:'#333845',
         minHeight: 80,
         borderRadius:15,
         justifyContent:'center',
@@ -391,7 +395,7 @@ const styles = StyleSheet.create({
 
 
     subTitle: {
-        fontSize: 17,
+        fontSize: 16,
         fontWeight: 'bold',
         color: '#FFFFFF',
         marginTop: 13,
@@ -401,15 +405,15 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         color: '#FFFFFF',
-        marginBottom: 5,
+        // marginBottom: 5,
         // backgroundColor:'white'
     },
 
     recordButton: {
         backgroundColor: '#497CF4',
         borderRadius: 20,
-        paddingVertical: 8,
-        paddingHorizontal: 30,
+        paddingVertical: 7,
+        paddingHorizontal: 20,
         marginBottom: 10,
     },
 

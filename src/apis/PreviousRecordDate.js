@@ -42,6 +42,8 @@ export const previousRecordDate = async (memberId, exerciseId, exerciseService) 
 
         // 서버로부터 반환된 데이터를 JSON으로 파싱
         const data = await response.json();
+
+        console.log(data);
         return data; // 반환된 데이터를 호출자에게 전달
 
     } catch (error) {

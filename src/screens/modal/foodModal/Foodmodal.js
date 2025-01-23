@@ -159,7 +159,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                 setTotalNutrition(prevTotal => {
                     const newTotal = {
                         grams: prevTotal.grams - convertToGrams(recipeData.grams, unit),
-                        kcal: prevTotal.kcal, // kcal은 그대로
+                        kcal: prevTotal.kcal - recipeData.kcal, // `kcal` 값을 빼기
                         carbs: prevTotal.carbs - convertToGrams(recipeData.carbs, unit),
                         protein: prevTotal.protein - convertToGrams(recipeData.protein, unit),
                         fat: prevTotal.fat - convertToGrams(recipeData.fat, unit),
@@ -181,7 +181,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                 setTotalNutrition(prevTotal => {
                     const newTotal = {
                         grams: prevTotal.grams + convertToGrams(recipeData.grams, unit),
-                        kcal: prevTotal.kcal, // kcal은 그대로
+                        kcal: prevTotal.kcal + recipeData.kcal, // `kcal` 값을 누적
                         carbs: prevTotal.carbs + convertToGrams(recipeData.carbs, unit),
                         protein: prevTotal.protein + convertToGrams(recipeData.protein, unit),
                         fat: prevTotal.fat + convertToGrams(recipeData.fat, unit),
@@ -366,11 +366,20 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
 
     const closeRecipeModal = () => {
         setRecipeModalVisible(false);
+
+        setSelectedRecipeIds([]); // 선택된 레시피 ID 초기화
+        setSelectedRecipeNames([]); // 선택된 레시피 이름 초기화
+        setTotalNutrition({
+            grams: 0,
+            kcal: 0,
+            carbs: 0,
+            protein: 0,
+            fat: 0,
+        }); // 합산된 데이터 초기화
     };
 
     const closeFoodModal = () => {
         setNutritionalModalVisible(false);  // 모달을 닫습니다.
-    
         // freeOnclose가 true일 때만 onClose를 호출
         if (freeOnclose) {
             onClose(); // 성공 시 모달 닫기

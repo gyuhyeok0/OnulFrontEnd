@@ -4,7 +4,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setIsLoggedIn } from './modules/AuthSlice';  // Redux 액션 가져오기
 import initializeI18n from './locales/i18n'; // i18n 초기화 함수 가져오기
-import { deleteExpiredRecords } from './modules/ExerciseRecordSlice'; // Redux 액션 가져오기
+// import { deleteExpiredRecords } from './modules/ExerciseRecordSlice'; // Redux 액션 가져오기
 import { deleteBodyData } from './modules/BodySlice'; // Redux 액션 가져오기
 import { deleteFoodData } from './modules/TotalFoodSlice';
 
@@ -14,7 +14,7 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
 
     const bodyData = useSelector((state) => state.body);
     const foodData = useSelector((state) => state.totalFood);
-    const exerciseData = useSelector((state)=>state.exerciseRecord)
+    // const exerciseData = useSelector((state)=>state.exerciseRecord)
 
     useEffect(() => {
         const initialize = async () => {
@@ -55,85 +55,48 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
                     setIsTimerRunning(false); // 타이머 실행 상태 초기화
                 }
 
-                // // 모든 키 가져오기
-                // const allKeys = await AsyncStorage.getAllKeys();
-                // console.log('전체 키:', allKeys);
-
-                // // 숫자_숫자_날짜 형식에서 만료된 데이터만 필터링
-                // const currentDate = new Date();
-                // const expiredKeys = (
-                //     await Promise.all(
-                //         allKeys.map(async (key) => {
-                //             if (!key.match(/^\d+_\d+_\d{4}-\d{2}-\d{2}$/)) {
-                //                 return null; // 형식이 맞지 않는 키는 제외
-                //             }
-
-                //             const storedData = await AsyncStorage.getItem(key);
-                //             if (storedData) {
-                //                 try {
-                //                     const parsedData = JSON.parse(storedData);
-
-                //                     // expirationDate 확인
-                //                     if (parsedData.expirationDate) {
-                //                         const expirationDate = new Date(parsedData.expirationDate);
-                //                         if (expirationDate < currentDate) {
-                //                             return key; // 만료된 키 반환
-                //                         }
-                //                     }
-                //                 } catch (error) {
-                //                     console.error(`키 ${key}의 JSON 파싱 오류:`, error);
-                //                 }
-                //             }
-                //             return null; // 유효하지 않거나 만료되지 않은 키는 제외
-                //         })
-                //     )
-                // ).filter(Boolean); // null 값을 제거
-
-                // console.log('만료된 키 목록:', expiredKeys);
-
-                console.log(JSON.stringify(exerciseData, null, 2));
 
                 // cutoffDate 정의
                 const currentDate = new Date(); // 현재 날짜를 가져옵니다.
                 const cutoffDate = new Date();
                 cutoffDate.setMonth(currentDate.getMonth() - 6); // 6개월 전 기준 날짜 계산
 
-                // "26" 키 아래의 "1", "2", "3" 등의 서비스 키를 순회
-                const firstKey = Object.keys(exerciseData.exercisesRecord || {})[0]; // 첫 번째 키 "26" 추출
+                // // "26" 키 아래의 "1", "2", "3" 등의 서비스 키를 순회
+                // const firstKey = Object.keys(exerciseData.exercisesRecord || {})[0]; // 첫 번째 키 "26" 추출
 
-                if (firstKey) {
-                    const secondLevelKeys = Object.keys(exerciseData.exercisesRecord[firstKey]); // "26" 아래의 서비스 키들 (예: "1", "2", "3")
+                // if (firstKey) {
+                //     const secondLevelKeys = Object.keys(exerciseData.exercisesRecord[firstKey]); // "26" 아래의 서비스 키들 (예: "1", "2", "3")
 
-                    secondLevelKeys.forEach(serviceKey => {
-                        const exerciseDateKeys = Object.keys(exerciseData.exercisesRecord[firstKey][serviceKey]); // 각 서비스 키 아래의 날짜들
+                //     secondLevelKeys.forEach(serviceKey => {
+                //         const exerciseDateKeys = Object.keys(exerciseData.exercisesRecord[firstKey][serviceKey]); // 각 서비스 키 아래의 날짜들
 
-                        // 날짜 비교 (6개월 전 기준으로)
-                        const expiredKeys = exerciseDateKeys.filter(dateKey => {
-                            const [year, month, day] = dateKey.split('-').map(Number); // 날짜 키를 YYYY-MM-DD로 분리
-                            const recordDate = new Date(Date.UTC(year, month - 1, day)); // UTC 기준 Date 객체 생성
+                //         // 날짜 비교 (6개월 전 기준으로)
+                //         const expiredKeys = exerciseDateKeys.filter(dateKey => {
+                //             const [year, month, day] = dateKey.split('-').map(Number); // 날짜 키를 YYYY-MM-DD로 분리
+                //             const recordDate = new Date(Date.UTC(year, month - 1, day)); // UTC 기준 Date 객체 생성
 
-                            console.log('dateKey:', dateKey, 'recordDate:', recordDate, 'isOld:', recordDate < cutoffDate);
+                //             console.log('dateKey:', dateKey, 'recordDate:', recordDate, 'isOld:', recordDate < cutoffDate);
 
-                            return recordDate < cutoffDate; // 기준 날짜보다 이전이면 삭제
-                        });
+                //             return recordDate < cutoffDate; // 기준 날짜보다 이전이면 삭제
+                //         });
 
-                            // 새로 생성된 키 (exerciseId_service_recordDate 형식)으로 삭제할 키 목록 만들기
-                        const deleteKeys = expiredKeys.map(dateKey => `${firstKey}_${serviceKey}_${dateKey}`);
+                //             // 새로 생성된 키 (exerciseId_service_recordDate 형식)으로 삭제할 키 목록 만들기
+                //         const deleteKeys = expiredKeys.map(dateKey => `${firstKey}_${serviceKey}_${dateKey}`);
 
-                        console.log(deleteKeys);
+                //         console.log(deleteKeys);
 
-                        if (deleteKeys.length > 0) {
+                //         if (deleteKeys.length > 0) {
 
-                            // 만료된 날짜에 대한 처리 (예: 데이터를 삭제하거나 다시 로드)
-                            // 예시로, 삭제 작업을 진행
-                            dispatch(deleteExpiredRecords(deleteKeys));
-                        } else {
-                            console.log('모든 날짜 데이터가 유효합니다.');
-                        }
-                    });
-                } else {
-                    console.log("첫 번째 키가 존재하지 않습니다.");
-                }
+                //             // 만료된 날짜에 대한 처리 (예: 데이터를 삭제하거나 다시 로드)
+                //             // 예시로, 삭제 작업을 진행
+                //             dispatch(deleteExpiredRecords(deleteKeys));
+                //         } else {
+                //             console.log('모든 날짜 데이터가 유효합니다.');
+                //         }
+                //     });
+                // } else {
+                //     console.log("첫 번째 키가 존재하지 않습니다.");
+                // }
 
             
                 // console.log('기준 날짜:', cutoffDate.toISOString().split('T')[0]);

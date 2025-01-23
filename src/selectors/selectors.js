@@ -1,9 +1,8 @@
-// src/selectors/selectors.js
 import { createSelector } from 'reselect';
 
 const createExerciseSelector = (key) => createSelector(
     (state) => state[key]?.myExercises || [],
-    (myExercises) => myExercises.slice() // 배열을 복사하여 새로운 참조 생성
+    (myExercises) => myExercises // 배열을 복사하지 않고 그대로 반환
 );
 
 // 운동 부위별 선택자

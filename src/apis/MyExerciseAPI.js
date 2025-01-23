@@ -174,10 +174,10 @@ export const sendExerciseToServer = async (newExercises, muscleGroup, memberId) 
                 console.error('새로운 토큰을 가져오지 못했습니다.');
             }
         } else {
-            console.error('서버 요청 실패:', response.status);
+            // console.error('서버 요청 실패:', response.status);
         }
     } catch (error) {
-        console.error('서버 요청 중 오류 발생:', error);
+        // console.error('서버 요청 중 오류 발생:', error);
     }
 };
 

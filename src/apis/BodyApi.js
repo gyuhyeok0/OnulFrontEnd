@@ -39,6 +39,7 @@ export const saveBodyData = (memberId, bodyData, accessToken = null) => {
 
                 console.log(dateKey);
                 console.log(bodyData);
+
             
                 dispatch(setBodyData({
                     dateKey,
