@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
 import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포트 임포트
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { API_URL } from '@env';
 
 function Signup({ navigation }) {
     const [memberId, setMemberId] = useState('');
@@ -64,7 +65,7 @@ function Signup({ navigation }) {
         }
     
         try {
-            const response = await fetch('http://localhost:8080/signup/checkDuplicate', { // 서버의 중복확인 엔드포인트
+            const response = await fetch(`${API_URL}/signup/checkDuplicate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

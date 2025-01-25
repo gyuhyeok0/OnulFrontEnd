@@ -235,7 +235,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
 
                         {rows.map((row) => (
                             <View key={row.id} style={styles.row}>
-                                <View style={{ width: '30%', backgroundColor: 'white', height: 100, borderRadius: 15, padding: 5 }}>
+                                <View style={{ width: '30%', backgroundColor: 'white', minHeight: 100, borderRadius: 15, padding: 5 }}>
                                     <Text style={{ fontSize: 12, margin: 1, color:'#F52121', fontWeight:'bold' }}>음식 이름</Text>
                                     <TextInput
                                         style={styles.inputDetail}
@@ -263,7 +263,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                     />
                                 </View>
 
-                                <View style={{ width: '70%', backgroundColor: 'white', height: 100, borderRadius: 15, flexDirection: 'row', padding: 5, justifyContent: 'space-between' }}>
+                                <View style={{ width: '70%', backgroundColor: 'white', minHeight: 100, borderRadius: 15, flexDirection: 'row', padding: 5, justifyContent: 'space-between' }}>
                                     <View style={{ width: '87%', flexDirection: 'row', gap: 15 }}>
                                         <View style={{ width: '48%' }}>
                                             <Text style={{ fontSize: 12, margin: 1 }}>칼로리</Text>

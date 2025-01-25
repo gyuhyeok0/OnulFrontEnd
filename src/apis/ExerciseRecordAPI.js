@@ -3,12 +3,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { refreshAccessToken } from '../apis/Token'; // 토큰 갱신 API 호출
 import { fetchExerciseRecordSuccess, fetchExercisesRecordFailure} from '../modules/ExerciseRecordSlice'; // 경로 확인
 import { updateLatestRecord } from '../modules/LatestExerciseRecordSlice'
+import { API_URL } from '@env';
 
 export const fetchExercisesRecord = async (exerciseId, memberId, exerciseService, recordDate) => {
     console.log("운동 기록 호출", recordDate);
 
     try {
-        const requestURL = 'http://localhost:8080/exercisesRecord/searchRecord';
+        const requestURL = `${API_URL}/exercisesRecord/searchRecord`;
         const accessToken = await AsyncStorage.getItem('accessToken');
 
         const response = await fetch(requestURL, {
@@ -182,7 +183,7 @@ export const loadExerciseRecordsForDate = (memberId, recordDate) => {
             return fetchData();
 
             async function fetchData() {
-                const requestURL = 'http://localhost:8080/exercisesRecord/recordsForDate';
+                const requestURL = `${API_URL}/exercisesRecord/recordsForDate`;
                 const accessToken = await AsyncStorage.getItem('accessToken');
 
                 const response = await fetch(requestURL, {

@@ -21,7 +21,6 @@ const resources = {
 const initializeI18n = async () => {
     const getStoredLanguage = async () => {
 
-        console.log("호출 되긴해?")
         try {
             const storedLanguage = await AsyncStorage.getItem('user-language');
             return storedLanguage || deviceLanguageTag; // 저장된 언어가 없으면 기기 언어 사용

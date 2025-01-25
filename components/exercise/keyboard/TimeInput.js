@@ -214,6 +214,7 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
                     {
                         backgroundColor: set.completed ? '#1EAE98' : '#525E77',
                         color: set.completed ? '#55E3C1' : 'white',
+                        padding: 0
                     },
                 ]}
                 onChangeText={handleTextChange}
@@ -226,6 +227,7 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
                 onFocus={handleFocus}
                 onSelectionChange={handleSelectionChange}
                 inputAccessoryViewID={inputAccessoryViewID}
+                selectTextOnFocus={true}
             />
 
 
@@ -234,7 +236,8 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
                     <View style={styles.inputAccessoryView}>{renderTimeButtons()}</View>
                 </InputAccessoryView>
             ) : (
-                <View style={styles.inputAccessoryView}>{renderTimeButtons()}</View>
+                // <View style={styles.inputAccessoryView}>{renderTimeButtons()}</View>
+                <></>
             )}
         </View>
     );

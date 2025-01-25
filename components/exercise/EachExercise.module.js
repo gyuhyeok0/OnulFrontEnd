@@ -22,9 +22,12 @@ const styles = StyleSheet.create({
     exerciseIcon: {
         width: 75,
         height: 55,
-        backgroundColor: 'white',
+        backgroundColor: '#141821',
         borderRadius: 5,
+        justifyContent:'center',
+        alignItems:'center'
     },
+
     exerciseText: {
         fontSize: 14,
         color: '#fff',
@@ -132,9 +135,9 @@ const styles = StyleSheet.create({
     
     input: {
         minWidth: 60,
-        height: 30,
+        minHeight: 30,
         borderRadius: 5,
-        paddingHorizontal: 5,
+        // paddingHorizontal: 5,
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',

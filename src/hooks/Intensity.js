@@ -1,6 +1,7 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchIntensitySuccess, fetchIntensityFailure } from '../modules/IntensitySlice'
+import { API_URL } from '@env';
 
 export const sendIntensityToServer = (userId, intensity, accessToken = null) => {
     return async (dispatch) => {
@@ -11,7 +12,7 @@ export const sendIntensityToServer = (userId, intensity, accessToken = null) => 
                 accessToken = await AsyncStorage.getItem('accessToken');
             }
 
-            const response = await fetch('http://localhost:8080/intensity/intensity', {
+            const response = await fetch(`${API_URL}/intensity/intensity`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

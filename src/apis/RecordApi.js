@@ -2,15 +2,17 @@ import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가�
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchTotalFoodFailure, fetchTotalFoodSuccess } from '../modules/TotalFoodSlice';
 import { fetchBodyDataFailure, setBodyData } from '../modules/BodySlice';
+import { API_URL } from '@env';
+
 
 export const isMonthDataExist = async (memberId, mountMonth, accessToken = null) => {
     try {
+
         if (!accessToken) {
             accessToken = await AsyncStorage.getItem('accessToken');
         }
 
-
-        const response = await fetch('http://localhost:8080/record/isMonthDataExist', {
+        const response = await fetch(`${API_URL}/record/isMonthDataExist`, { // 템플릿 리터럴 사용
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -25,6 +27,7 @@ export const isMonthDataExist = async (memberId, mountMonth, accessToken = null)
         if (response.status === 200) {
             const data = await response.json();
 
+            console.log("안녕")
             return data;
         } else if (response.status === 401) {
             console.warn('토큰 만료: 새로운 토큰을 요청 중...');
@@ -58,7 +61,7 @@ export const loadFoodRecordsForDate = (memberId, recordDate) => {
             return fetchData();
 
             async function fetchData() {
-                const requestURL = 'http://localhost:8080/management/foodRecordsForDate';
+                const requestURL = `${API_URL}/management/foodRecordsForDate`;
                 const accessToken = await AsyncStorage.getItem('accessToken');
 
                 const response = await fetch(requestURL, {
@@ -131,7 +134,7 @@ export const loadBodyRecordsForDate = (memberId, recordDate) => {
             return fetchData();
 
             async function fetchData() {
-                const requestURL = 'http://localhost:8080/management/bodyRecordsForDate';
+                const requestURL = `${API_URL}/management/bodyRecordsForDate`;
                 const accessToken = await AsyncStorage.getItem('accessToken');
 
                 const response = await fetch(requestURL, {

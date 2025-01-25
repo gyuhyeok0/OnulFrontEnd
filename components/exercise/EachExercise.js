@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
-import { View, StyleSheet, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, Image, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './EachExercise.module';
 import { isKmAndTime, isTime, isNumber } from './settings-components/ExerciseClassification';
@@ -22,6 +22,7 @@ import { updateExerciseSetsInRedux, resetState } from '../../src/modules/StateEx
 import { useQuery } from '@tanstack/react-query';
 import { selectExerciseRecordByDetails } from '../../src/modules/ExerciseRecordSlice';
 import { selectLatestPreVolume, updateExerciseVolume } from '../../src/modules/VolumeSlice';
+import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
@@ -50,6 +51,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const [exerciseType, setExerciseType] = useState(1);
 
     const [exerciseService, setExerciseService] = useState();
+    
 
     // Redux의 dispatch를 가져오기
     const dispatch = useDispatch();
@@ -219,6 +221,22 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             // 시간만 있는 경우
             else if (!kmAndTime && set.time) {
 
+                console.log("여기띠용"+set.time);
+
+                if (set.time) {
+                    // console.log("time 값이 존재합니다:", set.time);
+                
+                    // 00:00 또는 00:00:00 형태면 아무 작업도 하지 않음
+                    const timeRegex = /^(?:\d{2}:\d{2}|\d{2}:\d{2}:\d{2})$/;
+                    if (timeRegex.test(set.time)) {
+                        console.log("이미 올바른 형식의 time 값입니다:", set.time);
+        
+                    } else {
+                        return;
+
+                    }
+                }
+
                 // int 형식으로 변환한다.
                 const timeInSeconds = convertTimeToSeconds(set.time);
     
@@ -261,6 +279,17 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     }, [sets, exercise?.id, number, time, kmAndTime]);
 
     
+    // formatTime 함수
+    const formatTime = (value = '') => {
+        if (!value || isNaN(Number(value))) return '00:00';
+        if (value.length === 1) return `00:0${value}`;
+        if (value.length === 2) return `00:${value}`;
+        if (value.length === 3) return `0${value[0]}:${value.slice(1)}`;
+        if (value.length === 4) return `${value.slice(0, 2)}:${value.slice(2)}`;
+        if (value.length === 5) return `0${value[0]}:${value.slice(1, 3)}:${value.slice(3)}`;
+        if (value.length === 6) return `${value.slice(0, 2)}:${value.slice(2, 4)}:${value.slice(4)}`;
+        return '00:00';
+    };
 
     const addSet = () => {
         updateSets([
@@ -555,6 +584,11 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
                         <TouchableOpacity style={styles.exerciseIcon} onPress={toggleExerciseIcon}>
                             {/* 아이콘 추가 시 사용 */}
+        
+
+                            <Icon name="slash" size={35} color="#787A7F" style={{opacity:0.5}} />
+
+                            
                         </TouchableOpacity>
 
                         <Text style={styles.exerciseText}>{exercise.exerciseName}</Text>
@@ -628,7 +662,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                         <View style={styles.record}>
                             <Text style={styles.recordTitle}>record</Text>
                             
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                            <View style={{ flexDirection: 'row', marginBottom: 3 , marginRight:5, justifyContent:'space-between'}}>
                                 <Text
                                     style={{
                                         color: 'white',
@@ -636,7 +670,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                         fontSize: 11,
                                         width: 30,
                                         textAlign: 'center',
-                                        marginRight: 5,
+                                        // backgroundColor:'red'
                                     }}
                                 >
                                     SET
@@ -648,9 +682,8 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                             fontWeight: 'bold',
                                             fontSize: 11,
                                             width: 60,
-                                            textAlign: 'center',
-                                            flex: 1,
-                                            marginHorizontal: 5,
+                                            textAlign: 'center',                                            
+                                            // backgroundColor:'blue'
                                         }}
                                     >
                                         {kmAndTime ? kmUnit : weightUnit}
@@ -664,8 +697,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                             fontSize: 11,
                                             width: 60,
                                             textAlign: 'center',
-                                            flex: 1,
-                                            marginHorizontal: 5,
+                                            // backgroundColor:'blue'                                  
                                         }}
                                     >
                                     {time || kmAndTime ? '시간' : '횟수'}
@@ -679,15 +711,13 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                             fontWeight: 'bold',
                                             fontSize: 11,
                                             width: 60,
-                                            textAlign: 'center',
-                                            flex: 1,
-                                            marginHorizontal: 5,
+                                            textAlign: 'center',                                
+                                            // backgroundColor:'red',
                                         }}
                                     >
                                         완료
                                     </Text>
-                                </View>
-                        
+                                </View>                    
                             </View>
 
                             {/* 종류에 따라 다른 키보드 랜더링 */}

@@ -54,6 +54,7 @@ const NumberInput = ({ set, index, sets, setSets, style, deleteExerciseFilter}) 
                     {
                         backgroundColor: set.completed ? '#1EAE98' : '#525E77',
                         color: set.completed ? '#55E3C1' : 'white',
+                        padding:0,
                     },
                 ]}
                 onChangeText={handleTextChange}

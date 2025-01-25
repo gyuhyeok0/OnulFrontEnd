@@ -1,6 +1,7 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { API_URL } from '@env';
 
 import {
     fetchMyChestExercisesSuccess,
@@ -29,7 +30,7 @@ export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
 
-        const response = await axios.get(`http://localhost:8080/myExercises/${memberId}/${muscleGroup}`, {
+        const response = await axios.get(`${API_URL}/myExercises/${memberId}/${muscleGroup}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`, // 액세스 토큰을 사용한 인증 헤더
             },
@@ -148,7 +149,7 @@ export const sendExerciseToServer = async (newExercises, muscleGroup, memberId) 
     try {
         const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
 
-        const response = await fetch('http://localhost:8080/myExercises/RegistMyExercise', { // URL 수정
+        const response = await fetch(`${API_URL}/myExercises/RegistMyExercise`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -186,7 +187,7 @@ export const deleteExerciseFromServer = async (exerciseId, muscleGroup, memberId
     try {
         const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
         
-        const response = await axios.delete(`http://localhost:8080/myExercises/DeleteMyExercise/${exerciseId}`, {
+        const response = await axios.delete(`${API_URL}/myExercises/DeleteMyExercise/${exerciseId}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`, // 액세스 토큰을 사용한 인증 헤더
                 'Content-Type': 'application/json', // JSON 형식의 데이터 전송

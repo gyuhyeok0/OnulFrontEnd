@@ -1,6 +1,7 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setBodyData, setBodyDataFailure} from '../modules/BodySlice'
+import { API_URL } from '@env';
 
 export const saveBodyData = (memberId, bodyData, accessToken = null) => {
     return async (dispatch) => {
@@ -10,7 +11,7 @@ export const saveBodyData = (memberId, bodyData, accessToken = null) => {
                 accessToken = await AsyncStorage.getItem('accessToken');
             }
 
-            const response = await fetch('http://localhost:8080/management/saveBodyData', {
+            const response = await fetch(`${API_URL}/management/saveBodyData`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

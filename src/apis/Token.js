@@ -1,6 +1,7 @@
 // Token.js
 import AsyncStorage from '@react-native-async-storage/async-storage'; // 올바른 경로로 가져오기
 import { handlerLogOut } from '../hooks/HandleLogout';
+import { API_URL } from '@env';
 
 
 export const refreshAccessToken = async (navigation) => {
@@ -10,7 +11,7 @@ export const refreshAccessToken = async (navigation) => {
     const memberId = await AsyncStorage.getItem('memberId'); // 회원 ID 가져오기
 
 
-    const response = await fetch('http://localhost:8080/auth/refresh', {
+    const response = await fetch(`${API_URL}/auth/refresh`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

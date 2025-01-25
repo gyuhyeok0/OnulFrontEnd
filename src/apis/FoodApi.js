@@ -1,6 +1,7 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchTotalFoodSuccess, fetchTotalFoodFailure, resetFoodStatus } from '../modules/TotalFoodSlice'; // 경로 확인
+import { API_URL } from '@env';
 
 export const saveFoodData = async (memberId, id, recipeName, foodItems, accessToken = null) => {
     try {
@@ -9,7 +10,7 @@ export const saveFoodData = async (memberId, id, recipeName, foodItems, accessTo
         }
 
 
-        const response = await fetch('http://localhost:8080/management/saveFoodData', {
+        const response = await fetch(`${API_URL}/management/saveFoodData`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,7 +55,7 @@ export const deleteFoodData = async (memberId, id, accessToken = null) => {
             accessToken = await AsyncStorage.getItem('accessToken');
         }
 
-        const url = `http://localhost:8080/management/deleteFoodData?memberId=${memberId}&recipeId=${id}`;
+        const url = `${API_URL}/management/deleteFoodData?memberId=${memberId}&recipeId=${id}`;
 
         const response = await fetch(url, {
             method: 'DELETE',
@@ -93,7 +94,7 @@ export const getAllFoodData = async (memberId, accessToken = null) => {
             accessToken = await AsyncStorage.getItem('accessToken');
         }
 
-        const url = `http://localhost:8080/management/getAllFoodData?memberId=${memberId}`;
+        const url = `${API_URL}/management/getAllFoodData?memberId=${memberId}`;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -138,7 +139,7 @@ export const saveTotalFoodData = async (memberId, mealType, formattedDate, total
             accessToken = await AsyncStorage.getItem('accessToken');
         }
 
-        const response = await fetch('http://localhost:8080/management/saveTotalFoodData', {
+        const response = await fetch(`${API_URL}/management/saveTotalFoodData`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

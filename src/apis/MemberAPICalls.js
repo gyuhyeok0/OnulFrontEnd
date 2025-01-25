@@ -1,9 +1,10 @@
 import { postLogin } from '../modules/MemberSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 가져오기
+import { API_URL } from '@env';
 
 // 로그인 API 호출 함수 (리액트 네이티브 버전)
 export const callLoginAPI = ({ form }) => {
-    const requestURL = `http://localhost:8080/auth/login`;
+    const requestURL = `${API_URL}/auth/login`;
 
     return async (dispatch) => {
         try {

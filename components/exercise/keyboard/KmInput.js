@@ -124,6 +124,7 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit, deleteEx
                     {
                         backgroundColor: set.completed ? '#1EAE98' : '#525E77',
                         color: set.completed ? '#55E3C1' : 'white',
+                        padding:0,
                     },
                 ]}
                 onChangeText={handleTextChange}
@@ -142,7 +143,8 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit, deleteEx
                     <View style={styles.inputAccessoryView}>{renderKmButtons()}</View>
                 </InputAccessoryView>
             ) : (
-                <View style={styles.inputAccessoryView}>{renderKmButtons()}</View>
+                // <View style={styles.inputAccessoryView}>{renderKmButtons()}</View>
+                <></>
             )}
         </View>
     );
