@@ -1,6 +1,7 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
 
 import axios from 'axios';
+import { API_URL } from '@env';
 
 
 // 온보딩 체크
@@ -8,7 +9,7 @@ export const checkOnboardingStatus = async (userId, accessToken, navigation) => 
     try {
 
         const response = await axios.get(
-            `http://localhost:8080/onboarding/check?memberId=${userId}`,
+            `${API_URL}/onboarding/check?memberId=${userId}`,
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -108,7 +109,7 @@ export const registrationOnboarding = async (onboardingData, navigation) => {
 
     // 서버에 데이터 전송 예시
     try {
-        const response = await axios.post('http://localhost:8080/onboarding/register', dataToSend, {
+        const response = await axios.post(`${API_URL}/onboarding/register`, dataToSend, {
             headers: {
                 Authorization: `Bearer ${accessToken}`, // 토큰 추가
             },

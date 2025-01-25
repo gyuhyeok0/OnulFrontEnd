@@ -92,8 +92,6 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         marginTop: 10,
-        maxWidth: 350,
-        // backgroundColor:'red'
     },
     button: {
         paddingTop: 4,

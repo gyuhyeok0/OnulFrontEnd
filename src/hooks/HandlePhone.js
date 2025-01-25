@@ -1,7 +1,8 @@
+import { API_URL } from '@env';
 
 // 비번찾기
 export const fetchUserPhoneNumber = async (userId) => {
-    const response = await fetch(`http://localhost:8080/sms/check-id`, {
+    const response = await fetch(`${API_URL}/sms/check-id`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

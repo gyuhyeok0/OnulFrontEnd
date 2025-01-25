@@ -8,6 +8,7 @@ import Agree from '../../../components/signup/Agree';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { callLoginAPI } from '../../apis/MemberAPICalls';
 import { useDispatch } from 'react-redux';
+import { API_URL } from '@env';
 
 
 function SignupStep1({ navigation, route }) {
@@ -61,7 +62,7 @@ function SignupStep1({ navigation, route }) {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/sms/send', {
+            const response = await fetch(`${API_URL}/sms/send`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,7 +96,7 @@ function SignupStep1({ navigation, route }) {
     // 인증번호 검증
     const handleVerification = async () => {
         try {
-            const response = await fetch('http://localhost:8080/sms/verify', {
+            const response = await fetch(`${API_URL}/sms/verify`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,7 +151,7 @@ function SignupStep1({ navigation, route }) {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/signup/signup', {
+            const response = await fetch(`${API_URL}/signup/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

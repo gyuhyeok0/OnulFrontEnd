@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, Pressable, InputAccessoryView } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { View, Text, StyleSheet, Modal, Pressable, InputAccessoryView, KeyboardAvoidingView} from 'react-native';
+import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
 import {resetBodyData} from '../../src/modules/BodySlice'
@@ -8,7 +8,7 @@ import {saveBodyData} from '../../src/apis/BodyApi'
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 import { selectBodyDataByDate } from '../../src/modules/BodySlice';
-import {fetchExerciseRecordSuccess} from '../../src/modules/ExerciseRecordSlice';
+import { Platform } from 'react-native';
 
 const Body = ({ weightUnit, setWeightUnit }) => {
     const dispatch = useDispatch();
@@ -192,19 +192,28 @@ const Body = ({ weightUnit, setWeightUnit }) => {
 
     return (
         <>
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container}>
                 <View style={styles.body}>
-                    <Text style={styles.titleText}>신체</Text>
+                        <View>
+                            <Text style={styles.titleText}>신체</Text>
 
-                    <Text style={{marginLeft:10, color:'#B8BFD1', fontWeight:'bold', fontSize: 13}}>오늘의 신체 데이터를 기록해주세요</Text>
+                            <Text style={{marginLeft:10, color:'#B8BFD1', fontWeight:'bold', fontSize: 13}}>오늘의 신체 데이터를 기록해주세요</Text>
+                        </View>
+
+                        {Platform.OS === 'android' && (
+                            <View style={[styles.inputAccessoryView2, { flex: 1, padding: 10 }]}>
+                                {renderKgButtons()}
+                            </View>
+                        )}
 
                     <View style={[styles.rowCommon, styles.row1]}>    
 
                         <View style={styles.recordContainer}>
                             <Text style={styles.subTitle}>체중</Text>
 
-                            <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
-                                
+                            
+                            <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
+
                             <TextInput
                                 style={styles.weightDisplay}
                                 value={String(tempState.weight)} // 숫자를 문자열로 변환
@@ -216,7 +225,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 selectTextOnFocus={true}
                             />
 
-                                <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
+                                <Text style={{fontSize:20, color:'#BBB', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
                             </View>
 
                             <Pressable
@@ -234,7 +243,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                         <View style={styles.recordContainer}>
                             <Text style={styles.subTitle}>골격근량</Text>
 
-                            <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
+                            <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
                                 
                             <TextInput
                                 style={styles.weightDisplay}
@@ -247,7 +256,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 selectTextOnFocus={true}
                             />
 
-                                <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
+                                <Text style={{fontSize:20, color:'#BBB', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
                             </View>
 
                             <Pressable
@@ -268,7 +277,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                         <View style={styles.recordContainer}>
                             <Text style={styles.subTitle}>체지방률</Text>
 
-                            <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
+                            <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
                                 
                             <TextInput
                                 style={styles.weightDisplay}
@@ -287,7 +296,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
 
                             
 
-                                <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>%</Text>
+                                <Text style={{fontSize:20, color:'#BBB', fontWeight:'250', marginLeft:5}}>%</Text>
                             </View>
                             <Pressable
                                 style={[
@@ -304,7 +313,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                         <View style={styles.recordContainer}>
                                 <Text style={styles.subTitle}>체지방량</Text>
 
-                                <View style={{flexDirection:'row', margin:5, marginTop: 10}}>
+                            <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
                                 
                                 <TextInput
                                     style={styles.weightDisplay}
@@ -317,7 +326,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                     selectTextOnFocus={true}
                                 />
 
-                                    <Text style={{fontSize:22, color:'white', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
+                                <Text style={{fontSize:20, color:'#BBB', fontWeight:'250', marginLeft:5}}>{weightUnit}</Text>
                                 </View>
 
                                 <Pressable
@@ -334,19 +343,25 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                     </View>
                 </View>
 
-            </View>
+            </KeyboardAvoidingView>
 
-            {/* InputAccessoryView 연결 */}
-            <InputAccessoryView nativeID={inputAccessoryViewIDForWeight}>
-                <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
-            </InputAccessoryView>
-            <InputAccessoryView nativeID={inputAccessoryViewIDForMuscle}>
-                <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
-            </InputAccessoryView>
-            <InputAccessoryView nativeID={inputAccessoryViewIDForFatMass}>
-                <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
-            </InputAccessoryView>
-                                        
+            {Platform.OS === 'ios' ? (
+
+            <>
+                {/* InputAccessoryView 연결 */}
+                <InputAccessoryView nativeID={inputAccessoryViewIDForWeight}>
+                    <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
+                </InputAccessoryView>
+                <InputAccessoryView nativeID={inputAccessoryViewIDForMuscle}>
+                    <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
+                </InputAccessoryView>
+                <InputAccessoryView nativeID={inputAccessoryViewIDForFatMass}>
+                    <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
+                </InputAccessoryView>
+            </>
+            ) : (
+                <></>
+            )}
     
         </>
     );
@@ -430,6 +445,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#CCCFD4',
     },
 
+    inputAccessoryView2: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 5,
+    },
+
     timeButton: {
         flex: 1,
         marginHorizontal: 3,
@@ -437,7 +458,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 6,
         backgroundColor: '#fff',
-        height: 35,
+        height: 30,
     },
     buttonText: {
         color: 'black',

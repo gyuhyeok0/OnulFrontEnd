@@ -13,6 +13,7 @@ const FooterStyles = StyleSheet.create({
     safeArea: {
         backgroundColor: '#000000',
     },
+    
     button: {
         padding: 12,
         // backgroundColor: '#000000',

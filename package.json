@@ -37,6 +37,7 @@
     "react-native": "^0.75.2",
     "react-native-background-timer": "^2.4.1",
     "react-native-calendars": "^1.1307.0",
+    "react-native-dotenv": "^3.4.11",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-gesture-handler": "^2.21.2",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",

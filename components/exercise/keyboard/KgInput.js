@@ -139,6 +139,7 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
                     {
                         backgroundColor: set.completed ? '#1EAE98' : '#525E77',
                         color: set.completed ? '#55E3C1' : 'white',
+                        padding: 0,
                     },
                 ]}
                 onChangeText={handleTextChange}
@@ -157,7 +158,8 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
                     <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
                 </InputAccessoryView>
             ) : (
-                <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
+                // <View style={styles.inputAccessoryView}>{renderKgButtons()}</View>
+                <></>
             )}
         </View>
     );

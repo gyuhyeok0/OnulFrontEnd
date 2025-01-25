@@ -4,7 +4,6 @@ import { askReducer } from './AskSlice';
 import authReducer from './AuthSlice'; // authReducer 가져오기
 import exerciseReducer from './ExerciseSlice'; // exerciseReducer 가져오기
 import scheduleReducer from './ScheduleSlice'; // scheduleReducer 가져오기
-// import exerciseRecordReducer from './ExerciseRecordSlice'; // exerciseRecordReducer 가져오기
 
 import {
   myChestReducer,
@@ -24,7 +23,6 @@ import stateExerciseReducer from './StateExerciseSlice'; // 리듀서 가져오�
 import weekReducer from './WeekReducer'; // weekReducer import
 // import apiReducer from './ApiSlice'; // 아래에서 생성할 API slice
 
-import latestExerciseRecordReducer from './LatestExerciseRecordSlice'; // 새 리듀서 가져오기
 import intensityReducer from './IntensitySlice'; // 새로 만든 intensity 리듀서 가져오기
 import bodyReducer from './BodySlice';
 import totalFoodReducer from './TotalFoodSlice'; // 새로 만든 totalFood 리듀서 가져오기
@@ -46,7 +44,6 @@ const rootReducer = combineReducers({
   etcExercises: myEtcReducer, // 기타 운동 리듀서
   lowerBodyExercises: myLowerBodyReducer, // 하체 운동 리듀서
   shouldersExercises: myShouldersReducer, // 어깨 운동 리듀서
-  // exerciseRecord: exerciseRecordReducer, // 운동 기록 리듀서 추가
   schedulExerciseState: schedulExerciseReducer, // 이름 변경된 리듀서 등록
   
   freeExercises: myFreeReducer,
@@ -57,7 +54,6 @@ const rootReducer = combineReducers({
   week: weekReducer, // week 상태 관리
   // api: apiReducer, // 전역 상태에 API slice 추가
 
-  latestExerciseRecord: latestExerciseRecordReducer, // 가장 최근 운동 기록 리듀서 추가
   intensity: intensityReducer, // 새로 추가한 intensity 리듀서
   body: bodyReducer, // body 키에 bodyReducer를 연결
   totalFood: totalFoodReducer, // totalFood 리듀서 추가

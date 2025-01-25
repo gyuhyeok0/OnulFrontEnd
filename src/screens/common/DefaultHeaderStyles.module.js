@@ -38,9 +38,10 @@ export const DefaultHeaderStyles = {
 
     headerText: {
       color: 'white',
-      fontSize: 22,
-      paddingLeft: 10,
-      paddingBottom: 10
+      fontWeight: 'bold',
+      fontSize: 18,
+      paddingLeft: 8,
+      paddingBottom: 12
     }
 
 };

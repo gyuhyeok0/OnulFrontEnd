@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { refreshAccessToken } from '../apis/Token';
+import { API_URL } from '@env';
 
 // 이전기록 날짜만 조회
 export const previousRecordDate = async (memberId, exerciseId, exerciseService) => {
@@ -9,7 +10,7 @@ export const previousRecordDate = async (memberId, exerciseId, exerciseService) 
         // AsyncStorage에서 토큰 가져오기
         let accessToken = await AsyncStorage.getItem('accessToken');
 
-        const response = await fetch('http://localhost:8080/exercisesRecord/selectPreviousRecordDate', {
+        const response = await fetch(`${API_URL}/exercisesRecord/selectPreviousRecordDate`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

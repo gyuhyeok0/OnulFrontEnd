@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet, Dimensions, Animated, View, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { WebView } from 'react-native-webview';
+import { API_URL } from '@env';
 
 const screenHeight = Dimensions.get('window').height;
 
 const CustomModal = ({ isVisible, onClose, modalY, title }) => {
     const [loading, setLoading] = useState(true);
-    const [htmlUri, setHtmlUri] = useState('http://localhost:8080/privacy-policy.html');  // 로컬 IP 사용
+    const [htmlUri, setHtmlUri] = useState(`${API_URL}/privacy-policy.html`);
 
     useEffect(() => {
         if (isVisible) {
             setLoading(true);
-            setHtmlUri('http://localhost:8080/privacy-policy.html');
+            setHtmlUri(`${API_URL}/privacy-policy.html`);
         }
     }, [isVisible]);
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Dimensions, StyleSheet, Text, Alert, ScrollView } from 'react-native';
 import DefaultHeader from '../common/DefaultHeader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { API_URL } from '@env';
 
 
 const Inquiry = ({ navigation }) => {
@@ -39,7 +40,7 @@ const Inquiry = ({ navigation }) => {
     
         // 서버로 데이터를 전송하는 로직
         try {
-            const response = await fetch('http://localhost:8080/inquiry/submit', {
+            const response = await fetch(`${API_URL}/inquiry/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

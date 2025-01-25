@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     },
 
     header: {
-        minHeight: 40,
+        minHeight: 45,
         backgroundColor: '#222732',
         borderRadius: 10,
         padding: 8,
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     refreshButton: {
-        height: 30,
+        minHeight: 30,
         flexDirection: 'row',
     },
     refreshInner: {
@@ -56,7 +56,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 10,
-        maxWidth: 350,
+        // maxWidth: 350,
+        // backgroundColor:'red'
+
     },
     button: {
         paddingTop: 4,
@@ -67,6 +69,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderRadius: 10,
         borderColor: '#fff',
+
     },
     selectedButton: {
         backgroundColor: '#fff',

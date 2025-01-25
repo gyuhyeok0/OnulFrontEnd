@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Pressable, Text} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
 import Footer from '../common/Footer';
 import Header from '../common/Header';
@@ -46,6 +46,8 @@ const Management = ({ navigation }) => {
         updateStorage();
     }, [weightUnit]); // 의존성 배열 수정
 
+
+
     return (
         <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: '#1A1C22' }}>
             <Header title="Management" navigation={navigation} />
@@ -57,7 +59,7 @@ const Management = ({ navigation }) => {
                 <Food />
                 
             </ScrollView>
-            <Footer navigation={navigation} />
+            <Footer navigation={navigation}/>
         </View>
     );
 };
@@ -66,6 +68,105 @@ const styles = StyleSheet.create({
     scrollView: {
         backgroundColor: '#1A1C22',
     },
+
+    body:{
+        minHeight: 150,
+        backgroundColor:'#222732',
+        borderRadius:15,
+    },
+
+    titleText: {
+        color:'white',
+        fontSize: 20,
+        fontWeight:'bold',
+        margin:10
+    },
+
+    rowCommon: {
+        flexDirection: 'row', // 가로 방향 정렬
+        justifyContent: 'space-between', // 자식 간의 간격 균등 분배
+        paddingHorizontal: 10, // 좌우 여백 추가
+        alignItems: 'center', // 세로 방향 정렬
+        marginBottom: 10,
+    },
+
+    row1:{
+        marginTop:7,
+    },
+
+    recordContainer:{
+        width: '49%',
+        backgroundColor:'#333845',
+        minHeight: 80,
+        borderRadius:15,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+
+
+    subTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        marginTop: 13,
+    },
+
+    weightDisplay: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        // marginBottom: 5,
+        // backgroundColor:'white'
+    },
+
+    recordButton: {
+        backgroundColor: '#497CF4',
+        borderRadius: 20,
+        paddingVertical: 7,
+        paddingHorizontal: 20,
+        marginBottom: 10,
+    },
+
+    recordButtonText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+    },
+
+    inputAccessoryView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 5,
+        backgroundColor: '#CCCFD4',
+    },
+
+    timeButton: {
+        flex: 1,
+        marginHorizontal: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        backgroundColor: '#fff',
+        height: 35,
+    },
+    buttonText: {
+        color: 'black',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+
+    selectedButton: {
+        backgroundColor: '#497CF4', // 선택된 버튼의 배경색
+    },
+    selectedButtonText: {
+        color: 'white', // 선택된 버튼 텍스트 색
+        fontWeight: 'bold',
+    },
+
+    pressedCompleteButton: {
+        backgroundColor: '#34C759', // 초록색
+    },
+
 });
 
 export default Management;

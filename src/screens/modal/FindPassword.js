@@ -8,6 +8,7 @@ import styles from './FindPassword.module';
 import { handleVerification, fetchUserPhoneNumber } from '../../hooks/HandlePhone';
 import { Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { API_URL } from '@env';
 
 
 const screenHeight = Dimensions.get('window').height;
@@ -159,7 +160,7 @@ const FindPassword = ({ isVisible, onClose }) => {
         }
     
         try {
-            const response = await fetch('http://localhost:8080/sms/verificationAndSend', {
+            const response = await fetch(`${API_URL}/sms/verificationAndSend`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -205,7 +206,7 @@ const FindPassword = ({ isVisible, onClose }) => {
     // 인증번호 검증
     const handleVerification = async () => {
         try {
-            const response = await fetch('http://localhost:8080/sms/verify', {
+            const response = await fetch(`${API_URL}/sms/verify`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -241,7 +242,7 @@ const FindPassword = ({ isVisible, onClose }) => {
     const handlePasswordResetComplete = async () => {
         if (newPassword === confirmPassword) {
             try {
-                const response = await fetch('http://localhost:8080/signup/reset', {
+                const response = await fetch(`${API_URL}/signup/reset`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

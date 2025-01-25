@@ -444,7 +444,7 @@ const OnSchedule = () => {
     const toggleVisibility = () => {
         setIsVisible(prevState => !prevState);
         Animated.timing(animationHeight, {
-            toValue: isVisible ? 0 : 75,
+            toValue: isVisible ? 0 : 85,
             duration: 300,
             useNativeDriver: false,
         }).start();

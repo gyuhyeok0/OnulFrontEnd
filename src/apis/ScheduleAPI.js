@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { refreshAccessToken } from '../apis/Token';
 import { fetchScheduleSuccess, fetchScheduleFailure } from '../modules/ScheduleSlice';  // 경로는 해당 파일의 위치에 맞게 수정하세요.
+import { API_URL } from '@env';
 
 
 // 서버로 데이터를 전송하는 함수
@@ -12,7 +13,7 @@ export const sendDataToServer = async (part, memberId, weekType, day, accessToke
             accessToken = await AsyncStorage.getItem('accessToken');
         }
 
-        const response = await fetch('http://localhost:8080/schedule/registSchedule', {
+        const response = await fetch(`${API_URL}/schedule/registSchedule`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ export const deleteDataFromServer = async (part, memberId, weekType, day, access
             accessToken = await AsyncStorage.getItem('accessToken');
         }
 
-        const response = await fetch('http://localhost:8080/schedule/deleteSchedule', {
+        const response = await fetch(`${API_URL}/schedule/deleteSchedule`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ export const callFetchScheduleAPI = () => {
             let memberId = await AsyncStorage.getItem('memberId'); // 액세스 토큰 가져오기
             let accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
 
-            const requestURL = `http://localhost:8080/schedule/selectSchedule?memberId=${memberId}`; // memberId를 쿼리 파라미터로 추가
+            const requestURL = `${API_URL}/schedule/selectSchedule?memberId=${memberId}`;
 
             const response = await fetch(requestURL, {
                 method: 'GET',
