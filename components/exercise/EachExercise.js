@@ -114,7 +114,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     // 리듀서에 볼륨 저장
     useEffect(() => {            
 
-        console.log("볼륨이달라질때마다")
         if (volume) {
             const preVolume = volume;
             const date = new Date().toISOString().split('T')[0]; // 현재 날짜 (YYYY-MM-DD 형식)
@@ -254,9 +253,10 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
 
             }
-          // 무게만 계산 (횟수 무시)
+            // 무게와 횟수 기반으로 볼륨 계산
             else if (set.kg || set.lbs) {
-                let weight = 0;
+                let weight = 0; // 기본 무게 초기화
+                let reps = parseInt(set.reps || 0); // 반복 횟수 (없으면 0으로 처리)
 
                 // 단위에 따라 무게 선택
                 if (weightUnit === "kg") {
@@ -265,14 +265,16 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                     weight = parseFloat(set.lbs || 0); // lbs 값 사용
                 }
 
-                // 계산된 무게를 누적하고 소수점 2자리까지 반올림
-                calculatedVolume += weight;
-                calculatedVolume = parseFloat(calculatedVolume.toFixed(2));  // 소수점 2자리까지 반올림
+                // 무게와 반복 횟수를 곱해 볼륨 계산
+                let volume = weight * reps;
 
-                // console.log(`Weight-based volume (${weightUnit}): ${weight}`);
-                setVolume(calculatedVolume); // 시간일 경우 MM:SS 형식, 나머지는 숫자로 저장
-                setExerciseType(3)
+                // 계산된 볼륨을 누적하고 소수점 2자리까지 반올림
+                calculatedVolume += volume;
+                calculatedVolume = parseFloat(calculatedVolume.toFixed(2)); // 소수점 2자리까지 반올림
 
+                // console.log(`Volume (${weightUnit}): ${weight} x ${reps} = ${volume}`);
+                setVolume(calculatedVolume); // 최종 볼륨 저장
+                setExerciseType(3); // 운동 타입 설정 (예: 3번 타입)
             }
         });
     
@@ -398,8 +400,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         queryKey: ['submitExercise'],
         queryFn: async () => {
 
-            console.log(currentSetNumber);
-            console.log(currentSet);
 
             if (currentSet && currentSetNumber !== null) {
                 const result = await submitExerciseRecord(
@@ -610,8 +610,11 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                         <View style={styles.weightChangeContainer}>
                             <Text style={styles.weightChangeText}>up</Text>
                             <Text style={styles.weightChangeValue}>
-                                {isNaN(volumeDifference) ? 0 : Math.max(volumeDifference, 0)} {/* NaN은 0으로, 음수는 0으로, 양수는 그대로 */}
+                                {isNaN(volumeDifference) 
+                                    ? 0 
+                                    : Math.max(volumeDifference, 0).toFixed(2)} {/* NaN은 0으로, 음수는 0으로, 양수는 소숫점 2자리까지 */}
                             </Text>
+
                             <Text style={styles.weightChangeUnit}>
                                 {kmAndTime 
                                     ? kmUnit

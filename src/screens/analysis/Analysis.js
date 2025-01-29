@@ -44,14 +44,16 @@ const Analysis = ({ navigation }) => {
                     </Pressable>
                 </View>
 
-                <View style={styles.graph}>
+                {/* <View style={styles.graph}>
                     <Pressable
                         style={[styles.navButton, styles.disabledButton]} // 비활성화된 버튼 스타일
                         disabled={true} // 비활성화
                     >
                         <Text style={[styles.navButtonText, styles.disabledText]}>운동 균형 확인하기 ( 개발 중 )</Text>
                     </Pressable>
-                </View>
+                </View> */}
+
+                <View style={{height: 100}}></View>
 
             </ScrollView>
 
