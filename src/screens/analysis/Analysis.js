@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Footer from '../common/Footer'; 
 import Header from '../common/Header'; // 커스텀 헤더 컴포넌트 임포트
 
 const Analysis = ({ navigation }) => {
+
 
     useEffect(() => {
         console.log("=====================분석 페이지 ========================")
@@ -18,12 +19,13 @@ const Analysis = ({ navigation }) => {
             <ScrollView style={{ flex: 1, padding: 15}}>
 
                 <View style={styles.graph}>
-                    <Pressable
-                        style={styles.navButton}
-                        onPress={() => navigation.navigate('ExerciseVolumeGraph')} // 이동할 페이지 이름
-                    >
-                        <Text style={styles.navButtonText}>내 운동 상태 확인하기</Text>
-                    </Pressable>
+                <Pressable
+                    style={styles.navButton}
+                    onPress={() => navigation.navigate('ExerciseVolumeGraph')} // 전달할 prop 추가
+                >
+                    <Text style={styles.navButtonText}>내 운동 상태 확인하기</Text>
+                </Pressable>
+
                 </View>
 
                 <View style={styles.graph}>

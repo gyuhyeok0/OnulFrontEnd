@@ -54,10 +54,9 @@ import RegistChest from '../components/schedule/InModalComponent/RegistChest';
 import LoadingOverlay from '../components/LoadingOverlay'; // 추가
 import NetInfo from '@react-native-community/netinfo';
 
-import ExerciseVolumeGraph from '../components/analysis/ExerciseVolumeGraph';
-import WeightAndDietGraph from '../components/analysis/WeightAndDietGraph';
-import MuscleFatigue from '../components/analysis/MuscleFaigue';
-import BalanceGraph from '../components/analysis/BalanceGraph';
+import ExerciseVolumeGraph from '../components/analysis/volume/ExerciseVolumeGraph';
+import WeightAndDietGraph from '../components/analysis/bodyAndFood/WeightAndDietGraph';
+import MuscleFatigue from '../components/analysis/faigue/MuscleFaigue';
 
 
 // QueryClient 생성
@@ -339,11 +338,6 @@ function MainApp() {
           options={{ headerShown: false}}
         />
 
-        <Stack.Screen
-          name="BalanceGraph"
-          component={BalanceGraph}
-          options={{ headerShown: false}}
-        />
 
         
 

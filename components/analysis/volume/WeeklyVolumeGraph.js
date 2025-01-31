@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { WeeklyAndMonthlyExerciseVolume } from '../../src/apis/AnalysisApi';
+import { WeeklyAndMonthlyExerciseVolume } from '../../../src/apis/AnalysisApi';
 
-const WeeklyVolumeGraph = ({ memberId }) => {
+// kg에서 lbs로 변환하는 함수
+const convertToLbs = (kg) => {
+    return kg * 2.20462; // kg -> lbs 변환
+};
+
+const WeeklyVolumeGraph = ({ memberId, weightUnit }) => {
     const [selectedPeriod, setSelectedPeriod] = useState('weekly');
     const [weeklyVolume, setWeeklyVolume] = useState([]);
     const [monthlyVolume, setMonthlyVolume] = useState([]);
@@ -64,10 +69,15 @@ const WeeklyVolumeGraph = ({ memberId }) => {
                     data[i] = data[i - 1] !== null ? data[i - 1] : 0;
                 }
             }
-            
+
+            // weightUnit이 'lbs'이면 데이터를 변환
+            if (weightUnit === 'lbs') {
+                data = data.map(value => convertToLbs(value)); // lbs로 변환
+            }
+
             const validData = data.filter(value => value !== null && value !== 0);
             const volumeChange = validData.length > 1 ? validData[validData.length - 1] - validData[0] : null; // 0과 null 제외 후 계산
-            
+
             return {
                 key: `${group}-${index}`,  // ✅ 올바르게 key 추가
                 data,
@@ -77,8 +87,7 @@ const WeeklyVolumeGraph = ({ memberId }) => {
                 volumeChange
             };
         });
-    
-    
+
         setFormattedData({
             labels,
             datasets: datasets.length > 0 ? datasets : [{ data: Array(labels.length).fill(0), color: () => `rgba(255,255,255,1)`, strokeWidth: 2 }]
@@ -88,12 +97,12 @@ const WeeklyVolumeGraph = ({ memberId }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.graphTitle}>기간별 운동량 통계</Text>
+            <Text style={styles.graphTitle}>월별 평균 운동량 통계</Text>
             <LineChart
                 data={formattedData.datasets.length > 0 ? formattedData : { labels: [], datasets: [{ data: [0] }] }}
                 width={Dimensions.get('window').width - 30}
                 height={220}
-                yAxisSuffix="kg"
+                yAxisSuffix={weightUnit === 'lbs' ? 'lbs' : 'kg'} // 단위 표시
                 chartConfig={chartConfig}
                 bezier
                 style={styles.chartStyle}
@@ -107,17 +116,17 @@ const WeeklyVolumeGraph = ({ memberId }) => {
                 </TouchableOpacity>
             </View>
             <View style={styles.legendContainer}>
-
-            {formattedData.datasets.map(({ color, label, volumeChange }, index) => (
-                        <View key={`${label}-${index}`} style={styles.legendItem}>
-
+                {formattedData.datasets.map(({ color, label, volumeChange }, index) => (
+                    <View key={`${label}-${index}`} style={styles.legendItem}>
                         <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
                         <Text style={styles.legendText}>{label}</Text>
-
                         <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>
-                            {volumeChange !== null && volumeChange !== 0 ? (volumeChange > 0 ? "+" : "") + volumeChange + "kg" : ""}
+                            {volumeChange !== null && volumeChange !== 0 ? 
+                                (volumeChange > 0 ? "+" : "") + 
+                                (typeof volumeChange === 'number' ? (volumeChange.toFixed(2).replace(/\.00$/, '')) : "") + // .00을 제외
+                                (weightUnit === 'lbs' ? "lbs" : "kg") 
+                            : ""}
                         </Text>
-
 
                     </View>
                 ))}
@@ -130,7 +139,7 @@ const chartConfig = {
     backgroundColor: "#222732",
     backgroundGradientFrom: "#222732",
     backgroundGradientTo: "#222732",
-    decimalPlaces: 0,
+    decimalPlaces: 0, 
     color: (opacity = 1) => `rgba(200, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     fillShadowGradientOpacity: 0,
@@ -151,7 +160,6 @@ const styles = StyleSheet.create({
     legendColorBox: { width: 15, height: 15, marginRight: 8, borderRadius: 5 },
     legendText: { color: 'white', fontSize: 14 },
     legendText2: { color: 'white', fontSize: 14, fontWeight:'bold', marginLeft: 5 },
-
 });
 
 export default WeeklyVolumeGraph;
