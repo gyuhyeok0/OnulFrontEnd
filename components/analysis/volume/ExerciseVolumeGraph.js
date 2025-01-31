@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import DefaultHeader from '../../src/screens/common/DefaultHeader';
-import { analysisExerciseVolume } from '../../src/apis/AnalysisApi';
+import DefaultHeader from '../../../src/screens/common/DefaultHeader';
+import { analysisExerciseVolume } from '../../../src/apis/AnalysisApi';
 import { useDispatch, useSelector } from 'react-redux';
 import WeeklyVolumeGraph from './WeeklyVolumeGraph';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
 
 const mainMuscleGroups = {
     "등": ["광배근", "승모근", "하부 등"],
@@ -13,7 +14,6 @@ const mainMuscleGroups = {
     "팔": ["이두근", "삼두근", "전완근"],
     "어깨": ["전면 삼각근", "측면 삼각근", "후면 삼각근", "회전근개"],
     "복근": ["복직근", "하복부", "측면 복근"],
-
 };
 
 const colors = ["#55CBF7", "#FA4638", "#39D76A", "#FFDD33", "#B452FF", "#FF8C00"];
@@ -36,7 +36,24 @@ const ExerciseVolumeGraph = ({ navigation }) => {
     const last7Days = getLast7Days();
     const detailGroups = mainMuscleGroups[selectedMain] || [];
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+    const [weightUnit, setWeightUnit] = useState(null);
 
+    // 단위 로드
+    useEffect(() => {
+        const fetchUnits = async () => {
+            try {
+                const unitKg = await AsyncStorage.getItem('weightUnit');
+                setWeightUnit(unitKg || 'kg'); // 기본값: 'kg'
+            } catch (error) {
+                console.error('Error fetching units:', error);
+            }
+        };
+
+        fetchUnits();
+    }, []);
+
+    console.log(weightUnit);
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -63,6 +80,10 @@ const ExerciseVolumeGraph = ({ navigation }) => {
         fetchData();
     }, [memberId]);
 
+    // kg에서 lbs로 변환하는 함수
+    const convertToLbs = (kg) => {
+        return kg * 2.20462; // kg -> lbs 변환
+    };
 
     const filteredData = sampleData.filter(item => item.main === selectedMain && last7Days.includes(item.date));
 
@@ -82,23 +103,29 @@ const ExerciseVolumeGraph = ({ navigation }) => {
             }
             return hasValidData ? (lastKnownValue !== null ? lastKnownValue : 0) : undefined;
         });
-    
-        const isFlatLine = dataWithPreviousValues.every(value => value === dataWithPreviousValues[0]);
-    
-        return hasValidData && !isFlatLine ? {
+
+        // weightUnit이 'lbs'이면 데이터를 변환
+        if (weightUnit === 'lbs') {
+            return hasValidData && dataWithPreviousValues.every(value => value !== undefined) ? {
+                data: dataWithPreviousValues.map(value => convertToLbs(value)), // lbs로 변환
+                color: () => colors[index % colors.length],
+                strokeWidth: 2,
+                detail,
+                volumeChange
+            } : null;
+        }
+
+        return hasValidData && !dataWithPreviousValues.every(value => value === dataWithPreviousValues[0]) ? {
             data: dataWithPreviousValues,
             color: () => colors[index % colors.length],
             strokeWidth: 2,
             detail,
-            volumeChange // 변화량 저장
+            volumeChange
         } : null;
     }).filter(Boolean);
-    
-    
-    
 
     return (
-        <>    
+        <>
             <DefaultHeader title="운동량 그래프" navigation={navigation} />
             <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.graphContainer}>
@@ -107,25 +134,34 @@ const ExerciseVolumeGraph = ({ navigation }) => {
                         data={{ labels: last7Days, datasets: datasets.length ? datasets : [{ data: Array(7).fill(0) }] }}
                         width={Dimensions.get('window').width - 30}
                         height={220}
-                        yAxisSuffix="kg"
+                        yAxisSuffix={weightUnit === 'lbs' ? "lbs" : "kg"} // 단위 표시
                         chartConfig={chartConfig}
                         bezier
                         style={styles.chartStyle}
                     />
                 
-                    <View style={styles.legendContainer}>
-                        {datasets
-                            .filter(({ data }) => data.some(volume => volume > 0))
-                            .map(({ color, detail, volumeChange }) => (
-                                <View key={detail} style={styles.legendItem}>
-                                    <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
-                                    <Text style={styles.legendText}>{detail}</Text>
-                                    <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>
-                                        {volumeChange !== 0 ? (volumeChange > 0 ? "+" : "") + volumeChange + "kg" : ""}
-                                    </Text>
-                                </View>
-                            ))}
-                    </View>
+                <View style={styles.legendContainer}>
+                    {datasets
+                        .filter(({ data }) => data.some(volume => volume > 0))
+                        .map(({ color, detail, volumeChange }) => (
+                            <View key={detail} style={styles.legendItem}>
+                                <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
+                                <Text style={styles.legendText}>{detail}</Text>
+                                <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>
+                                    {volumeChange !== 0 ? 
+                                        (volumeChange > 0 ? "+" : "") + 
+                                        (weightUnit === 'lbs' 
+                                            ? (convertToLbs(volumeChange).toFixed(2).replace(/\.00$/, ''))  // lbs일 때 .00 제외
+                                            : volumeChange.toFixed(2).replace(/\.00$/, '')  // kg일 때 .00 제외
+                                        ) + 
+                                        (weightUnit === 'lbs' ? "lbs" : "kg") 
+                                    : ""}
+                                </Text>
+
+                            </View>
+                        ))}
+                </View>
+
 
                     <View style={styles.buttonContainer}>
                         {Object.keys(mainMuscleGroups).map(group => (
@@ -136,7 +172,7 @@ const ExerciseVolumeGraph = ({ navigation }) => {
                     </View>
                 </View>
 
-                <WeeklyVolumeGraph memberId={memberId} />
+                <WeeklyVolumeGraph memberId={memberId} weightUnit={weightUnit} />
 
                 <View style={{height: 100}}/>
 
@@ -149,7 +185,7 @@ const chartConfig = {
     backgroundColor: "#222732",
     backgroundGradientFrom: "#222732",
     backgroundGradientTo: "#222732",
-    decimalPlaces: 0,
+    decimalPlaces: 0, 
     color: (opacity = 1) => `rgba(200, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     fillShadowGradientOpacity: 0,

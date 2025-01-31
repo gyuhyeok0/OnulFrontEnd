@@ -4,14 +4,14 @@ import { TextInput } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 // import ProgressBar from '../../common/ProgressBar';
-import DefaultHeader from '../../src/screens/common/DefaultHeader';
+import DefaultHeader from '../../../src/screens/common/DefaultHeader';
 
-const WeightAndDietGraph = ({ navigation }) => {
+const MuscleFatigue = ({ navigation }) => {
 
 
     return (
         <>    
-            <DefaultHeader title="몸무게 및 식단" navigation={navigation} />
+            <DefaultHeader title="근육 피로도" navigation={navigation} />
 
             <View style={styles.container}>
                 <Text style={styles.title}>안녕하세요</Text>
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default WeightAndDietGraph;
+export default MuscleFatigue;
