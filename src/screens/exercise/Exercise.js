@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Footer from '../common/Footer';
 import { checkOnboardingStatus } from '../../hooks/HendleOnboarding';
 import { handlerLogOut } from '../../hooks/HandleLogout';
-import AutoAdapt from '../../../components/exercise/AutoAdapt';
+import AutoAdapt from '../../../components/exercise/autoAdapt/AutoAdapt';
 import OnSchedule from '../../../components/exercise/OnSchedule';
 import Custom from '../../../components/exercise/Custom';
 import AsyncStorage from '@react-native-async-storage/async-storage';

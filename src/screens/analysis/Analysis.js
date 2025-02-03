@@ -6,11 +6,6 @@ import Header from '../common/Header'; // 커스텀 헤더 컴포넌트 임포�
 const Analysis = ({ navigation }) => {
 
 
-    useEffect(() => {
-        console.log("=====================분석 페이지 ========================")
-    }, []);
-    
-
     return (
         <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: '#1A1C22' }}>
             

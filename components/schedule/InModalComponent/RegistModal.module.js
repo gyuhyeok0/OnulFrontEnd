@@ -166,8 +166,10 @@ export const styles = StyleSheet.create({
         borderColor: 'black',
         borderRadius: 5,
         borderWidth: 1,
-        backgroundColor: 'gray',
+        backgroundColor: '#141821',
         marginRight: 8,
+        justifyContent:'center',
+        alignItems:'center'
     },
 
     exerciseName:{

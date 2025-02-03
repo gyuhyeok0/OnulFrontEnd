@@ -6,6 +6,7 @@ import { callFetchExercisesAPI, callToggleLikeAPI } from '../../../src/apis/Exer
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { styles } from './RegistModal.module';
 import { deleteExerciseFromServer, sendExerciseToServer, fetchMyExercises as fetchMyExercisesAction } from '../../../src/apis/MyExerciseAPI';
+import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
 
 const RegistShoulders = () => {
     const dispatch = useDispatch();
@@ -244,7 +245,11 @@ const RegistShoulders = () => {
                             ]}
                             onPress={() => toggleExerciseSelect(exercise.id)}
                         >
-                            <View style={styles.exerciseIcon}></View>
+                            <View style={styles.exerciseIcon}>
+
+                                <Icon name="slash" size={35} color="#787A7F" style={{opacity:0.5}} />
+                            </View>    
+
                             <View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={styles.exerciseName}>{exercise.exerciseName}</Text>
