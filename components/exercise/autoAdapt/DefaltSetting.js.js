@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef} from 'react';
 import { View, StyleSheet, Text, Pressable, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AiSettingsModal from './AiSettingsModal'; // 모달 컴포넌트 추가
@@ -14,7 +14,7 @@ const DefaltSetting = ({setUpdateCount}) => {
     // 상태 설정 (수정된 상태들)
     const [exerciseGoal, setExerciseGoal] = useState('근비대'); // 기본값: 근비대
     const [exerciseSplit, setExerciseSplit] = useState(4); // 기본값: 4분할
-    const [priorityParts, setPriorityParts] = useState([]);  // 빈 배열로 초기화
+    const [priorityParts, setPriorityParts] = useState(['자동']);  // 빈 배열로 초기화
 
 
     // 상태 설정 (모달 설정)
@@ -26,30 +26,67 @@ const DefaltSetting = ({setUpdateCount}) => {
 
     const [modalVisible, setModalVisible] = useState(false); // 모달 상태
 
+    const prevStateRef = useRef(null);
+
     useEffect(() => {
         const fetchData = async () => {
+
+            if (!memberId) {
+                console.warn("⚠️ Warning: memberId is not available yet.");
+                return;
+            }
+        
+
             try {
-                console.log(memberId);
                 const response = await getAutoAdaptSetting(memberId);
-                console.log(response);
+
     
                 if (response) {
                     setExerciseGoal(response.exerciseGoal || '근비대');
                     setExerciseSplit(response.exerciseSplit || 4);
+                    setPriorityParts(response.priorityParts || '자동')
                     setExerciseStyle(response.exerciseStyle || ['머신', '프리웨이트']);
                     setExerciseTime(response.exerciseTime || '60분 이하');
                     setDifficulty(response.difficulty || '중급');
                     setExcludedParts(response.excludedParts || []);
                     setIncludeCardio(response.includeCardio || false);
+    
+                    // 🔥 상태가 모두 업데이트된 후 prevStateRef 저장
+                    prevStateRef.current = {
+                        difficulty: response.difficulty || '중급',
+                        exerciseTime: response.exerciseTime || '60분 이하',
+                        exerciseStyle: response.exerciseStyle || ['머신', '프리웨이트'],
+                        excludedParts: response.excludedParts || [],
+                        includeCardio: response.includeCardio || false
+                    };
+    
                 }
             } catch (error) {
-                console.error("Error fetching exercise data:", error);
+
             }
         };
+    
         fetchData();
-    }, [memberId]);
+    }, [memberId]); // ✅ memberId가 변경될 때만 실행 (최초 실행 포함)
+    
+    
 
+    // 이전상태 저장
+    useEffect(() => {
+        if (!modalVisible) { // 🔥 모달이 닫힐 때만 실행
+    
+            prevStateRef.current = {
+                difficulty,
+                exerciseTime,
+                exerciseStyle,
+                excludedParts,
+                includeCardio
+            };
+        }
+    }, [modalVisible]); // ✅ 모달이 닫힐 때만 실행되도록 변경
+    
 
+    // 서버 요청 코드
     const sendUpdate = async (updatedValues) => {
         if (!memberId) return; // memberId가 없으면 요청 보내지 않음
     
@@ -57,6 +94,8 @@ const DefaltSetting = ({setUpdateCount}) => {
             memberId,
             exerciseGoal,
             exerciseSplit,
+            priorityParts,
+
             difficulty,
             exerciseTime,
             exerciseStyle,
@@ -69,6 +108,7 @@ const DefaltSetting = ({setUpdateCount}) => {
             await updateAutoAdaptSetting(updateData);
             
 
+            console.log("실행함ㅎㅁ마")
             setUpdateCount(prevCount => prevCount + 1); // ✅ 실행될 때마다 카운트 증가
             console.log('자동적응 설정이 서버에 업데이트됨:', updateData);
         } catch (error) {
@@ -80,29 +120,86 @@ const DefaltSetting = ({setUpdateCount}) => {
     const handleGoalChange = (selectedGoal) => {
         setExerciseGoal(selectedGoal);
         sendUpdate({ exerciseGoal: selectedGoal });
+
     };
 
     const handleSplitChange = (selectedSplit) => {
         setExerciseSplit(selectedSplit);
         sendUpdate({ exerciseSplit: selectedSplit });
+
     };
 
-    // 부위 우선 선택 핸들러 (토글 방식)
     const handlePriorityChange = (part) => {
-        setPriorityParts((prev) =>
-            prev.includes(part) ? prev.filter((p) => p !== part) : [...prev, part]
-        );
-        setUpdateCount(prevCount => prevCount + 1); 
+        if (priorityParts.length === 1 && priorityParts.includes('자동') && part === '자동') {
+            return; // '자동'만 남아있을 경우 클릭 방지
+        }
+        
+        console.log("✅ 부위 우선 선택 업데이트:", part);
+        
+        setPriorityParts((prev) => {
+            const newParts = prev.includes(part) ? prev.filter((p) => p !== part) : [...prev, part];
+    
+            if (newParts.length === 0) {
+                console.log("⚠️ 모든 부위가 해제됨 → '자동'으로 설정");
+                sendUpdate({ priorityParts: ['자동'] }); // 서버로 즉시 업데이트
+                return ['자동'];
+            }
+    
+            sendUpdate({ priorityParts: newParts }); // 서버로 업데이트
+    
+            return newParts;
+        });
     };
+    
+    
+    
 
+    // 이전값과 비교하기 위한 코드
+    const areObjectsEqual = (obj1, obj2) => {
+        if (obj1 === obj2) return true; // 같은 객체면 true
+    
+        if (typeof obj1 !== "object" || typeof obj2 !== "object" || obj1 === null || obj2 === null) {
+            return obj1 === obj2; // 기본 타입(숫자, 문자열 등) 비교
+        }
+    
+        // 배열 비교
+        if (Array.isArray(obj1) && Array.isArray(obj2)) {
+            if (obj1.length !== obj2.length) return false;
+            return obj1.every((value, index) => areObjectsEqual(value, obj2[index]));
+        }
+    
+        // 키 개수 다른 경우 바로 false
+        const keys1 = Object.keys(obj1);
+        const keys2 = Object.keys(obj2);
+        if (keys1.length !== keys2.length) return false;
+    
+        // 각 키의 값 비교 (재귀)
+        return keys1.every(key => areObjectsEqual(obj1[key], obj2[key]));
+    };
+    
 
+    // 모달을 닫았을때 이전값과 비교후 차이가 있을때만 서버 요청
     const closeModal = useCallback(() => {
         setModalVisible(false); // 모달 닫기
-        console.log(difficulty);
+
+
+        const prevState = prevStateRef.current;
+        const currentState = { difficulty, exerciseTime, exerciseStyle, excludedParts, includeCardio };
+    
+        if (prevState === null) {
+            console.log("🔹 초기 상태 저장 중... 비교하지 않음");
+            prevStateRef.current = currentState;
+            return;
+        }
+
+        const hasChanged = !areObjectsEqual(prevState, currentState);
+        
         const updateData = {
             memberId,
             exerciseGoal,
             exerciseSplit,
+            priorityParts,
+
             difficulty,
             exerciseTime,
             exerciseStyle,
@@ -110,18 +207,33 @@ const DefaltSetting = ({setUpdateCount}) => {
             includeCardio
         };
     
-        const sendUpdate = async () => {
-            try {
-                await updateAutoAdaptSetting(updateData);
-                setUpdateCount(prevCount => prevCount + 1); // ✅ 실행될 때마다 카운트 증가
-                console.log('자동적응 설정이 서버에 업데이트됨:', updateData);
-            } catch (error) {
-                console.error('자동적응 설정 업데이트 실패:', error);
-            }
-        };
+
     
-        sendUpdate();
+        if (hasChanged) {
+
+
+            const sendUpdate = async () => {
+                try {
+                    await updateAutoAdaptSetting(updateData);
+                    setUpdateCount(prevCount => prevCount + 1);
+                    console.log('자동적응 설정이 서버에 업데이트됨:', updateData);
+                } catch (error) {
+                    console.error('자동적응 설정 업데이트 실패:', error);
+                }
+            };
+
+            sendUpdate();
+
+        } else {
+
+        }
+
     }, [memberId, exerciseGoal, exerciseSplit, difficulty, exerciseTime, exerciseStyle, excludedParts, includeCardio]);
+
+    const openModal = useCallback(() => {
+        setModalVisible(true); // 모달 열기
+    }, []);
+
 
     return (
         <View style={styles.todayExerciseObjective}>
@@ -158,7 +270,7 @@ const DefaltSetting = ({setUpdateCount}) => {
             {/* 부위 우선 선택 */}
             <Text style={styles.sectionTitle}>부위 우선 선택</Text>
             <View style={styles.priorityRow}>
-                {['등', '가슴', '하체', '어깨', '팔', '복근'].map((part) => (
+                {['자동', '등', '가슴', '하체', '어깨', '팔'].map((part) => (
                     <Pressable 
                         key={part} 
                         style={[styles.partButton, Array.isArray(priorityParts) && priorityParts.includes(part) && styles.selected]} 
@@ -171,7 +283,7 @@ const DefaltSetting = ({setUpdateCount}) => {
 
             
             {/* 상세 설정 버튼 (작고 심플한 스타일) */}
-            <Pressable onPress={() => setModalVisible(true)} style={styles.settingsContainer}>
+            <Pressable onPress={() => openModal()} style={styles.settingsContainer}>
                 <Icon name="settings-outline" size={16} color="#AAB2C8" />
                 <Text style={styles.detailText}>상세 설정</Text>
             </Pressable>

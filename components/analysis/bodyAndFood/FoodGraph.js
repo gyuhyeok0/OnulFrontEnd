@@ -56,7 +56,9 @@ const FoodGraph = ({ foodData = {} }) => {
             const processData = (key) => {
                 let data = labels.map(month => {
                     const dateKey = Object.keys(foodData).find(date => date.includes(month.replace("월", "").padStart(2, '0')));
-                    return foodData[dateKey]?.[key] ?? null;
+
+                    return foodData[dateKey]?.[key] ?? 0; // null을 0으로 변환
+
                 });
                 
                 for (let i = 1; i < data.length; i++) {
@@ -95,18 +97,18 @@ const FoodGraph = ({ foodData = {} }) => {
 
     // Format volume change to two decimal places, removing .00 for whole numbers
     const formatVolumeChange = (value) => {
-        if (value !== null) {
-            // Convert to ounces if the unit is 'oz'
-            if (unit === 'oz') {
-                value = value * 0.03527396; // Convert grams to ounces
-            }
+        if (value === null || value === undefined || isNaN(value)) return '';  // Null 또는 NaN 체크 추가
     
-            // Format the value to two decimal places and remove `.00` if it's a whole number
-            const formattedValue = value.toFixed(2);
-            return formattedValue.endsWith('.00') ? formattedValue.slice(0, -3) : formattedValue;
+        // 단위 변환 (g → oz)
+        if (unit === 'oz') {
+            value = value * 0.03527396;
         }
-        return '';
+    
+        // 값 포맷팅 (소수점 두 자리까지, 필요 없으면 제거)
+        const formattedValue = Number(value).toFixed(2);
+        return formattedValue.endsWith('.00') ? formattedValue.slice(0, -3) : formattedValue;
     };
+    
 
     return (
         <View style={styles.container}>
