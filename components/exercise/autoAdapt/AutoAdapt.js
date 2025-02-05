@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오
 import { isSameDay } from 'date-fns'; // 날짜 비교를 위한 라이브러리
 import DefaltSetting from './DefaltSetting.js';
 import Icon2 from 'react-native-vector-icons/FontAwesome5';
+import { aiRequset } from '../../../src/apis/AutoAdapt.js';
+import { useCurrentWeekAndDay } from '../../../src/hooks/useCurrentWeekAndDay.js';
 
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
@@ -17,11 +19,34 @@ const AutoAdapt = () => {
     const [isRequesting, setIsRequesting] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [updateCount, setUpdateCount] = useState(0); 
+    const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+    const { isDateChanged } = useCurrentWeekAndDay();
+    const checkDate = false
 
+
+    // 운동세팅을 바꾸엇을때 ai 요청 (날짜확인 x)
     useEffect(() => {
+        console.log(updateCount);
         if (updateCount === 0) return; 
-        console.log("여기서 ai request 해야함");
+        aiRequset(memberId,checkDate);
     }, [updateCount]);
+
+
+    // 날짜가 변경되었을때 
+    useEffect(() => {
+        // 날짜가 변경되었을 때만 실행
+        if (isDateChanged) {
+            console.log("날짜가 실제로 변경되었습니다!");
+
+            // ai 요청(날짜 확인 x)
+            aiRequset(memberId,checkDate);
+        }
+
+    }, [isDateChanged]); // isDateChanged가 true일 때만 실행
+
+    // useEffect(() => {
+    //     console.log("마운트 될때 ai 운동 조회 해야함");
+    // }, []);
     
 
 
@@ -59,6 +84,7 @@ const AutoAdapt = () => {
             console.error('오류 발생:', error.message || error);
         }
     };
+
 
     // 토글 시 애니메이션 실행
     const toggleVisibility = () => {

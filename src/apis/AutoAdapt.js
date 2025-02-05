@@ -76,3 +76,42 @@ export const updateAutoAdaptSetting = async (updateData, accessToken = null) => 
     }
 };
 
+
+export const aiRequset = async (memberId, checkDate, accessToken = null) => {
+    try {
+
+        let accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
+
+        const response = await fetch(`${API_URL}/autoAdapt/aiRequest`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ memberId, checkDate }) // ✅ 바디를 JSON 문자열로 변환하여 전달
+        });
+        
+
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                // 상태 코드가 401일 경우 액세스 토큰 갱신
+                const newAccessToken = await refreshAccessToken();
+                if (newAccessToken) {
+                    // 새 토큰으로 다시 시도
+                    return await aiRequset(memberId, newAccessToken);
+                } else {
+                    throw new Error('새로운 토큰을 가져오지 못했습니다.');
+                }
+            } else {
+                throw new Error('네트워크 오류');
+            }
+        }
+
+
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        throw error;
+    }
+
+};

@@ -90,17 +90,11 @@ const WeightAndDietGraph = ({ navigation }) => {
         const datasets = dataKeys.map((key, index) => {
             let data = labels.map((month) => {
                 const dateKey = Object.keys(bodyData).find(date => date.includes(month.replace("월", "").padStart(2, '0')));
-                return bodyData[dateKey]?.[key] ?? null;
+                return bodyData[dateKey]?.[key] ?? 0;  // null이 아닌 0을 기본값으로 설정
             });
     
-            for (let i = 1; i < data.length; i++) {
-                if (data[i] === null) {
-                    data[i] = data[i - 1] !== null ? data[i - 1] : 0;
-                }
-            }
-    
             const validData = data.filter(value => value !== null && value !== 0);
-            const volumeChange = validData.length > 1 ? validData[validData.length - 1] - validData[0] : null;
+            const volumeChange = validData.length > 1 ? validData[validData.length - 1] - validData[0] : 0; // null 대신 0 처리
     
             return {
                 key: `${key}-${index}`,
@@ -114,6 +108,7 @@ const WeightAndDietGraph = ({ navigation }) => {
     
         return { labels, datasets };
     };
+    
     
     const chartData = getChartData();
     const hasData = chartData.datasets.length > 0;

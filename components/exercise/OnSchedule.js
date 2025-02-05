@@ -450,7 +450,6 @@ const OnSchedule = () => {
         }).start();
     };
 
-    
     const handlePress = useCallback(async (part) => {
         const isPartSelected = selectedParts[part];
         const updatedParts = { ...selectedParts, [part]: !isPartSelected };
