@@ -7,6 +7,7 @@ import { API_URL } from '@env';
 export const callFetchExercisesAPI = () => {
     return async (dispatch) => {
         
+
         try {
             const requestURL = `${API_URL}/exercises/selectList`;
             const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기

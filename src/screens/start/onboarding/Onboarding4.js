@@ -52,6 +52,9 @@ const Onboarding4 = ({ navigation, route }) => {
 
     const handleNextStep = async () => {
         if (!isNextButtonDisabled) {
+            // lbs -> kg 변환
+            const convertToKg = (value) => (basicUnit === 'lbs' && value !== '' && value !== -1) ? Math.round(value * 0.453592) : value;
+    
             const onboardingData = {
                 gender,
                 height,
@@ -59,24 +62,15 @@ const Onboarding4 = ({ navigation, route }) => {
                 heightUnit,
                 weightUnit,
                 basicUnit,
-
-                benchPress1rm: unknownValues.benchPress ? -1 : benchPress,  
-                deadlift1rm: unknownValues.deadlift ? -1 : deadlift,  
-                squat1rm: unknownValues.squat ? -1 : squat,  
-
+    
+                benchPress1rm: unknownValues.benchPress ? -1 : convertToKg(benchPress),  
+                deadlift1rm: unknownValues.deadlift ? -1 : convertToKg(deadlift),  
+                squat1rm: unknownValues.squat ? -1 : convertToKg(squat),  
+    
                 memberId: userId,  
                 accessToken: accessToken   
             };
-
-            // AsyncStorage에 1RM 값 저장
-            try {
-                await AsyncStorage.setItem('benchPress1rm', JSON.stringify(benchPress || -1));
-                await AsyncStorage.setItem('deadlift1rm', JSON.stringify(deadlift || -1));
-                await AsyncStorage.setItem('squat1rm', JSON.stringify(squat || -1));
-            } catch (error) {
-                console.error('1RM 값을 저장하는 데 실패했습니다.', error);
-            }
-
+    
             // 다음 단계로 진행
             registrationOnboarding(onboardingData, navigation);
         }

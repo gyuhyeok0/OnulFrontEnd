@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
 import { View, StyleSheet, Image, Text, Pressable, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -60,12 +60,18 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         state.stateExercise.exerciseSets[`${exercise.id}-${exerciseServiceNumber}`]?.sets || []
     );
 
-    const exerciseId = exercise.id;
 
-    // 가장 최근 볼륨 가져오기
-    const latestPreVolume = useSelector((state) => {
-        return selectLatestPreVolume(state, exerciseId);
-    });
+    // // 가장 최근 볼륨 가져오기
+    // const latestPreVolume = useSelector((state) => {
+    //     return selectLatestPreVolume(state, exerciseId);
+    // });
+
+    const exerciseId = useMemo(() => exercise.id, [exercise.id]);
+
+    // ✅ `useSelector`에서 `exerciseId` 사용
+    const latestPreVolume = useSelector((state) => selectLatestPreVolume(state, exerciseId));
+
+
 
 
 

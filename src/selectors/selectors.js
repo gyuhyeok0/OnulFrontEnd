@@ -1,8 +1,10 @@
 import { createSelector } from 'reselect';
 
+const EMPTY_ARRAY = [];
+
 const createExerciseSelector = (key) => createSelector(
-    (state) => state[key]?.myExercises || [],
-    (myExercises) => myExercises // 배열을 복사하지 않고 그대로 반환
+    (state) => state[key]?.myExercises || EMPTY_ARRAY,
+    (myExercises) => myExercises.length ? myExercises : EMPTY_ARRAY // ✅ 빈 배열을 재사용
 );
 
 // 운동 부위별 선택자

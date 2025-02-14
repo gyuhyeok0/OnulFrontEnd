@@ -322,15 +322,12 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
 
         if (isAnyRecipeSelected) {
             // 오늘 날짜 생성
-            const today = new Date();
-    
-            // 연, 월, 일 값을 추출하고 두 자리로 포맷
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해야 합니다.
-            const day = String(today.getDate()).padStart(2, '0'); // 날짜를 두 자리로 포맷
-    
-            // 원하는 형식 (YYYY-MM-DD)
-            const formattedDate = `${year}-${month}-${day}`;
+            const getCurrentDate = () => {
+                const now = new Date();
+                return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+            };
+            
+            const formattedDate = getCurrentDate();
     
             // console.log(selectedRecipeNames);
             const recipeNames = selectedRecipeNames;
@@ -476,6 +473,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                             <TouchableOpacity style={modalstyles.freeCompleteButton} onPress={openFreeFoodModal}>
                                 <Text style={modalstyles.freeCompleteButtonText}>임시식단</Text>
                             </TouchableOpacity>
+                            
                         </KeyboardAwareScrollView>
 
                          {/* Recipe Modal Content */}

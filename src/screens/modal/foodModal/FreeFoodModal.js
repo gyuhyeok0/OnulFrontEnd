@@ -103,15 +103,13 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                 : roundToOneDecimal(parseFloat(fat) || 0),  // g이면 그대로 사용 후 반올림
         };
 
-        const today = new Date();
-    
-        // 연, 월, 일 값을 추출하고 두 자리로 포맷
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해야 합니다.
-        const day = String(today.getDate()).padStart(2, '0'); // 날짜를 두 자리로 포맷
+        const getCurrentDate = () => {
+            const now = new Date();
+            return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+        };
+        
+        const formattedDate = getCurrentDate();
 
-        // 원하는 형식 (YYYY-MM-DD)
-        const formattedDate = `${year}-${month}-${day}`;
     
 
         try {
