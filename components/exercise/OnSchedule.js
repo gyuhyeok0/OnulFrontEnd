@@ -450,6 +450,7 @@ const OnSchedule = () => {
         }).start();
     };
 
+    
     const handlePress = useCallback(async (part) => {
         const isPartSelected = selectedParts[part];
         const updatedParts = { ...selectedParts, [part]: !isPartSelected };
@@ -545,7 +546,7 @@ const OnSchedule = () => {
                     </Pressable>
                 </View>
                 
-                <Animated.View style={[styles.hiddenContent, { height: animationHeight }]}>
+                {/* <Animated.View style={[styles.hiddenContent, { height: animationHeight }]}>
                     {isVisible && (
                         <View style={styles.buttonContainer}>
                             {['가슴', '등', '하체', '어깨', '복근', '팔', '기타', '커스텀'].map(part => (
@@ -561,7 +562,7 @@ const OnSchedule = () => {
                             ))}
                         </View>
                     )}
-                </Animated.View>
+                </Animated.View> */}
             </View>
 
             {reorderedExercises.length > 0 ? (

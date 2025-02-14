@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
+import { Modal, View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 
 const AiSettingsModal = ({ 
     modalVisible, setModalVisible,
@@ -8,7 +8,7 @@ const AiSettingsModal = ({
     exerciseStyle, setExerciseStyle,
     excludedParts, setExcludedParts,
     includeCardio, setIncludeCardio,
-    onClose,
+    onClose, priorityParts
 }) => {
     
     
@@ -53,7 +53,7 @@ const AiSettingsModal = ({
                     {/* 운동 시간 설정 */}
                     <Text style={styles.sectionTitle}>운동 시간</Text>
                     <View style={styles.buttonRow}>
-                        {['30분 이하', '60분 이하', '60분 이상'].map((time) => (
+                        {['30분 이하', '60분 이하', '60분 초과'].map((time) => (
                             <Pressable 
                                 key={time} 
                                 style={[styles.optionButton, exerciseTime === time && styles.selected]}
@@ -67,7 +67,7 @@ const AiSettingsModal = ({
                     {/* 운동 스타일 */}
                     <Text style={styles.sectionTitle}>운동 스타일</Text>
                     <View style={styles.buttonRow}>
-                        {['머신', '프리웨이트', '맨몸'].map((style) => (
+                        {['머신', '프리웨이트'].map((style) => (
                             <Pressable 
                                 key={style} 
                                 style={[styles.optionButton, exerciseStyle.includes(style) && styles.selected]}
@@ -81,13 +81,26 @@ const AiSettingsModal = ({
                     {/* 특정 부위 제외 */}
                     <Text style={styles.sectionTitle}>특정 부위 제외</Text>
                     <View style={styles.buttonRow}>
-                        {['등', '가슴', '하체', '어깨', '팔', '복근'].map((part) => (
+                        {['등', '가슴', '하체', '어깨', '팔'].map((part) => (
                             <Pressable 
                                 key={part} 
                                 style={[styles.optionButton, excludedParts.includes(part) && styles.selected]}
-                                onPress={() => setExcludedParts((prev) =>
-                                    prev.includes(part) ? prev.filter((p) => p !== part) : [...prev, part]
-                                )}
+                                onPress={() => {
+                                    if (priorityParts.includes(part)) {
+                                        Alert.alert("제외 불가", `${part} 부위는 부위 우선 선택되어 있어 제외할 수 없습니다.`);
+                                        return; // 클릭 방지
+                                    }
+
+                                     // ✅ 모든 부위를 제외할 수 없도록 제한
+                                    if (excludedParts.length === 4 && !excludedParts.includes(part)) {
+                                        Alert.alert("선택 불가", "최소 1개 부위는 반드시 포함되어야 합니다.");
+                                        return; // 변경하지 않음
+                                    }
+
+                                    setExcludedParts((prev) =>
+                                        prev.includes(part) ? prev.filter((p) => p !== part) : [...prev, part]
+                                    );
+                                }}
                             >
                                 <Text style={styles.optionText}>{part}</Text>
                             </Pressable>

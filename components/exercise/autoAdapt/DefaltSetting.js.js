@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef} from 'react';
-import { View, StyleSheet, Text, Pressable, Modal } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Modal, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AiSettingsModal from './AiSettingsModal'; // 모달 컴포넌트 추가
 import Icon from 'react-native-vector-icons/Ionicons'
 import { getAutoAdaptSetting, updateAutoAdaptSetting } from '../../../src/apis/AutoAdapt';
 
 // 운동 메뉴의 자동적응 코드
-const DefaltSetting = ({setUpdateCount}) => {
+const DefaltSetting = ({setUpdateCount, isLoading}) => {
     const dispatch = useDispatch();
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
@@ -125,28 +125,47 @@ const DefaltSetting = ({setUpdateCount}) => {
 
     const handleSplitChange = (selectedSplit) => {
         setExerciseSplit(selectedSplit);
-        sendUpdate({ exerciseSplit: selectedSplit });
-
+        setPriorityParts(['자동']); // ✅ 분할 루틴 변경 시 자동 초기화
+        sendUpdate({ exerciseSplit: selectedSplit, priorityParts: ['자동'] });
     };
+    
 
     const handlePriorityChange = (part) => {
         if (priorityParts.length === 1 && priorityParts.includes('자동') && part === '자동') {
             return; // '자동'만 남아있을 경우 클릭 방지
         }
-        
-        console.log("✅ 부위 우선 선택 업데이트:", part);
-        
-        setPriorityParts((prev) => {
-            const newParts = prev.includes(part) ? prev.filter((p) => p !== part) : [...prev, part];
     
-            if (newParts.length === 0) {
-                console.log("⚠️ 모든 부위가 해제됨 → '자동'으로 설정");
-                sendUpdate({ priorityParts: ['자동'] }); // 서버로 즉시 업데이트
-                return ['자동'];
+        console.log("✅ 부위 우선 선택 업데이트:", part);
+    
+        setPriorityParts((prev) => {
+            const maxSelectableParts = {
+                1: 1, // 1분할 → 최대 1개
+                2: 4, // 2분할 → 최대 4개
+                3: 3, // 3분할 → 최대 3개
+                4: 2, // 4분할 → 최대 2개
+                5: 1  // 5분할 → 최대 1개
+            }[exerciseSplit] || 4; // 기본값: 4
+    
+            // ✅ '자동'을 제외한 부위 목록
+            const filteredPrev = prev.filter(p => p !== '자동');
+            const isSelected = filteredPrev.includes(part);
+            
+            let newParts = isSelected
+                ? filteredPrev.filter(p => p !== part) // ✅ 선택 해제 (단, '자동'은 유지)
+                : [...filteredPrev, part]; // ✅ 새로운 부위 추가
+    
+            // ✅ 최대 개수 초과 시 알림 후 추가 선택 방지
+            if (newParts.length > maxSelectableParts) {
+                Alert.alert("선택 불가", `최대 ${maxSelectableParts}개의 부위만 선택할 수 있습니다.`);
+                return prev; // 변경하지 않음
+            }
+    
+            // ✅ '자동'은 항상 유지
+            if (prev.includes('자동') && !newParts.includes('자동')) {
+                newParts = ['자동', ...newParts]; // '자동'을 유지한 상태로 추가
             }
     
             sendUpdate({ priorityParts: newParts }); // 서버로 업데이트
-    
             return newParts;
         });
     };
@@ -234,20 +253,39 @@ const DefaltSetting = ({setUpdateCount}) => {
         setModalVisible(true); // 모달 열기
     }, []);
 
+    const showLoadingAlert = () => {
+        Alert.alert("업데이트 중", "현재 업데이트 중입니다. 잠시 기다려주세요.");
+    };
+    
+    const [viewWidth, setViewWidth] = useState(null);
 
+    const handleLayout = (event) => {
+        const { width } = event.nativeEvent.layout;
+        setViewWidth(width + 30); // 현재 부모 뷰의 너비에 30 추가
+    };
+    
     return (
         <View style={styles.todayExerciseObjective}>
-            {/* 운동 목표 선택 */}
             <View style={styles.buttonRow}>
                 <Pressable 
                     style={[styles.goalButton, exerciseGoal === '근비대' && styles.selected]}
-                    onPress={() => handleGoalChange('근비대')}
+                    onPress={() => {
+                        if (isLoading) {
+                            showLoadingAlert();
+                        } else {
+                            handleGoalChange('근비대');
+                        }
+                    }}
+                    disabled={isLoading}
+
                 >
                     <Text style={styles.buttonText}>근비대</Text>
                 </Pressable>
                 <Pressable 
                     style={[styles.goalButton, exerciseGoal === '체지방 감소' && styles.selected]}
                     onPress={() => handleGoalChange('체지방 감소')}
+                    disabled={isLoading}
+
                 >
                     <Text style={styles.buttonText}>체지방 감소</Text>
                 </Pressable>
@@ -256,11 +294,13 @@ const DefaltSetting = ({setUpdateCount}) => {
             {/* 분할 선택 */}
             <Text style={styles.sectionTitle}>분할 루틴 선택</Text>
             <View style={styles.splitRow}>
-                {[1, 2, 3, 4, 5, 6].map((num) => (
+                {[1, 2, 3, 4, 5].map((num) => (
                     <Pressable 
                         key={num} 
                         style={[styles.splitButton, exerciseSplit === num && styles.selected]}
                         onPress={() => handleSplitChange(num)}
+                        disabled={isLoading}
+
                     >
                         <Text style={styles.buttonText}>{num}분할</Text>
                     </Pressable>
@@ -274,7 +314,15 @@ const DefaltSetting = ({setUpdateCount}) => {
                     <Pressable 
                         key={part} 
                         style={[styles.partButton, Array.isArray(priorityParts) && priorityParts.includes(part) && styles.selected]} 
-                        onPress={() => handlePriorityChange(part)}
+                        onPress={() => {
+                            if (excludedParts.includes(part)) {
+                                Alert.alert("선택 불가", `${part} 부위는 특정 부위 제외되어 있어 우선 선택할 수 없습니다.`);
+                                return; // 클릭 방지
+                            }
+                            handlePriorityChange(part);
+                        }}
+                        disabled={isLoading}
+
                     >
                         <Text style={styles.buttonText}>{part}</Text>
                     </Pressable>
@@ -303,6 +351,7 @@ const DefaltSetting = ({setUpdateCount}) => {
                 includeCardio={includeCardio}
                 setIncludeCardio={setIncludeCardio}
                 onClose={closeModal} 
+                priorityParts={priorityParts}
             />
 
         </View>
@@ -319,6 +368,7 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 10,  // 왼쪽 위 모서리 둥글게
         borderBottomRightRadius: 10, // 오른쪽 위 모서리 둥글게        
         marginBottom: 30,
+        position: 'relative'
     },
     sectionTitle: {
         color: '#FFFFFF',
@@ -391,6 +441,12 @@ const styles = StyleSheet.create({
         color: '#AAB2C8',  // 연한 회색 (강조하지 않음)
         fontSize: 13,       // 작은 글씨
         marginLeft: 4,      // 아이콘과의 간격 조정
+    },
+
+    alertText: {
+        textAlign:'center',
+        zIndex: 100
+
     },
 });
 

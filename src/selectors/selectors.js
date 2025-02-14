@@ -1,9 +1,12 @@
 import { createSelector } from 'reselect';
 
-const createExerciseSelector = (key) => createSelector(
-    (state) => state[key]?.myExercises || [],
-    (myExercises) => myExercises // 배열을 복사하지 않고 그대로 반환
-);
+const EMPTY_ARRAY = Object.freeze([]); // 불변 빈 배열
+
+const createExerciseSelector = (key) =>
+    createSelector(
+        [(state) => state.exercises[key] || EMPTY_ARRAY], // undefined 방지
+        (exercises) => exercises.slice() // 새로운 배열 반환
+    );
 
 // 운동 부위별 선택자
 export const selectChestExercises = createExerciseSelector('chestExercises');

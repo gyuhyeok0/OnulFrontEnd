@@ -7,14 +7,22 @@ export const analysisUpdateAPI = async (memberId, accessToken = null) => {
     try {
 
 
+        const getCurrentDate = () => {
+            const now = new Date();
+            return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+        };
+        
+        const date = getCurrentDate();
+
         let accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
-        const response = await fetch(`${API_URL}/analysis/update?memberId=${memberId}`, {
-            method: 'POST', // POST 요청
+        const response = await fetch(`${API_URL}/analysis/update?memberId=${memberId}&date=${date}`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 헤더에 포함
+                Authorization: `Bearer ${accessToken}`,
             },
         });
+        
 
         if (!response.ok) {
             if (response.status === 401) {
@@ -153,8 +161,15 @@ export const MonthlyWeightAndDiet = async (memberId, accessToken = null) => {
 export const getMuscleFaigue = async (memberId, accessToken = null) => {
     try {
 
+        const getCurrentDate = () => {
+            const now = new Date();
+            return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+        };
+        
+        const date = getCurrentDate();
+
         let accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
-        const response = await fetch(`${API_URL}/analysis/getMuscleFaigue?memberId=${memberId}`, {
+        const response = await fetch(`${API_URL}/analysis/getMuscleFaigue?memberId=${memberId}&date=${date}`, {
             method: 'GET', // POST 요청
             headers: {
                 'Content-Type': 'application/json',

@@ -13,11 +13,14 @@ import { Platform } from 'react-native';
 const Body = ({ weightUnit, setWeightUnit }) => {
     const dispatch = useDispatch();
 
-    
 
-    // 오늘 날짜 계산 (dateKey)
-    const today = new Date()
-        .toLocaleDateString('en-CA', { year: 'numeric', month: 'numeric', day: 'numeric' }); // YYYY-M-D 형식
+    const getCurrentDate = () => {
+        const now = new Date();
+        return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+    };
+    
+    const today = getCurrentDate();
+    
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 

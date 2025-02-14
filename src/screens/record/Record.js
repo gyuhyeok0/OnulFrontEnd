@@ -29,8 +29,12 @@ const Record = ({ navigation }) => {
         React.useCallback(() => {
             const fetchData = async () => {
                 if (mountMonth === undefined) {
+
+                    
                     const today = new Date();
                     const currentMonth = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-01`;
+                    
+                    
                     setMountMonth(currentMonth);
                 }
     

@@ -17,6 +17,7 @@ import {reorderMyFreeExercises} from '../../src/modules/MyExerciseSclice'
 import DraggableItem from './settings-components/DraggableItem'; // 파일 경로를 실제 파일 위치에 맞게 설정
 
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
+import { setWeekState } from '../../src/modules/WeekReducer';
 
 
 // 운동 메뉴의 커스텀 코드
@@ -95,15 +96,6 @@ const Custom = () => {
         const [isReadyKm, setIsReadyKm] = useState(false); // 로딩 상태 추가
 
         const { isDateChanged } = useCurrentWeekAndDay();
-
-
-        useEffect(() => {
-            // 날짜가 변경되었을 때만 실행
-            if (isDateChanged) {
-                console.log("날짜가 실제로 변경되었습니다!");
-                dispatch(resetState());
-            }
-          }, [isDateChanged]); // isDateChanged가 true일 때만 실행
 
         // reorderedExercises가 변경될 때 Redux에 기본 세트 추가
         useEffect(() => {

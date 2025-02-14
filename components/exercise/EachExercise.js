@@ -106,9 +106,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         setVolumeDifference(difference);
     
     }, [latestPreVolume, volume]);
-    
-    
-    
 
     // 볼륨이 달라질때마다 계산
     // 리듀서에 볼륨 저장
