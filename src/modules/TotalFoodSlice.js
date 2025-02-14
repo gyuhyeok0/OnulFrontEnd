@@ -17,36 +17,20 @@ const exerciseRecordSlice = createSlice({
         fetchTotalFoodSuccess(state, action) {
             const { date, mealType, totalNutrition, recipeNames } = action.payload;
             
-            
             // 날짜 키가 없으면 새 객체 생성
             if (!state.foodRecords[date]) {
                 state.foodRecords[date] = {};
             }
         
-            // mealType 데이터 업데이트 또는 추가
-            if (state.foodRecords[date][mealType]) {
-                // 기존 nutrition 업데이트
-                state.foodRecords[date][mealType].totalNutrition = {
-                    ...state.foodRecords[date][mealType].totalNutrition, // 기존 데이터
-                    ...totalNutrition, // 새 데이터 병합
-                };
-        
-                // 레시피 이름이 있다면 기존 레시피 이름에 새로 받은 레시피 이름을 병합
-                state.foodRecords[date][mealType].recipeNames = [
-                    ...new Set([
-                        ...(state.foodRecords[date][mealType].recipeNames || []), // 기존 recipeNames 유지
-                        ...recipeNames, // 새로 전달받은 recipeNames 병합
-                    ])
-                ]; // 중복된 이름이 있을 수 있으므로 Set으로 처리하여 중복 제거
-            } else {
-                state.foodRecords[date][mealType] = {
-                    totalNutrition,
-                    recipeNames, // 새로운 레시피 이름 목록 추가
-                };
-            }
+            // mealType 데이터는 항상 새 데이터로 덮어씀
+            state.foodRecords[date][mealType] = {
+                totalNutrition,
+                recipeNames, // 들어온 데이터만 저장
+            };
         
             state.status = 'succeeded';
         },
+        
         
         
         

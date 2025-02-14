@@ -8,8 +8,8 @@ import AutoAdapt from '../../../components/exercise/autoAdapt/AutoAdapt';
 import OnSchedule from '../../../components/exercise/OnSchedule';
 import Custom from '../../../components/exercise/Custom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useCurrentWeekAndDay } from '../../hooks/useCurrentWeekAndDay';
 import { addDefaultSetsToRedux } from '../../modules/StateExerciseSlice'; // Redux 액션
+import useCheckDateChange from '../../hooks/useCheckDateChange';
 
 
 const Exercise = ({ navigation }) => {
@@ -20,12 +20,21 @@ const Exercise = ({ navigation }) => {
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });
 
     const hasExecuted = useRef(false); // 실행 여부를 추적하는 useRef
-
+    const { isDateChanged } = useCheckDateChange();
 
     useEffect(() => {
         console.log("==========운동페이지 입니다============")
-        // console.log(exerciseSets);
+
     }, []);
+
+    // 온보딩 체크 여부 확인
+    useEffect(() => {
+        if (userId && accessToken) {
+            checkOnboardingStatus(userId, accessToken, navigation);
+        } else {
+            handlerLogOut(navigation);
+        }
+    }, [userId, accessToken]);
 
     // 운동 버튼 누를시 말풍선
     const handlePress = (option, message) => {
@@ -214,4 +223,3 @@ const styles = StyleSheet.create({
 });
 
 export default Exercise;
-

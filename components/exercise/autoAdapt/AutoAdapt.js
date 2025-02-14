@@ -5,86 +5,76 @@ import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오
 import { isSameDay } from 'date-fns'; // 날짜 비교를 위한 라이브러리
 import DefaltSetting from './DefaltSetting.js';
 import Icon2 from 'react-native-vector-icons/FontAwesome5';
-import { aiRequset } from '../../../src/apis/AutoAdapt.js';
+import { aiRequset, autoAdaptExercises, changePriorityPartsSetting } from '../../../src/apis/AutoAdapt.js';
 import { useCurrentWeekAndDay } from '../../../src/hooks/useCurrentWeekAndDay.js';
+import { setWeekState } from '../../../src/modules/WeekReducer.js';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { ActivityIndicator } from 'react-native';
+import { store } from '../../../src/store.js';
+import { addDefaultSetsToRedux } from '../../../src/modules/StateExerciseSlice.js';
+import EachExercise from '../EachExercise.js';
 
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
     const dispatch = useDispatch();
-    const userId = useSelector((state) => state.member.userInfo.memberId);
-    
-    const intensities = ['쉬웠음', '보통', '어려움']; // 운동 강도 배열
-    const data = useSelector((state) => state.intensity.data); // intensity 데이터 가져오기
-
-    const [isRequesting, setIsRequesting] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [updateCount, setUpdateCount] = useState(0); 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
-    const { isDateChanged } = useCurrentWeekAndDay();
-    const checkDate = false
+    const isDateTriggered = useRef(false); // ✅ 날짜 변경으로 실행되었는지 여부 저장
+    const [isLoading, setIsLoading] = useState(false);
+    const [reorderedExercises, setReorderedExercises] = useState([]);
+
+    const [weightUnit, setWeightUnit] = useState(null); 
+    const [kmUnit, setKmUnit] = useState(null); 
+
+    const [scheduleHeight, setScheduleHeight] = useState(0);
+
+    const [isReadyWeight, setIsReadyWeight] = useState(false); // 로딩 상태 추가
+    const [isReadyKm, setIsReadyKm] = useState(false); // 로딩 상태 추가
 
 
-    // 운동세팅을 바꾸엇을때 ai 요청 (날짜확인 x)
+    // ✅ 운동 세팅을 바꿨을 때 실행 (단, isDateChanged로 인해 실행된 경우 제외)
     useEffect(() => {
-        console.log(updateCount);
-        if (updateCount === 0) return; 
-        aiRequset(memberId,checkDate);
-    }, [updateCount]);
-
-
-    // 날짜가 변경되었을때 
-    useEffect(() => {
-        // 날짜가 변경되었을 때만 실행
-        if (isDateChanged) {
-            console.log("날짜가 실제로 변경되었습니다!");
-
-            // ai 요청(날짜 확인 x)
-            aiRequset(memberId,checkDate);
+        // 시작시 동작 아님
+        // 날짜 확인해야함
+        const checkDate = false;
+        const initialization = false;
+        
+        // ✅ 날짜 변경(`isDateChanged`)으로 실행된 경우, 실행하지 않음
+        if (updateCount === 0 || isDateTriggered.current) {
+            isDateTriggered.current = false; // ✅ 다음 updateCount 변화부터는 실행 가능
+            return;
         }
-
-    }, [isDateChanged]); // isDateChanged가 true일 때만 실행
-
-    // useEffect(() => {
-    //     console.log("마운트 될때 ai 운동 조회 해야함");
-    // }, []);
     
+        // 요청 시작 -> 로딩 상태로 변경
+        setIsLoading(true);
+        aiRequset(memberId, checkDate, initialization)
+            .then((result) => {
+                console.log("📌 AI 요청 결과:", result);
+            })
+            .catch((error) => {
+                console.error("❌ AI 요청 실패:", error);
+            })
+
+            
+        .finally(async () => {
+            // 요청이 끝났으면 로딩 상태 해제
+            setIsLoading(false);
+            // ✅ autoAdaptExercises가 비동기 함수라면, async/await 사용
+            try {
+                const data = await autoAdaptExercises(memberId);
+                setReorderedExercises([]);  // 기존 데이터 초기화
+                setReorderedExercises(data); // 새로운 데이터 설정
+
+            } catch (error) {
+                console.error("❌ autoAdaptExercises 실패:", error);
+            }
+        });
+    }, [updateCount]);
 
 
     // 애니메이션 값 설정 (초기값: 0 → 안 보이게 설정)
     const animationHeight = useRef(new Animated.Value(0)).current;
-
-    // selectedIntensity를 data.intensity 값으로 초기화
-    const [selectedIntensity, setSelectedIntensity] = useState(() => {
-        const initialIntensity = data?.intensity;
-        return intensities.indexOf(initialIntensity) !== -1
-            ? intensities.indexOf(initialIntensity)
-            : 1; // 기본값: '보통'
-    });
-
-    // 신규 유저이거나 날짜가 다를 경우 기본값 '보통'으로 디스패치
-    useEffect(() => {
-        const today = new Date();
-
-        if (!data || !data.createdAt || !isSameDay(new Date(data.createdAt), today)) {
-            const defaultIntensity = '보통';
-            const defaultIndex = intensities.indexOf(defaultIntensity);
-    
-            console.log("신규 또는 날짜가 달라서 디스패치 실행");
-            dispatch(sendIntensityToServer(userId, intensities[defaultIndex]));
-        }
-    }, [data, dispatch, intensities]);
-
-    // 강도 선택 함수
-    const handleIntensityPress = async (index) => {
-        setSelectedIntensity(index); // UI 업데이트
-        try {
-            const response = await dispatch(sendIntensityToServer(userId, intensities[index]));
-            console.log('서버 응답 데이터:', response);
-        } catch (error) {
-            console.error('오류 발생:', error.message || error);
-        }
-    };
-
 
     // 토글 시 애니메이션 실행
     const toggleVisibility = () => {
@@ -96,6 +86,115 @@ const AutoAdapt = () => {
             useNativeDriver: false, 
         }).start();
     };
+
+    // -------------------------------------
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await autoAdaptExercises(memberId);
+                console.log("자동 적응 운동 데이터:", data);
+                setReorderedExercises(data);
+
+                if (!data || data.length === 0) {
+
+                    const checkDate = false;
+                    const initialization = false;
+            
+                    // AI 요청 실행
+                    await aiRequset(memberId, checkDate, initialization);
+            
+                    // AI 요청 후 다시 데이터 가져오기
+                    const newData = await autoAdaptExercises(memberId);
+                    setReorderedExercises(newData);
+                } else {
+                    console.log("✅ 자동 적응 운동 데이터:", data);
+                    setReorderedExercises(data);
+                }
+                
+            } catch (error) {
+                console.error("데이터 불러오기 오류:", error);
+            }
+        };
+    
+        fetchData();
+    }, []);
+
+    // reorderedExercises가 변경될 때 Redux에 기본 세트 추가
+    useEffect(() => {
+        if (reorderedExercises.length > 0) {
+            const exercisesWithId = reorderedExercises.map((exercise) => ({
+                id: exercise.exerciseId, // exerciseId 포함
+                exerciseServiceNumber: 3,
+                ...exercise,
+            }));
+            dispatch(addDefaultSetsToRedux(exercisesWithId));
+        }
+    }, [reorderedExercises, dispatch]);
+    
+    //키보드에서 unit 변경시 스토리지 저장
+        useEffect(() => {
+            const updateStorage = async () => {
+                try {
+                    if (kmUnit) {
+                        // console.log("kmUnit 변경됨 = " + kmUnit);
+        
+                        // kmUnit에 따라 heightUnit 값 설정
+                        const heightUnit = kmUnit === 'km' ? 'cm' : 'feet';
+        
+                        // AsyncStorage에 저장
+                        await AsyncStorage.setItem('heightUnit', heightUnit);
+                        // console.log("heightUnit 저장됨: " + heightUnit);
+                    }
+        
+                    if (weightUnit) {
+                        // console.log("weightUnit 변경됨 = " + weightUnit);
+        
+                        // weightUnit 값 설정
+                        const unitToSave = weightUnit === 'kg' ? 'kg' : 'lbs';
+        
+                        // AsyncStorage에 저장
+                        await AsyncStorage.setItem('weightUnit', unitToSave);
+                        // console.log("weightUnit 저장됨: " + unitToSave);
+                    }
+                } catch (error) {
+                    console.error('Error updating AsyncStorage:', error);
+                }
+            };
+        
+            updateStorage();
+        }, [kmUnit, weightUnit]);
+        
+        
+
+        //무게 단위 로드
+        useEffect(() => {
+            const fetchUnits = async () => {
+                try {
+                    // 무게 단위 로드
+                    const unitKg = await AsyncStorage.getItem('weightUnit');
+                    setWeightUnit(unitKg || 'kg');
+                    setIsReadyWeight(true); // 무게 단위 로딩 완료
+                    
+                    // 거리 단위 로드
+                    const unitKm = await AsyncStorage.getItem('heightUnit');
+                    if (unitKm === 'feet') {
+                        setKmUnit('mi');
+                    } else if (unitKm === 'cm') {
+                        setKmUnit('km');
+                    } else {
+                        setKmUnit(unitKm || 'km');
+                    }
+                    setIsReadyKm(true); // 거리 단위 로딩 완료
+                } catch (error) {
+                    console.error('Error fetching units:', error);
+                }
+            };
+        
+            fetchUnits();
+        }, []);
+
+
 
     return (
         <View style={{ width: '100%', backgroundColor: '#1A1C22', padding: 10 }}>
@@ -109,8 +208,16 @@ const AutoAdapt = () => {
                         : { borderRadius: 10 } // "caret-down" 상태 → 위쪽만 둥글게
                 ]}
                 onPress={toggleVisibility}
-            >
-                <Text style={styles.refreshLabel}>오늘의 운동</Text>
+            >   
+                <View style={{flexDirection:'row', alignItems:'center'}}>
+                    <Text style={styles.refreshLabel}>오늘의 AI 운동</Text>
+                    {isLoading && (
+                    <View style={{marginLeft: 10, flexDirection:'row', alignItems:'center'}}>
+                        <ActivityIndicator size="small" color="white" />
+                        <Text style={{color:'white', marginLeft: 5}}>잠시 기다려주세요</Text>
+                    </View>
+                    )}
+                </View>
                 <Icon2 name={isVisible ? "caret-up" : "caret-down"} size={28} color="white" />
             </Pressable>
 
@@ -118,38 +225,61 @@ const AutoAdapt = () => {
             {/* 애니메이션이 적용된 영역 (caret-down 상태일 때만 렌더링) */}
             {isVisible && (
                 <Animated.View style={[styles.animatedContainer, { height: animationHeight }]}>
-                    <DefaltSetting setUpdateCount={setUpdateCount}/>
+                    <DefaltSetting setUpdateCount={setUpdateCount} isLoading={isLoading}/>
                 </Animated.View>
             )}
 
+            <View style={{height:15}}></View>
 
-            {/* 운동 강도 선택 버튼들 */}
-            <View style={styles.intensityContainer}>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>오늘의 운동강도</Text>
-                <Text style={{ fontSize: 12, color: '#888888', marginTop: 5 }}>다음날 운동에 반영됩니다.</Text>
+                {/* {Array.isArray(autoAdaptExercises) && autoAdaptExercises.length > 0 ? (
+                    <View style={styles.schedule} onLayout={(event) => setScheduleHeight(event.nativeEvent.layout.height)}>
+                        {autoAdaptExercises.map((exercise, index) => (
+                            <View style={{ position: 'relative' }} key={`${exercise.id}-${index}`}>
+                                <EachExercise
+                                    exercise={exercise}
+                                    exerciseServiceNumber={2}
+                                    weightUnit={weightUnit}
+                                    setWeightUnit={setWeightUnit}
+                                    kmUnit={kmUnit}
+                                    setKmUnit ={setKmUnit}
+                                />
+                            </View>
+                        ))}
+                    </View>
+                ) : (
+                    <View style={{}}>
+                        <Text style={{ textAlign: 'center', color: 'white', fontSize: 15, fontWeight: '500' }}>
+                            먼저 위의 버튼을 눌러 운동을 등록해주세요.
+                        </Text>
+                    </View>
+                )} */}
 
-                <View style={styles.intensityWrap}>
-                    {intensities.map((intensity, index) => (
-                        <Pressable
-                            key={index}
-                            onPress={() => handleIntensityPress(index)}
-                            style={[
-                                styles.intensityButton,
-                                index === selectedIntensity && styles.selectedButton
-                            ]}
-                        >
-                            <Text
-                                style={[
-                                    styles.intensityText,
-                                    index === selectedIntensity && styles.selectedText
-                                ]}
-                            >
-                                {intensity}
-                            </Text>
-                        </Pressable>
+            {reorderedExercises.length > 0 ? (
+                <View style={styles.schedule}>
+                    {reorderedExercises.map((exercise, index) => (
+                        <View style={{ position: 'relative' }} key={`${exercise.id}-${index}`}>
+
+                    <EachExercise
+                        key={`${exercise.id}-${index}`} // 고유 key로 설정
+                        exercise={exercise}
+                        exerciseServiceNumber = {3}
+                        weightUnit = {weightUnit}
+                        setWeightUnit ={setWeightUnit}
+                        kmUnit = {kmUnit}
+                        setKmUnit ={setKmUnit}
+                    />
+                                                
+
+                        </View>
                     ))}
                 </View>
-            </View>
+            ) : (
+                <View style={styles.noSchedule}>
+                    <Text style={{color:'white'}}>잠시기다려주세요.</Text>
+                </View>
+            )}
+
+
         </View>
     );
 };

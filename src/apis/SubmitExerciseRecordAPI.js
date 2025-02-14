@@ -7,6 +7,8 @@ import moment from 'moment'; // moment 가져오기
 import { API_URL } from '@env';
 
 
+
+
 // 서버로 데이터를 전송하는 함수
 export const submitExerciseRecord = async (memberId, exerciseService, setNumber, set, exercise,  exerciseType, volume, weightUnit, kmUnit, accessToken = null, dispatch) => {
     try {
@@ -15,6 +17,14 @@ export const submitExerciseRecord = async (memberId, exerciseService, setNumber,
         if (!accessToken) {
             accessToken = await AsyncStorage.getItem('accessToken');
         }
+
+        const getCurrentDate = () => {
+            const now = new Date();
+            return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+        };
+        
+        const date = getCurrentDate();
+        console.log (date)
 
         if (set.time) {
             // console.log("time 값이 존재합니다:", set.time);
@@ -39,7 +49,7 @@ export const submitExerciseRecord = async (memberId, exerciseService, setNumber,
         }
 
 
-        const response = await fetch(`${API_URL}/submitExercises/regist`, {
+        const response = await fetch(`${API_URL}/submitExercises/regist?date=${date}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -93,7 +103,16 @@ export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerci
             accessToken = await AsyncStorage.getItem('accessToken');
         }
 
-        const response = await fetch(`${API_URL}/submitExercises/delete`, {
+        const getCurrentDate = () => {
+            const now = new Date();
+            return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+        };
+        
+        const date = getCurrentDate();
+        console.log (date)
+
+
+        const response = await fetch(`${API_URL}/submitExercises/delete?date=${date}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -29,23 +29,34 @@ const exerciseVolumeSlice = createSlice({
     },
 });
 
-// Selector: 오늘 제외하고 가장 최근 볼륨 가져오기
-export const selectLatestPreVolume = (state, exerciseId) => {
-    // console.log("실행======================================");
 
-    const today = new Date().toISOString().split('T')[0]; // 오늘 날짜
-    const exerciseData = state.exerciseVolumeData[exerciseId] || {}; // exerciseVolumeData를 상태에서 가져오기
+import { createSelector } from '@reduxjs/toolkit';
 
-    // 날짜들을 배열로 만들고, 오늘을 제외한 최신 날짜를 찾아 그 날짜에 해당하는 볼륨을 반환
-    const dates = Object.keys(exerciseData).filter(date => date !== today);
-    
-    if (dates.length === 0) return null; // 오늘을 제외한 데이터가 없다면 null 반환
+// 1️⃣ 상태에서 exerciseVolumeData 가져오기
+const selectExerciseVolumeData = (state) => state.exerciseVolumeData;
 
-    // 가장 최근 날짜 찾기
-    const latestDate = dates.sort((a, b) => new Date(b) - new Date(a))[0];
+// 2️⃣ 오늘을 제외한 가장 최근 볼륨을 찾는 Selector
+export const selectLatestPreVolume = createSelector(
+    [selectExerciseVolumeData, (_, exerciseId) => exerciseId], 
+    (exerciseVolumeData, exerciseId) => {
+        if (!exerciseVolumeData || !exerciseVolumeData[exerciseId]) return null;
 
-    return exerciseData[latestDate].preVolume; // 최신 날짜에 해당하는 볼륨 반환
-};
+        const today = new Date().toISOString().split('T')[0];
+        const exerciseData = exerciseVolumeData[exerciseId];
+
+        // 날짜 목록을 생성하고 가장 최근 날짜 찾기
+        const dates = Object.keys(exerciseData).filter((date) => date !== today);
+
+        if (dates.length === 0) return null;
+
+        // ✅ 가장 최근 날짜를 캐싱하여 반환
+        const latestDate = dates.reduce((latest, current) => (new Date(current) > new Date(latest) ? current : latest));
+
+        return exerciseData[latestDate]?.preVolume || null;
+    }
+);
+
+
 
 
 export const { updateExerciseVolume, resetExerciseVolumeData } = exerciseVolumeSlice.actions;
