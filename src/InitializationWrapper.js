@@ -202,26 +202,26 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
             } 
 
 
-            // AI 요청 실행 여부 확인
-            if (typeof memberId === "string" && memberId.trim() !== "") {
-                try {
-                    console.log('ai 요청');
+            // // AI 요청 실행 여부 확인
+            // if (typeof memberId === "string" && memberId.trim() !== "") {
+            //     try {
+            //         console.log('ai 요청');
 
-                    const checkDate = true;
-                    const initialization = true;
+            //         const checkDate = true;
+            //         const initialization = true;
 
-                    // ✅ aiRequest가 완료될 때까지 대기
-                    const result = await aiRequset(memberId, checkDate, initialization);
+            //         // ✅ aiRequest가 완료될 때까지 대기
+            //         const result = await aiRequset(memberId, checkDate, initialization);
 
-                    console.log("📌 AI 요청 결과:", result);
+            //         console.log("📌 AI 요청 결과:", result);
 
                     
-                } catch (error) {
-                    console.error("❌ AI 요청 실패:", error);
-                }
-            } else {
-                console.warn("❌ memberId가 유효하지 않으므로 AI 요청을 수행하지 않습니다.");
-            }
+            //     } catch (error) {
+            //         console.error("❌ AI 요청 실패:", error);
+            //     }
+            // } else {
+            //     console.warn("❌ memberId가 유효하지 않으므로 AI 요청을 수행하지 않습니다.");
+            // }
 
 
             // 날짜 스토리지에 저장 (로컬 시간 기준)
@@ -261,12 +261,6 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
         initialize();
     }, [dispatch, setTimerTime, setIsTimerRunning, onInitializationComplete]);
     
-    // 초기화가 완료되면 스플래시 화면 숨기기
-    useEffect(() => {
-        if (isInitialized) {
-            SplashScreen.hide();
-        }
-    }, [isInitialized]);
 
     // 초기화가 완료되지 않은 상태에서는 아무것도 렌더링하지 않음
     if (!isInitialized) {
