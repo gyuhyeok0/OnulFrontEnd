@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
-import SplashScreen from 'react-native-splash-screen';
+import RNSplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setIsLoggedIn } from './modules/AuthSlice';  // Redux 액션 가져오기
 import initializeI18n from './locales/i18n'; // i18n 초기화 함수 가져오기
@@ -11,6 +11,7 @@ import { analysisUpdateAPI } from './apis/AnalysisApi';
 import { inspection } from './apis/Inspection';
 import { Alert, BackHandler, Platform, Linking } from 'react-native';
 import { aiRequset } from './apis/AutoAdapt';
+import SplashScreen from 'react-native-splash-screen'
 
 
 const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTimerRunning }) => {
@@ -21,6 +22,10 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
     const foodData = useSelector((state) => state.totalFood);
     // const exerciseData = useSelector((state)=>state.exerciseRecord)
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+
+    useEffect(() => {
+        SplashScreen.hide();
+    }, []);
 
     useEffect(() => {
         const initialize = async () => {
@@ -202,26 +207,26 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
             } 
 
 
-            // AI 요청 실행 여부 확인
-            if (typeof memberId === "string" && memberId.trim() !== "") {
-                try {
-                    console.log('ai 요청');
+            // // AI 요청 실행 여부 확인
+            // if (typeof memberId === "string" && memberId.trim() !== "") {
+            //     try {
+            //         console.log('ai 요청');
 
-                    const checkDate = true;
-                    const initialization = true;
+            //         const checkDate = true;
+            //         const initialization = true;
 
-                    // ✅ aiRequest가 완료될 때까지 대기
-                    const result = await aiRequset(memberId, checkDate, initialization);
+            //         // ✅ aiRequest가 완료될 때까지 대기
+            //         const result = await aiRequset(memberId, checkDate, initialization);
 
-                    console.log("📌 AI 요청 결과:", result);
+            //         console.log("📌 AI 요청 결과:", result);
 
                     
-                } catch (error) {
-                    console.error("❌ AI 요청 실패:", error);
-                }
-            } else {
-                console.warn("❌ memberId가 유효하지 않으므로 AI 요청을 수행하지 않습니다.");
-            }
+            //     } catch (error) {
+            //         console.error("❌ AI 요청 실패:", error);
+            //     }
+            // } else {
+            //     console.warn("❌ memberId가 유효하지 않으므로 AI 요청을 수행하지 않습니다.");
+            // }
 
 
             // 날짜 스토리지에 저장 (로컬 시간 기준)
@@ -264,7 +269,7 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
     // 초기화가 완료되면 스플래시 화면 숨기기
     useEffect(() => {
         if (isInitialized) {
-            SplashScreen.hide();
+            RNSplashScreen.hide();
         }
     }, [isInitialized]);
 

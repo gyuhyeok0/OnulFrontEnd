@@ -13,6 +13,7 @@ import { ActivityIndicator } from 'react-native';
 import { store } from '../../../src/store.js';
 import { addDefaultSetsToRedux } from '../../../src/modules/StateExerciseSlice.js';
 import EachExercise from '../EachExercise.js';
+import AutoAdaptLoading from './AutoAdaptLoading.js';
 
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
@@ -98,8 +99,8 @@ const AutoAdapt = () => {
 
                 if (!data || data.length === 0) {
 
-                    const checkDate = false;
-                    const initialization = false;
+                    const checkDate = true;
+                    const initialization = true;
             
                     // AI 요청 실행
                     await aiRequset(memberId, checkDate, initialization);
@@ -231,29 +232,6 @@ const AutoAdapt = () => {
 
             <View style={{height:15}}></View>
 
-                {/* {Array.isArray(autoAdaptExercises) && autoAdaptExercises.length > 0 ? (
-                    <View style={styles.schedule} onLayout={(event) => setScheduleHeight(event.nativeEvent.layout.height)}>
-                        {autoAdaptExercises.map((exercise, index) => (
-                            <View style={{ position: 'relative' }} key={`${exercise.id}-${index}`}>
-                                <EachExercise
-                                    exercise={exercise}
-                                    exerciseServiceNumber={2}
-                                    weightUnit={weightUnit}
-                                    setWeightUnit={setWeightUnit}
-                                    kmUnit={kmUnit}
-                                    setKmUnit ={setKmUnit}
-                                />
-                            </View>
-                        ))}
-                    </View>
-                ) : (
-                    <View style={{}}>
-                        <Text style={{ textAlign: 'center', color: 'white', fontSize: 15, fontWeight: '500' }}>
-                            먼저 위의 버튼을 눌러 운동을 등록해주세요.
-                        </Text>
-                    </View>
-                )} */}
-
             {reorderedExercises.length > 0 ? (
                 <View style={styles.schedule}>
                     {reorderedExercises.map((exercise, index) => (
@@ -274,9 +252,7 @@ const AutoAdapt = () => {
                     ))}
                 </View>
             ) : (
-                <View style={styles.noSchedule}>
-                    <Text style={{color:'white'}}>잠시기다려주세요.</Text>
-                </View>
+                <AutoAdaptLoading/>
             )}
 
 

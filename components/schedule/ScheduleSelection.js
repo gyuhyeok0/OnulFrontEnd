@@ -349,15 +349,14 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
         setSelectedExercise('');
     }, []);
 
-    // 운동 부위 클릭 처리
     const handlePress = useCallback(async (part) => {
         const isPartSelected = selectedParts[part];
         const updatedParts = { ...selectedParts, [part]: !isPartSelected };
-
+    
         setSelectedParts(updatedParts);
-
+    
         let hasExercisesForPart = false;
-
+    
         switch (part) {
             case '가슴':
                 hasExercisesForPart = Array.isArray(chestExercises) && chestExercises.length > 0;
@@ -386,7 +385,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
             default:
                 hasExercisesForPart = false;
         }
-
+    
         if (memberId) {
             try {
                 if (!isPartSelected) {
@@ -401,13 +400,24 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
                     await sendDataToServer(part, memberId, selectedWeekType, selectedDay);
                 } else {
                     await deleteDataFromServer(part, memberId, selectedWeekType, selectedDay);
-                    
+    
                     if (part === "커스텀") {
-                        setReorderedExercises([]); // "커스텀"일 경우 배열 초기화
+                        setReorderedExercises([]); // "커스텀"일 경우 전체 초기화
+                        await AsyncStorage.removeItem('reorderedExercises');  // ✅ 스토리지에서도 삭제
                     } else {
                         setReorderedExercises((prev) =>
                             prev.filter((exercise) => exercise.mainMuscleGroup !== part)
                         );
+    
+                        // ✅ 모든 운동이 제거되면 스토리지 삭제
+                        setTimeout(async () => {
+                            if (reorderedExercises.length === 0) {
+                                await AsyncStorage.removeItem('reorderedExercises');
+                                console.log("스토리지에서 운동 목록 삭제 완료");
+                            } else {
+                                saveReorderedExercises();
+                            }
+                        }, 100);
                     }
                 }
                 dispatch(callFetchScheduleAPI());
@@ -417,8 +427,8 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
         } else {
             Alert.alert('회원 ID를 찾을 수 없습니다.');
         }
-    }, [selectedParts, memberId, chestExercises, backExercises, lowerBodyExercises, shouldersExercises, absExercises, armsExercises, aerobicExercises, customExercises, selectedWeekType, selectedDay, dispatch, openModal]);
-
+    }, [selectedParts, memberId, chestExercises, backExercises, lowerBodyExercises, shouldersExercises, absExercises, armsExercises, aerobicExercises, customExercises, selectedWeekType, selectedDay, dispatch, openModal, saveReorderedExercises]);
+    
     // 운동 항목 순서 변경
     const handleDragStart = (index) => {
         setActiveIndex(index);
