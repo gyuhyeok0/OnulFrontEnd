@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Animated, Text, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SplashScreen from 'react-native-splash-screen';
 import initializeI18n from './locales/i18n'; // i18n 초기화 함수 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 추가
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -57,7 +56,6 @@ import NetInfo from '@react-native-community/netinfo';
 import ExerciseVolumeGraph from '../components/analysis/volume/ExerciseVolumeGraph';
 import WeightAndDietGraph from '../components/analysis/bodyAndFood/WeightAndDietGraph';
 import MuscleFatigue from '../components/analysis/faigue/MuscleFaigue';
-
 
 // QueryClient 생성
 const queryClient = new QueryClient();

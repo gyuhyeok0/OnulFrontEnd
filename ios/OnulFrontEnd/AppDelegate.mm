@@ -1,15 +1,21 @@
 #import "AppDelegate.h"
-
 #import <React/RCTBundleURLProvider.h>
+#import "RNSplashScreen.h" 
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.moduleName = @"OnulFrontEnd";
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
+
+// ✅ 스플래시 화면을 강제로 표시
+  // [RNSplashScreen show];
+  // dispatch_async(dispatch_get_main_queue(), ^{
+  //   [RNSplashScreen show];
+  //   NSLog(@"[AppDelegate] RNSplashScreen.show() 호출 후");
+  // });
+  
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }

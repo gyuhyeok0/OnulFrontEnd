@@ -473,11 +473,13 @@ const OnSchedule = () => {
                     { text: "확인", onPress: () => openModal(part) },
                 ]);
                 setSelectedParts((prevParts) => ({ ...prevParts, [part]: false }));
-
+    
                 return;
             }
         } else {
-
+            // 운동 부위 선택 해제 시 스토리지에서도 삭제
+            await removePartFromStorage(part);
+    
             if (part === "커스텀") {
                 setReorderedExercises([]); // "커스텀"일 경우 배열 초기화
             } else {
@@ -493,7 +495,6 @@ const OnSchedule = () => {
                     await sendDataToServer(part, memberId, selectedWeekType, selectedDay);
                 } else {
                     await deleteDataFromServer(part, memberId, selectedWeekType, selectedDay);
-                    // setReorderedExercises([])
                 }
                 dispatch(callFetchScheduleAPI());
             } catch (error) {
@@ -503,6 +504,33 @@ const OnSchedule = () => {
             Alert.alert('회원 ID를 찾을 수 없습니다.');
         }
     }, [selectedParts, memberId, selectedWeekType, selectedDay, dispatch, exerciseMap]);
+    
+    const removePartFromStorage = async (part) => {
+        try {
+            const storedData = await AsyncStorage.getItem('reorderedExercises');
+            if (!storedData) return; // 저장된 데이터가 없으면 그냥 종료
+    
+            const parsedData = JSON.parse(storedData);
+            const updatedExercises = parsedData.exercises.filter(
+                (exercise) => exercise.mainMuscleGroup !== part
+            );
+    
+            // ✅ 만약 남아있는 운동이 없으면 키 자체를 삭제
+            if (updatedExercises.length === 0) {
+                await AsyncStorage.removeItem('reorderedExercises');
+                console.log(`"${part}" 운동이 제거되어 스토리지에서 삭제됨.`);
+            } else {
+                await AsyncStorage.setItem('reorderedExercises', JSON.stringify({
+                    ...parsedData,
+                    exercises: updatedExercises
+                }));
+                console.log(`"${part}" 운동 제거 후 스토리지 업데이트됨.`);
+            }
+        } catch (error) {
+            console.error(`"${part}" 운동 삭제 중 오류 발생:`, error);
+        }
+    };
+    
 
     
     const openModal = useCallback((exercise) => {
