@@ -261,6 +261,12 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
         initialize();
     }, [dispatch, setTimerTime, setIsTimerRunning, onInitializationComplete]);
     
+    // 초기화가 완료되면 스플래시 화면 숨기기
+    useEffect(() => {
+        if (isInitialized) {
+            SplashScreen.hide();
+        }
+    }, [isInitialized]);
 
     // 초기화가 완료되지 않은 상태에서는 아무것도 렌더링하지 않음
     if (!isInitialized) {

@@ -8,9 +8,6 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
     const inputRef = useRef(null);
     const inputAccessoryViewID = `inputKg-${index}`; // 고유 ID 설정
 
-    useEffect(() => {
-        console.log("Current weightUnit in Custom:", weightUnit);
-    }, [weightUnit]);
 
 
     const handleSelectionChange = (event) => {
@@ -105,7 +102,7 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
     }, [weightUnit]); // 단위가 변경될 때 실행
     
     const handleUnitChange = (unit) => {
-        console.log(`[handleUnitChange] 단위 변경 요청됨: ${unit}`);
+        // console.log(`[handleUnitChange] 단위 변경 요청됨: ${unit}`);
         setWeightUnit(unit); // 단위 상태 업데이트
     }; 
 

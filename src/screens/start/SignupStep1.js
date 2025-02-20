@@ -293,6 +293,7 @@ function SignupStep1({ navigation, route }) {
                     </View>
 
                 </View>
+                <Text style={styles.note}>메시지를 수신하기 위해 국외발신 차단 설정을 해제해 주시기 바랍니다</Text>
 
                 <Agree setIsAllAgreed={setIsAllAgreed} /> 
 

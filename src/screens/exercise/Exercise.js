@@ -21,11 +21,25 @@ const Exercise = ({ navigation }) => {
 
     const hasExecuted = useRef(false); // 실행 여부를 추적하는 useRef
     const { isDateChanged } = useCheckDateChange();
+    const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate); // Optional chaining 사용
+
 
     useEffect(() => {
         console.log("==========운동페이지 입니다============")
+        console.log(memberSignupDate);
 
+        if (memberSignupDate) {
+            const signupDate = new Date(memberSignupDate);
+            const currentDate = new Date();
+            const diffTime = Math.abs(currentDate - signupDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays >= 5) {
+                setSelectedOption('OnSchedule');
+            }
+        }
     }, []);
+
 
     // 온보딩 체크 여부 확인
     useEffect(() => {

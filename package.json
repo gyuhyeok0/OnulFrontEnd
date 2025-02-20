@@ -35,6 +35,7 @@
     "react-dom": "^18.3.1",
     "react-i18next": "^15.0.1",
     "react-native": "^0.75.2",
+    "react-native-admob-native-ads": "^0.7.6",
     "react-native-background-timer": "^2.4.1",
     "react-native-calendars": "^1.1307.0",
     "react-native-chart-kit": "^6.12.0",

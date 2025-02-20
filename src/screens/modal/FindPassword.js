@@ -420,6 +420,7 @@ const FindPassword = ({ isVisible, onClose }) => {
                                     )}
                                 </>
                             )}
+                            <Text style={styles.note}>메시지를 수신하기 위해 국외발신 차단 설정을 해제해 주시기 바랍니다</Text>
 
                             {/* 비밀번호 재설정 영역 */}
                             {isComplete && (
@@ -504,6 +505,12 @@ const modalstyles = StyleSheet.create({
     title:{
         color: 'white',
         fontSize: 20
+    },
+
+    note: {
+        marginTop: 5,
+        fontSize: 12,
+        color: '#999999',
     },
 });
 

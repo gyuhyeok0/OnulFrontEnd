@@ -94,7 +94,7 @@ const AutoAdapt = () => {
         const fetchData = async () => {
             try {
                 const data = await autoAdaptExercises(memberId);
-                console.log("자동 적응 운동 데이터:", data);
+                // console.log("자동 적응 운동 데이터:", data);
                 setReorderedExercises(data);
 
                 if (!data || data.length === 0) {
@@ -109,7 +109,7 @@ const AutoAdapt = () => {
                     const newData = await autoAdaptExercises(memberId);
                     setReorderedExercises(newData);
                 } else {
-                    console.log("✅ 자동 적응 운동 데이터:", data);
+                    // console.log("✅ 자동 적응 운동 데이터:", data);
                     setReorderedExercises(data);
                 }
                 
