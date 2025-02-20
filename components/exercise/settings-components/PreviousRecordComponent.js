@@ -62,7 +62,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
             try {
                 const result = await fetchExercisesRecord(exerciseId, memberId, exerciseService, renderingDate);
 
-                console.log("운동 기록 가져온 결과:", result);
+                // console.log("운동 기록 가져온 결과:", result);
                 // 결과에 대해 추가적인 로직을 여기서 처리할 수 있습니다.
 
                 setRecordData(result);

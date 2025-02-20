@@ -103,7 +103,7 @@ function Signup({ navigation }) {
 
     return (
         <>
-            <DefaultHeader title="간편가입" navigation={navigation} />
+            <DefaultHeader title="회원가입" navigation={navigation} />
 
             <KeyboardAwareScrollView
                 contentContainerStyle={{ flexGrow: 1 }}

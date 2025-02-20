@@ -78,7 +78,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     useEffect(() => {
         // 초기 상태는 volumeDifference를 0으로 설정
 
-        console.log(latestPreVolume);
+        // console.log(latestPreVolume);
         if (volumeDifference === null) {
             setVolumeDifference(0);
         }
@@ -95,7 +95,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                 difference = volume - latestPreVolume;
             }
     
-            console.log(difference);
+            // console.log(difference);
     
             // 차이가 음수일 경우 0으로 설정
             if (difference < 0) {
@@ -106,7 +106,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             // 만약 latestPreVolume이 null이면, difference를 0으로 설정
             difference = volume || 0; // volume이 null일 경우 0으로 처리
 
-            console.log("null 이에요")
+            // console.log("null 이에요")
         }
     
         setVolumeDifference(difference);
@@ -130,7 +130,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     
     // 볼륨 차이 계산 및 상태 업데이트
     useEffect(() => {
-        console.log("가장 최근 볼륨 (오늘 제외):", latestPreVolume);
+        // console.log("가장 최근 볼륨 (오늘 제외):", latestPreVolume);
         if (latestPreVolume !== null && volume !== null) {
             const difference =
                 typeof volume === "string" && typeof latestPreVolume === "string"
@@ -226,7 +226,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             // 시간만 있는 경우
             else if (!kmAndTime && set.time) {
 
-                console.log("여기띠용"+set.time);
+                // console.log("여기띠용"+set.time);
 
                 if (set.time) {
                     // console.log("time 값이 존재합니다:", set.time);
@@ -234,7 +234,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                     // 00:00 또는 00:00:00 형태면 아무 작업도 하지 않음
                     const timeRegex = /^(?:\d{2}:\d{2}|\d{2}:\d{2}:\d{2})$/;
                     if (timeRegex.test(set.time)) {
-                        console.log("이미 올바른 형식의 time 값입니다:", set.time);
+                        // console.log("이미 올바른 형식의 time 값입니다:", set.time);
         
                     } else {
                         return;
@@ -336,7 +336,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             setShowPreviousRecord(false);
         }
 
-        console.log(sets);
+        // console.log(sets);
 
     };
 
@@ -450,7 +450,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     
                     console.log(`세트 ${index} 상태가 해제되었습니다.`);
                 } else {
-                    console.log('Data successfully submitted:', data);
+                    // console.log('Data successfully submitted:', data);
                 }
             } catch (error) {
                 console.error("Unexpected error during refetch:", error);
@@ -478,7 +478,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             console.log("삭제 쿼리 호출합니다.")
 
 
-            console.log(currentSet, currentSetNumber);
+            // console.log(currentSet, currentSetNumber);
 
             if (currentSet && currentSetNumber !== null) {
 
@@ -507,7 +507,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                 if (data && data.success === false) {
                     console.log("실패한거 아냐?")
                 } else {
-                    console.log('Data successfully submitted:', data);
+                    // console.log('Data successfully submitted:', data);
                 }
             } catch (error) {
                 console.error("Unexpected error during refetch:", error);

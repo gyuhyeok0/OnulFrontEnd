@@ -80,7 +80,6 @@ export const updateAutoAdaptSetting = async (updateData, accessToken = null) => 
 export const changePriorityPartsSetting = async (memberId, priorityParts, accessToken = null) => {
     try {
 
-        console.log(memberId,priorityParts);
 
         let accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
 

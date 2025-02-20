@@ -15,7 +15,7 @@ const TimeInput = ({ set, index, sets, setSets, style, selectedIndex, setSelecte
 
     useEffect(() => {
         if (set.time !== inputValue && adjustedTime === null) {
-            console.log(`[useEffect] set.time 업데이트 감지: ${set.time}`);
+            // console.log(`[useEffect] set.time 업데이트 감지: ${set.time}`);
             setInputValue(set.time);
         }
     }, [set.time, adjustedTime, inputValue]);
