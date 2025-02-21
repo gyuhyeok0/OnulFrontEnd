@@ -1,3 +1,7 @@
+import firebase from '@react-native-firebase/app';
+import analytics from '@react-native-firebase/analytics';
+import admob from '@react-native-firebase/admob';
+
 import React, { useEffect, useState } from 'react';
 import { Alert, Animated, Text, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -76,6 +80,19 @@ function MainApp() {
   const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
   const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
 
+
+
+  useEffect(() => {
+    // Firebase Analytics 이벤트 로깅 (앱 오픈)
+    analytics()
+      .logEvent('app_open')
+      .then(() => console.log('Analytics app_open event logged'))
+      .catch(error => console.error('Analytics logEvent error:', error));
+  
+    // AdMob 모듈은 별도의 initialize() 호출 없이 Firebase 앱의 초기화에 의존합니다.
+    // 만약 추가 구성(configuration)이 필요하다면 공식 문서에 따라 설정합니다.
+  }, []);
+  
 
   const handleRetry = () => {
     setErrorMessage(null);

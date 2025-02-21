@@ -1,25 +1,23 @@
 #import "AppDelegate.h"
-
+#import <Firebase.h> // Firebase 헤더 추가
 #import <React/RCTBundleURLProvider.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleName = @"OnulFrontEnd";
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
-  self.initialProps = @{};
+  // Firebase 초기화: 다른 코드보다 먼저 호출해야 합니다.
+  [FIRApp configure];
 
+  // React Native 초기화 코드
+  self.moduleName = @"OnulFrontEnd";
+  self.initialProps = @{};
+  
+  // super의 didFinishLaunchingWithOptions 호출
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-  return [self bundleURL];
-}
-
-- (NSURL *)bundleURL
 {
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
