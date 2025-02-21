@@ -31,6 +31,26 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-7000340961307617~2967843066</string>
+
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>4fzdc2evr5.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>v72qych5uu.skadnetwork</string>
+		</dict>
+	</array>
+
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UIAppFonts</key>

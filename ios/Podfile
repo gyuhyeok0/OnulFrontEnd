@@ -19,28 +19,25 @@ target 'OnulFrontEnd' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Google AdMob SDK 추가
-  # pod 'Google-Mobile-Ads-SDK'
-
-  # 최신 버전의 Masked View 모듈을 사용하도록 수정
   pod 'RNCMaskedView', :path => '../node_modules/@react-native-masked-view/masked-view'
+
+  ## Firebase 모듈 추가 (애드몹 연동에 필요한 최소 구성)
+  pod 'Firebase/Core'
+  pod 'Firebase/Analytics'
+
 
   target 'OnulFrontEndTests' do
     inherit! :complete
-    # Pods for testing
   end
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
   end
 end
