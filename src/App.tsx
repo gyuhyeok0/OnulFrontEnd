@@ -1,6 +1,5 @@
 import firebase from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
-import admob from '@react-native-firebase/admob';
 
 import React, { useEffect, useState } from 'react';
 import { Alert, Animated, Text, StyleSheet, View } from 'react-native';
