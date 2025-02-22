@@ -23,6 +23,11 @@ import { useQuery } from '@tanstack/react-query';
 import { selectExerciseRecordByDetails } from '../../src/modules/ExerciseRecordSlice';
 import { selectLatestPreVolume, updateExerciseVolume } from '../../src/modules/VolumeSlice';
 import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
+import { Alert } from 'react-native'; // 예제에서는 Alert로 광고 표시 (광고 SDK로 변경 가능)
+
+import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+
+const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
@@ -61,19 +66,57 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     );
 
 
-    // // 가장 최근 볼륨 가져오기
-    // const latestPreVolume = useSelector((state) => {
-    //     return selectLatestPreVolume(state, exerciseId);
-    // });
-
     const exerciseId = useMemo(() => exercise.id, [exercise.id]);
 
     // ✅ `useSelector`에서 `exerciseId` 사용
     const latestPreVolume = useSelector((state) => selectLatestPreVolume(state, exerciseId));
 
+    const MAX_ADS_PER_DAY = 5;
+
+    const resetDailyAdCount = async () => {
+        const today = new Date().toISOString().split('T')[0]; // 오늘 날짜 (YYYY-MM-DD)
+        const lastResetDate = await AsyncStorage.getItem('lastAdResetDate');
+    
+        if (lastResetDate !== today) {
+            await AsyncStorage.setItem('adCount', '0'); // 광고 카운트 초기화
+            await AsyncStorage.setItem('lastAdResetDate', today);
+        }
+    };
+
+    // 광고 표시 함수 (하루 5번 제한)
+    const showAd = async () => {
+        await resetDailyAdCount(); // 하루 제한 체크
+
+        let adCount = await AsyncStorage.getItem('adCount');
+        adCount = adCount ? parseInt(adCount) : 0;
+
+        // 하루 5번 카운트
+        // if (adCount >= MAX_ADS_PER_DAY) {
+        //     console.log("오늘 광고 제한 초과 (5번)");
+        //     return; // 광고 실행 안 함
+        // }
 
 
+        if (interstitialAd.loaded) {
+            // 광고 실행
+            interstitialAd.show();
+            
+            // 광고 닫힌 후 다시 로드
+            interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
+                interstitialAd.load();
+            });
+    
+            // 광고 카운트 증가
+            await AsyncStorage.setItem('adCount', (adCount + 1).toString());
+    
+            // 광고 본 후 exerciseSubmitCount 초기화
+            await AsyncStorage.setItem('exerciseSubmitCount', '0');
+        } else {            
+            // 광고가 로드되지 않았으면 다시 로드 시도
+            interstitialAd.load();
+        }
 
+    };
 
     useEffect(() => {
         // 초기 상태는 volumeDifference를 0으로 설정
@@ -435,7 +478,16 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         setCurrentSetNumber(index); // 상태 업데이트
         setCurrentSet(set);
 
+        let count = await AsyncStorage.getItem('exerciseSubmitCount');
+        count = count ? parseInt(count) + 1 : 1; // 기존 값이 있으면 +1, 없으면 1부터 시작
+        await AsyncStorage.setItem('exerciseSubmitCount', count.toString());
     
+        console.log(count);
+        // 15회마다 광고 표시
+        if (count >= 15) {
+            await showAd();
+        }
+
         setTimeout(async () => {
             try {
                 const { data } = await refetchSubmit();
