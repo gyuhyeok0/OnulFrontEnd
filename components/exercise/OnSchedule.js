@@ -563,6 +563,8 @@ const OnSchedule = () => {
                     )}
                 </Animated.View>
             </View>
+            <Text style={{color:'#999999', marginLeft: 10, marginBottom: 10, fontSize: 12}}>운동이 보이지 않으면 새로고침하거나 부위 버튼을 다시 눌러주세요</Text>
+
 
             {reorderedExercises.length > 0 ? (
                 <View style={styles.schedule} onLayout={(event) => setScheduleHeight(event.nativeEvent.layout.height)}>

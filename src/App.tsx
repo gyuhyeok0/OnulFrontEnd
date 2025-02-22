@@ -61,6 +61,24 @@ import ExerciseVolumeGraph from '../components/analysis/volume/ExerciseVolumeGra
 import WeightAndDietGraph from '../components/analysis/bodyAndFood/WeightAndDietGraph';
 import MuscleFatigue from '../components/analysis/faigue/MuscleFaigue';
 
+import {
+  RewardedAd,
+  RewardedAdEventType, // ★ RewardedAdEventType 임포트
+  TestIds,
+  AdEventType,
+  InterstitialAd, // ★ 전면 광고 추가
+} from 'react-native-google-mobile-ads';
+
+import { NativeModules } from 'react-native';
+
+console.log('NativeModules:', NativeModules);
+
+
+
+// (1) 전역 또는 상단에 RewardedAd 인스턴스 생성
+const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
+
+const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL); // ★ 전면 광고 추가
 
 // QueryClient 생성
 const queryClient = new QueryClient();
@@ -90,6 +108,64 @@ function MainApp() {
   
     // AdMob 모듈은 별도의 initialize() 호출 없이 Firebase 앱의 초기화에 의존합니다.
     // 만약 추가 구성(configuration)이 필요하다면 공식 문서에 따라 설정합니다.
+  }, []);
+
+  useEffect(() => {
+    if (!rewardedAd) return;
+  
+    // (2) 앱 실행 시 광고 로드
+    rewardedAd.load();
+  
+    // (3) 이벤트 리스너 등록
+    const unsubscribeLoaded = rewardedAd.addAdEventListener(
+      RewardedAdEventType.LOADED,
+      () => {
+        console.log('📢 RewardedAd Loaded in App.js');
+        console.log('✅ 로드 준비 완료');
+      }
+    );
+  
+    const unsubscribeClosed = rewardedAd.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        if (!rewardedAd.loaded) {  // `loaded` 프로퍼티로 체크
+          rewardedAd.load();
+        }
+      }
+    );
+  
+    // 언마운트 시 리스너 정리
+    return () => {
+      unsubscribeLoaded?.();
+      unsubscribeClosed?.();
+    };
+  }, []);
+  
+  
+  useEffect(() => {
+    if (!interstitialAd) return;
+
+    // 전면 광고 로드
+    interstitialAd.load();
+
+    const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(
+      AdEventType.LOADED,
+      () => console.log('✅ 전면 광고 로드 완료')
+    );
+
+    const unsubscribeInterstitialClosed = interstitialAd.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        if (!interstitialAd.loaded) {
+          interstitialAd.load();
+        }
+      }
+    );
+
+    return () => {
+      unsubscribeInterstitialLoaded?.();
+      unsubscribeInterstitialClosed?.();
+    };
   }, []);
   
 
@@ -331,7 +407,7 @@ function MainApp() {
         <Stack.Screen
           name="RegistChest"
           component={RegistChest}
-          options={{ headerShown: "ture" }} // 헤더 숨김 옵션
+          // options={{ headerShown: "ture" }} // 헤더 숨김 옵션
         />
 
 
@@ -339,19 +415,19 @@ function MainApp() {
         <Stack.Screen
           name="ExerciseVolumeGraph"
           component={ExerciseVolumeGraph}
-          options={{ headerShown: false}}
+          options={{ headerShown: false, animation: 'none'}}
         />
 
         <Stack.Screen
           name="WeightAndDietGraph"
           component={WeightAndDietGraph}
-          options={{ headerShown: false}}
+          options={{ headerShown: false, animation: 'none'}}
         />
 
         <Stack.Screen
           name="MuscleFatigue"
           component={MuscleFatigue}
-          options={{ headerShown: false}}
+          options={{ headerShown: false, animation: 'none'}}
         />
 
 
