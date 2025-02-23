@@ -73,6 +73,8 @@ import { NativeModules } from 'react-native';
 
 console.log('NativeModules:', NativeModules);
 
+import { AppState } from 'react-native';
+import useLifecycleTracking from './TrackAppLifecycle';
 
 
 // (1) 전역 또는 상단에 RewardedAd 인스턴스 생성
@@ -97,19 +99,10 @@ function MainApp() {
   const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
   const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
 
+  //firebase 애널리틱스
+  useLifecycleTracking(); 
 
-
-  useEffect(() => {
-    // Firebase Analytics 이벤트 로깅 (앱 오픈)
-    analytics()
-      .logEvent('app_open')
-      .then(() => console.log('Analytics app_open event logged'))
-      .catch(error => console.error('Analytics logEvent error:', error));
-  
-    // AdMob 모듈은 별도의 initialize() 호출 없이 Firebase 앱의 초기화에 의존합니다.
-    // 만약 추가 구성(configuration)이 필요하다면 공식 문서에 따라 설정합니다.
-  }, []);
-
+  //영상광고 로드
   useEffect(() => {
     if (!rewardedAd) return;
   

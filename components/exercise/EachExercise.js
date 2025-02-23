@@ -24,6 +24,8 @@ import { selectExerciseRecordByDetails } from '../../src/modules/ExerciseRecordS
 import { selectLatestPreVolume, updateExerciseVolume } from '../../src/modules/VolumeSlice';
 import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
 import { Alert } from 'react-native'; // 예제에서는 Alert로 광고 표시 (광고 SDK로 변경 가능)
+import analytics from '@react-native-firebase/analytics';
+import { AppState } from 'react-native';
 
 import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
 
@@ -96,16 +98,45 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         //     return; // 광고 실행 안 함
         // }
 
+        // 광고 시작 시간 저장 (닫는 속도 분석)
+        const adStartTime = new Date().getTime();
 
         if (interstitialAd.loaded) {
             // 광고 실행
             interstitialAd.show();
             
-            // 광고 닫힌 후 다시 로드
-            interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
-                interstitialAd.load();
+            // 기존 리스너 제거 (중복 실행 방지)
+            interstitialAd.removeAllListeners();
+
+            // 광고 닫힌 후 이벤트 리스너
+            interstitialAd.addAdEventListener(AdEventType.CLOSED, async () => {
+                const adCloseTime = new Date().getTime();
+                const adDuration = (adCloseTime - adStartTime) / 1000; // 광고 시청 시간 (초)
+
+                console.log(`📢 전면 광고 닫힘 (광고 본 시간: ${adDuration}초)`);
+
+                // 유저 이탈 여부 체크 (비동기 처리)
+                const userRetention = await checkUserRetention();
+
+                await analytics().logEvent("ad_interstitial_closed", {
+                    ad_type: "interstitial",
+                    duration: adDuration, // 광고 본 시간 기록
+                    user_retention: userRetention, // 광고 후 앱 이탈 여부
+                });
+
+                interstitialAd.load(); // 광고 닫힌 후 다시 로드
             });
+
     
+            // 광고 클릭 이벤트 리스너 (CTR 분석)
+            interstitialAd.addAdEventListener(AdEventType.CLICKED, async () => {
+                console.log("📢 전면 광고 클릭됨");
+
+                await analytics().logEvent("ad_interstitial_clicked", {
+                    ad_type: "interstitial",
+                });
+            });
+
             // 광고 카운트 증가
             await AsyncStorage.setItem('adCount', (adCount + 1).toString());
     
@@ -116,6 +147,14 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             interstitialAd.load();
         }
 
+    };
+
+    // 광고 후 유저가 앱에 머무르는지 체크 (5초 후 앱 상태 확인)
+    const checkUserRetention = () => {
+        setTimeout(() => {
+            const isAppStillOpen = AppState.currentState === "active";
+            return isAppStillOpen ? "retained" : "exited"; // 앱에 머물렀는지 여부 반환
+        }, 5000);
     };
 
     useEffect(() => {
