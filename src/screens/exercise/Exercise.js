@@ -10,6 +10,10 @@ import Custom from '../../../components/exercise/Custom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addDefaultSetsToRedux } from '../../modules/StateExerciseSlice'; // Redux 액션
 import useCheckDateChange from '../../hooks/useCheckDateChange';
+import Purchases from "react-native-purchases";
+import { getSubscriptionStatus } from '../../hooks/Subscription';
+import Icon from 'react-native-vector-icons/FontAwesome'; // FontAwesome에서 Lock 아이콘 가져오기
+import SubscriptionModal from '../modal/SubscriptionModal';
 
 
 const Exercise = ({ navigation }) => {
@@ -19,27 +23,44 @@ const Exercise = ({ navigation }) => {
     const [selectedOption, setSelectedOption] = useState('AutoAdapt');
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });
 
-    const hasExecuted = useRef(false); // 실행 여부를 추적하는 useRef
-    const { isDateChanged } = useCheckDateChange();
     const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate); // Optional chaining 사용
 
+    const [ day, setDay] = useState(0);
+    const [isSubscribed, setIsSubscribed] = useState(false); // 구독 상태
+    const [hasSubscriptionAccess, setHasSubscriptionAccess] = useState(false); // 구독 후 5일 이상이면 true
+    
+    // 결제 모달
+    const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false); // 결제 모달 상태
+    const isPremium = useSelector(state => state.subscription.isPremium);
+    const { isDateChanged } = useCheckDateChange();
 
     useEffect(() => {
-        console.log("==========운동페이지 입니다============")
+        console.log("==========운동페이지 입니다============");
         console.log(memberSignupDate);
-
+    
         if (memberSignupDate) {
             const signupDate = new Date(memberSignupDate);
             const currentDate = new Date();
             const diffTime = Math.abs(currentDate - signupDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+    
+            setDay(diffDays);
+    
             if (diffDays >= 5) {
-                setSelectedOption('OnSchedule');
+                if (isSubscribed) {
+                    setHasSubscriptionAccess(true); 
+                    setSelectedOption('AutoAdapt');
+                } else {
+                    setHasSubscriptionAccess(false); 
+                    setSelectedOption('OnSchedule');
+                }
+            } else {
+                setHasSubscriptionAccess(true); 
+                setSelectedOption('AutoAdapt');
             }
-        }
-    }, []);
 
+        }
+    }, [memberSignupDate, isSubscribed]); // isSubscribed 추가
 
     // 온보딩 체크 여부 확인
     useEffect(() => {
@@ -52,6 +73,15 @@ const Exercise = ({ navigation }) => {
 
     // 운동 버튼 누를시 말풍선
     const handlePress = (option, message) => {
+
+        if(!isPremium) {
+            if (option === 'AutoAdapt' && !hasSubscriptionAccess) {
+                setIsPaymentModalVisible(true); // 여기서 모달을 띄우도록 변경
+                return;
+            }
+        }
+        
+        
         setSelectedOption(option);
         setShowTooltip({ visible: true, message });
     };
@@ -67,15 +97,13 @@ const Exercise = ({ navigation }) => {
         }
     }, [showTooltip.visible]);
 
-    // 운동 버튼 누를시 컴포넌트 변경
+    // 선택한 옵션을 기반으로 화면 렌더링
     const renderSelectedComponent = () => {
         switch (selectedOption) {
             case 'AutoAdapt':
                 return <AutoAdapt />;
             case 'OnSchedule':
-                return (
-                    <OnSchedule/>
-                );
+                return <OnSchedule />;
             case 'Custom':
                 return <Custom />;
             default:
@@ -109,6 +137,13 @@ const Exercise = ({ navigation }) => {
                             }
                             style={styles.icon}
                         />
+                        {(!hasSubscriptionAccess && !isPremium) && (
+                            <View style={styles.blur}>
+                                <Icon name="lock" size={38} color="white" style={{ marginTop: 27 }} />
+                            </View>
+                        )}
+
+
                     </Pressable>
 
                     <Pressable
@@ -166,6 +201,11 @@ const Exercise = ({ navigation }) => {
 
             </ScrollView>
             <Footer navigation={navigation} />
+
+            <SubscriptionModal
+                visible={isPaymentModalVisible}
+                onClose={() => setIsPaymentModalVisible(false)}
+            />
         </View>
     );
 };
@@ -200,6 +240,7 @@ const styles = StyleSheet.create({
     },
     option: {
         alignItems: 'center',
+        position:'relative'
     },
     optionText: {
         color: '#9E9E9E',
@@ -234,6 +275,18 @@ const styles = StyleSheet.create({
         lineHeight: 18,
         fontWeight: 'bold',
     },
+
+    blur:{
+        backgroundColor: 'rgba(21, 24, 28, 0.55)',  // 반투명한 #15181C
+        width: 65,
+        height: 65,
+        top: -5,
+        position: 'absolute',
+        borderRadius: 10,  // 부드러운 느낌 추가
+        overflow: 'hidden',
+        justifyContent:'center',
+        alignItems:'center',
+    }
 });
 
 export default Exercise;

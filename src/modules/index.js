@@ -28,6 +28,7 @@ import bodyReducer from './BodySlice';
 import totalFoodReducer from './TotalFoodSlice'; // 새로 만든 totalFood 리듀서 가져오기
 
 import exerciseVolumeReducer from './VolumeSlice';
+import subscriptionReducer from './SubscriptionSlice';
 
 
 const rootReducer = combineReducers({
@@ -59,6 +60,9 @@ const rootReducer = combineReducers({
   totalFood: totalFoodReducer, // totalFood 리듀서 추가
   exerciseVolumeData: exerciseVolumeReducer,
 
+  subscription: subscriptionReducer,
+
 });
+
 
 export default rootReducer;
