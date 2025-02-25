@@ -100,6 +100,8 @@ const Inquiry = ({ navigation }) => {
 
                         {/* 이메일 (필수) */}
                         <Text style={styles.label}>이메일 *</Text>
+                        <Text style={{marginBottom: 8, color:'#999999'}}>답변을 이메일로 보내드립니다</Text>
+
                         <TextInput
                             style={styles.input}
                             placeholder="이메일 입력"
@@ -109,7 +111,6 @@ const Inquiry = ({ navigation }) => {
                             onChangeText={setEmail}
                             required
                         />
-
                         {/* 제목 (필수) */}
                         <Text style={styles.label}>제목 *</Text>
                         <TextInput

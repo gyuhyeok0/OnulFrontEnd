@@ -1,73 +1,136 @@
 import 'intl-pluralrules';
 import React, { useEffect, useState } from 'react';
-import { View, Button, Alert, Text } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DefaultHeader from '../common/DefaultHeader';
 
 const AsyncStorage2 = ({ navigation }) => {
-    const [storageSize, setStorageSize] = useState(0);
+    const [selectedWeightUnit, setSelectedWeightUnit] = useState(null);
+    const [selectedHeightUnit, setSelectedHeightUnit] = useState(null);
 
-    // 스토리지 데이터 크기를 계산하는 함수
-    const calculateStorageSize = async () => {
+    // 단위를 선택할 때 로컬스토리지에 저장하는 함수
+    const saveUnitSelection = async (key, value) => {
         try {
-            const keys = await AsyncStorage.getAllKeys(); // 모든 키 가져오기
-            if (keys.length > 0) {
-                const result = await AsyncStorage.multiGet(keys); // 키에 해당하는 모든 값 가져오기
-                let totalSize = 0;
-
-                // 각 값의 크기를 계산
-                result.forEach(([key, value]) => {
-                    const keySize = key ? key.length : 0;
-                    const valueSize = value ? value.length : 0;
-                    totalSize += keySize + valueSize; // 키와 값의 길이 합산
-                });
-
-                // 크기를 MB로 변환
-                const sizeInMB = (totalSize / 1024 / 1024).toFixed(2);
-                setStorageSize(sizeInMB); // 상태로 크기 저장
-                console.log(`스토리지 크기: ${sizeInMB} MB`);
-            } else {
-                setStorageSize(0);
-                console.log('AsyncStorage에 저장된 데이터가 없습니다.');
+            await AsyncStorage.setItem(key, value);
+            // weightUnit 선택 시 bodyWeightUnit도 동일하게 설정
+            if (key === 'weightUnit') {
+                await AsyncStorage.setItem('bodyWeightUnit', value);
             }
-        } catch (error) {
-            console.error('스토리지 크기 계산 중 오류 발생:', error);
+        } catch (e) {
+            console.error('Failed to save the unit selection.', e);
         }
     };
 
-    // 스토리지 데이터를 삭제하는 함수
-    const clearStorage = async () => {
+    // AsyncStorage에서 저장된 단위 값을 가져오는 함수
+    const loadUnitSelection = async () => {
         try {
-            await AsyncStorage.clear();
-            Alert.alert("성공", "스토리지 데이터가 삭제되었습니다.");
-            console.log("스토리지 데이터가 삭제되었습니다.");
-            setStorageSize(0); // 크기를 초기화
-        } catch (error) {
-            console.error('스토리지를 지우는 중 오류 발생:', error);
+            const weightUnit = await AsyncStorage.getItem('weightUnit');
+            const heightUnit = await AsyncStorage.getItem('heightUnit');
+
+            if (weightUnit) {
+                setSelectedWeightUnit(weightUnit);
+            }
+            if (heightUnit) {
+                setSelectedHeightUnit(heightUnit);
+            }
+        } catch (e) {
+            console.error('Failed to load the unit selection.', e);
         }
     };
 
     useEffect(() => {
-        calculateStorageSize(); // 컴포넌트가 마운트될 때 스토리지 데이터 크기를 계산
+        loadUnitSelection();  // 컴포넌트가 마운트될 때 저장된 단위 값을 불러옴
     }, []);
+
+    const handleUnitSelection = (type, value) => {
+        if (type === 'weight') {
+            setSelectedWeightUnit(value);
+            saveUnitSelection('weightUnit', value);
+        } else {
+            setSelectedHeightUnit(value);
+            saveUnitSelection('heightUnit', value);
+        }
+    };
 
     return (
         <>
-            <DefaultHeader title="메뉴" navigation={navigation} />
+            <DefaultHeader title="단위 설정" navigation={navigation} />
 
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ marginBottom: 20, fontSize: 18 }}>
-                    스토리지 크기: {storageSize} MB
-                </Text>
-                <Button title="스토리지 크기 확인" onPress={calculateStorageSize} />
-                <Button title="스토리지 삭제" onPress={clearStorage} color="red" />
-                <Button title="로그아웃" onPress={async () => {
-                    await clearStorage();
-                    navigation.navigate('Login');
-                }} color="blue" />
+            <View style={{ flex: 1, backgroundColor:'#1A1C22' }}>
+                <Text style={{color:'white', fontSize: 18, marginLeft: 10, marginTop: 20,marginBottom:10}}>단위를 설정해 주세요</Text>
+
+                <View style={styles.unitContainer}>
+                    <UnitButton unitType="weight" unitValue="lbs" selectedUnit={selectedWeightUnit} onPress={() => handleUnitSelection('weight', 'lbs')} />
+                    <UnitButton unitType="weight" unitValue="kg" selectedUnit={selectedWeightUnit} onPress={() => handleUnitSelection('weight', 'kg')} />
+                </View>
+
+                <View style={styles.unitContainer}>
+                    <UnitButton unitType="height" unitValue="feet" selectedUnit={selectedHeightUnit} onPress={() => handleUnitSelection('height', 'feet')} />
+                    <UnitButton unitType="height" unitValue="cm" selectedUnit={selectedHeightUnit} onPress={() => handleUnitSelection('height', 'cm')} />
+                </View>
             </View>
         </>
     );
 };
+
+// UnitButton 컴포넌트 정의
+const UnitButton = ({ unitType, unitValue, selectedUnit, onPress }) => {
+    const isSelected = selectedUnit === unitValue;
+
+    return (
+        <Pressable
+            style={[styles.unitButton, isSelected && styles.selectedUnitButton]}
+            onPress={onPress}
+        >
+            <Text style={styles.unitButtonText}>{unitValue}</Text>
+        </Pressable>
+    );
+};
+
+const styles = StyleSheet.create({
+    unitContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    unitButton: {
+        backgroundColor: '#33373E',
+        borderRadius: 15,
+        paddingVertical: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        marginHorizontal: 8,
+    },
+    selectedUnitButton: {
+        backgroundColor: '#525D75',
+        borderWidth: 1,
+        borderColor: '#FFFFFF',
+    },
+    unitButtonText: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    nextButton: {
+        backgroundColor: '#5E56C3',
+        borderRadius: 30,
+        paddingVertical: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 13,
+    },
+    nextButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    disabledButton: {
+        backgroundColor: '#433D8B',
+    },
+    disabledButtonText: {
+        color: '#343055',
+    },
+});
 
 export default AsyncStorage2;

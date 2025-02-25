@@ -14,6 +14,7 @@ import Purchases from "react-native-purchases";
 import { getSubscriptionStatus } from '../../hooks/Subscription';
 import Icon from 'react-native-vector-icons/FontAwesome'; // FontAwesome에서 Lock 아이콘 가져오기
 import SubscriptionModal from '../modal/SubscriptionModal';
+import FreeTrialBanner from '../../../components/banner/FreeTrialBanner';
 
 
 const Exercise = ({ navigation }) => {
@@ -34,6 +35,16 @@ const Exercise = ({ navigation }) => {
     const isPremium = useSelector(state => state.subscription.isPremium);
     const { isDateChanged } = useCheckDateChange();
 
+    const [fourWeeksLater, setFourWeeksLater] = useState(null);
+
+    useEffect(() => {
+        if (memberSignupDate) {
+            const signupDateObj = new Date(memberSignupDate); // 문자열을 Date 객체로 변환
+            signupDateObj.setDate(signupDateObj.getDate() + 28); // 28일 후 계산
+            setFourWeeksLater(signupDateObj.toISOString().split("T")[0]); // YYYY-MM-DD 형식으로 저장
+        }
+    }, [memberSignupDate]);
+
     useEffect(() => {
         console.log("==========운동페이지 입니다============");
         console.log(memberSignupDate);
@@ -46,7 +57,7 @@ const Exercise = ({ navigation }) => {
     
             setDay(diffDays);
     
-            if (diffDays >= 5) {
+            if (diffDays >= 125) {
                 if (isSubscribed) {
                     setHasSubscriptionAccess(true); 
                     setSelectedOption('AutoAdapt');
@@ -113,10 +124,13 @@ const Exercise = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <FreeTrialBanner fourWeeksLater={fourWeeksLater} />
+
             <ScrollView  style={styles.scrollView}
                 keyboardShouldPersistTaps="handled" // 버튼 탭 시 키보드 유지
             >
                 <View style={styles.selectionContainer}>
+
                     <Pressable
                         style={styles.option}
                         onPress={() => handlePress('AutoAdapt', '운동 스케줄을 자동으로 생성합니다. 회원님의 성과에 따라 점진적으로 발전합니다.')}
@@ -190,7 +204,7 @@ const Exercise = ({ navigation }) => {
                         />
                     </Pressable>
                 </View>
-
+                
                 {renderSelectedComponent()}
 
                 {showTooltip.visible && (
