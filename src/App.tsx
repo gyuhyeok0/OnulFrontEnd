@@ -76,6 +76,10 @@ console.log('NativeModules:', NativeModules);
 import { AppState } from 'react-native';
 import useLifecycleTracking from './TrackAppLifecycle';
 
+import { Platform } from "react-native";
+import Purchases from "react-native-purchases";
+import { fetchSubscriptionStatus } from './modules/SubscriptionSlice';
+
 
 // (1) 전역 또는 상단에 RewardedAd 인스턴스 생성
 const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
@@ -85,10 +89,18 @@ const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL); 
 // QueryClient 생성
 const queryClient = new QueryClient();
 
+// RevenueCat Public API Key 
+const REVENUECAT_PUBLIC_API_KEY = Platform.OS === "ios"
+? "appl_uSTTOKJNVKqRDdHQicAQPIzbfam"  // iOS 키
+: "goog_some_google_api_key"; // Android 키 (Google Play는 다름)
+
+  
 
 const Stack = createNativeStackNavigator();
 
 function MainApp() {
+  const dispatch = useDispatch();
+
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // 로그인 상태 확인
   const [timerTime, setTimerTime] = useState(0); // 타이머 시간 상태
   const [isTimerRunning, setIsTimerRunning] = useState(false); // 타이머 실행 상태
@@ -99,6 +111,57 @@ function MainApp() {
   const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
   const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
 
+  useEffect(() => {
+    // ✅ RevenueCat 초기화 및 구독 상태 업데이트
+    const setupRevenueCat = async () => {
+      try {
+        Purchases.configure({ apiKey: REVENUECAT_PUBLIC_API_KEY });
+      } catch (error) {
+        console.error("RevenueCat 설정 오류:", error);
+      }
+    };
+
+    setupRevenueCat();
+  }, []);
+
+  useEffect(() => {
+    // ✅ Redux Persist가 복원된 후 `fetchSubscriptionStatus()` 실행
+    const unsubscribe = persistor.subscribe(() => {
+        if (persistor.getState().bootstrapped) {
+            store.dispatch(fetchSubscriptionStatus()); // ✅ Redux Store에서 직접 실행
+            unsubscribe(); // ✅ 한 번만 실행되도록 구독 해제
+        }
+    });
+
+      return () => {
+          unsubscribe();
+      };
+  }, []);
+
+  useEffect(() => {
+    console.log("🚀 App 시작 - RevenueCat 구독 상태 감지 시작");
+  
+    // 리스너 함수를 변수에 저장
+    const listener = () => {
+      console.log("🛒 구독 상태 변경 감지됨 - 최신 상태 가져오기!");
+      store.dispatch(fetchSubscriptionStatus());
+    };
+  
+    // 리스너 등록
+    Purchases.addCustomerInfoUpdateListener(listener);
+  
+    return () => {
+      console.log("🛑 RevenueCat 구독 리스너 해제");
+      // 등록한 리스너를 전달해서 제거
+      Purchases.removeCustomerInfoUpdateListener(listener);
+    };
+  }, []);
+  
+
+
+
+
+  
   //firebase 애널리틱스
   useLifecycleTracking(); 
 
@@ -160,7 +223,8 @@ function MainApp() {
       unsubscribeInterstitialClosed?.();
     };
   }, []);
-  
+
+
 
   const handleRetry = () => {
     setErrorMessage(null);

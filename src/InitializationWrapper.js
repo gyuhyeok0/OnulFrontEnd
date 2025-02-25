@@ -224,26 +224,26 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
             // }
 
 
-            // 날짜 스토리지에 저장 (로컬 시간 기준)
-            try {
-                const todayDate = new Date().toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 (로컬 시간 기준)
+            // // 날짜 스토리지에 저장 (로컬 시간 기준)
+            // try {
+            //     const todayDate = new Date().toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 (로컬 시간 기준)
 
-                // 기존 "현재 접속일" 가져오기
-                const previousAccessDate = await AsyncStorage.getItem('currentAccessDate');
+            //     // 기존 "현재 접속일" 가져오기
+            //     const previousAccessDate = await AsyncStorage.getItem('currentAccessDate');
 
-                // ✅ 기존 "현재 접속일"이 오늘과 다를 때만 "마지막 접속일"을 업데이트
-                if (previousAccessDate && previousAccessDate !== todayDate) {
-                    await AsyncStorage.setItem('lastAccessDate', previousAccessDate);
-                    console.log(`📌 마지막 접속일 업데이트: ${previousAccessDate}`);
-                }
+            //     // ✅ 기존 "현재 접속일"이 오늘과 다를 때만 "마지막 접속일"을 업데이트
+            //     if (previousAccessDate && previousAccessDate !== todayDate) {
+            //         await AsyncStorage.setItem('lastAccessDate', previousAccessDate);
+            //         console.log(`📌 마지막 접속일 업데이트: ${previousAccessDate}`);
+            //     }
 
-                // ✅ 새로운 "현재 접속일" 저장 (무조건 저장)
-                await AsyncStorage.setItem('currentAccessDate', todayDate);
-                console.log(`✅ 현재 접속일 저장 완료: ${todayDate}`);
+            //     // ✅ 새로운 "현재 접속일" 저장 (무조건 저장)
+            //     await AsyncStorage.setItem('currentAccessDate', todayDate);
+            //     console.log(`✅ 현재 접속일 저장 완료: ${todayDate}`);
 
-            } catch (error) {
-                console.error('❌ 날짜 저장 실패:', error);
-            }
+            // } catch (error) {
+            //     console.error('❌ 날짜 저장 실패:', error);
+            // }
     
             console.log('초기화 완료');
             setIsInitialized(true);

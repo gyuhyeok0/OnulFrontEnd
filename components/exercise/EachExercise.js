@@ -33,6 +33,7 @@ const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
 
+    const isPremium = useSelector(state => state.subscription.isPremium);
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 
@@ -524,7 +525,9 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         console.log(count);
         // 15회마다 광고 표시
         if (count >= 15) {
-            await showAd();
+            if(!isPremium){
+                await showAd();
+            }
         }
 
         setTimeout(async () => {

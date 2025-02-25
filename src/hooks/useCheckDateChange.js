@@ -9,21 +9,17 @@ const useCheckDateChange = () => {
 
     useEffect(() => {
         const checkDateChange = async () => {
-            console.log("시발!!!!!!")
             try {
                 const todayDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
-
-                // ✅ "현재 접속일" 가져오기
-                const currentAccessDate = await AsyncStorage.getItem('currentAccessDate');
 
                 // ✅ "오늘 resetState()가 실행되었는지 확인"
                 const resetDoneDate = await AsyncStorage.getItem('resetDoneDate'); 
 
-                console.log(`📌 현재 접속일: ${currentAccessDate}, 마지막 리셋 날짜: ${resetDoneDate}`);
+                console.log(`📌 마지막 리셋 날짜: ${resetDoneDate}`);
 
-                // ✅ 날짜가 변경되었고, 오늘 resetState()가 실행되지 않았으면 실행
-                if (currentAccessDate && currentAccessDate !== todayDate && resetDoneDate !== todayDate) {
-                    console.log(`✅ 날짜 변경 감지됨! (${currentAccessDate} → ${todayDate})`);
+                // ✅ 오늘 resetState()가 실행되지 않았으면 실행
+                if (resetDoneDate !== todayDate) {
+                    console.log(`✅ 하루 1회 실행! (${resetDoneDate} → ${todayDate})`);
 
                     // ✅ Redux 상태 초기화
                     dispatch(resetState());
@@ -46,4 +42,4 @@ const useCheckDateChange = () => {
     return { isDateChanged };
 };
 
-export default useCheckDateChange;  
+export default useCheckDateChange;
