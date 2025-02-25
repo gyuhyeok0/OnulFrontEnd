@@ -11,6 +11,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncSt
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store'; 
+
+import { RootState } from "./store"; // store.ts에서 가져오기
+
+
 import { setToken, setIsLoggedIn } from './modules/AuthSlice';  // Redux 액션 가져오기
 import Timer from '../components/header/Timer';  // Timer 컴포넌트 가져오기
 import Header from './screens/common/Header';
@@ -101,7 +105,8 @@ const Stack = createNativeStackNavigator();
 function MainApp() {
   const dispatch = useDispatch();
 
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // 로그인 상태 확인
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+
   const [timerTime, setTimerTime] = useState(0); // 타이머 시간 상태
   const [isTimerRunning, setIsTimerRunning] = useState(false); // 타이머 실행 상태
   const [initializationComplete, setInitializationComplete] = useState(false);
