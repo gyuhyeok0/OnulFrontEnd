@@ -45,3 +45,45 @@ export const callLoginAPI = ({ form }) => {
         }
     };
 };
+
+
+export const deleteAccount = async (memberId, accessToken = null) => {
+    
+    console.log("안녕"+ memberId)
+    try {
+        if (!accessToken) {
+            accessToken = await AsyncStorage.getItem('accessToken');
+        }
+
+        const response = await fetch(`${API_URL}/delete/deleteAccount?memberId=${memberId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        
+
+        if (response.status === 200) {
+            console.log("성공");
+            return true; // 요청 성공
+        } else if (response.status === 401) {
+            console.warn('토큰 만료: 새로운 토큰을 요청 중...');
+            const newAccessToken = await refreshAccessToken();
+            if (newAccessToken) {
+                // 새로 발급받은 토큰으로 재귀 호출
+                return await deleteAccount(memberId, newAccessToken);
+            } else {
+                console.error('새로운 토큰을 가져오지 못했습니다.');
+                throw new Error('Unable to refresh token');
+            }
+        } else {
+            const errorMessage = `Unexpected error occurred: ${response.statusText}`;
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+    } catch (error) {
+        console.error('요청 실패:', error);
+        throw error; // 오류를 호출한 쪽으로 전달
+    }
+};

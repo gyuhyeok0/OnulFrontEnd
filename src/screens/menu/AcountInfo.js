@@ -3,8 +3,13 @@ import React, { useEffect } from 'react';
 import { View, Text, Alert, Pressable } from 'react-native';
 import { handlerLogOut } from '../../hooks/HandleLogout';
 import DefaultHeader from '../common/DefaultHeader';
+import { deleteAccount } from '../../apis/MemberAPICalls';
+import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
 
 const MenuAccountInfo = ({ navigation }) => {
+
+    const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+
     useEffect(() => {
         console.log("=====================계정 정보 ========================");
     }, []);
@@ -17,10 +22,25 @@ const MenuAccountInfo = ({ navigation }) => {
                 { text: "취소", style: "cancel" },
                 {
                     text: "탈퇴하기",
-                    onPress: () => console.log("회원 탈퇴 기능은 아직 구현되지 않았습니다."),
+                    onPress: async () => {
+                        try {
+                            // 탈퇴 처리 (비동기 처리)
+                            await deleteAccount(memberId);
+                            // 로그아웃 처리
+                            handlerLogOut(navigation);
+                        } catch (error) {
+                            // 오류가 발생하면 알림을 띄워서 서버 문제 안내
+                            Alert.alert(
+                                "오류 발생",
+                                "죄송합니다 현재 서버에 문제가 발생했습니다. 번거로우시겠지만, 문의 부탁드립니다.",
+                                [{ text: "확인" }]
+                            );
+                        }
+                    },
                 },
             ]
-        );
+        );        
+        
     };
 
     return (
