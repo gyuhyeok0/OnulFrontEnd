@@ -258,7 +258,7 @@ const Analysis = ({ navigation }) => {
 
                     </View>
 
-                    <Pressable style={styles.navButton} onPress={() => handlePress('ExerciseVolumeGraph')}>
+                    <Pressable style={styles.navButton} onPress={() => handlePress('WeightAndDietGraph')}>
                         <Text style={styles.navButtonText}>몸무게 및 식단 확인하기</Text>
                     </Pressable>
                     <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>이 이미지는 실제 데이터 시각화가 아닌 디자인 요소입니다</Text>
@@ -275,10 +275,10 @@ const Analysis = ({ navigation }) => {
                             style={{width: 130, height: 35}}
                         />
                         <Text style={{color:'white', fontSize: 15, fontWeight:'bold'}}>내 근육은 얼마나 지쳤을까?</Text>
-
+                        
                     </View>
 
-                    <Pressable style={styles.navButton} onPress={() => handlePress('ExerciseVolumeGraph')}>
+                    <Pressable style={styles.navButton} onPress={() => handlePress('MuscleFatigue')}>
                         <Text style={styles.navButtonText}>근육 피로도 확인하기</Text>
                     </Pressable>
                     <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>이 이미지는 실제 데이터 시각화가 아닌 디자인 요소입니다</Text>

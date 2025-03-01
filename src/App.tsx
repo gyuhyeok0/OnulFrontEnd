@@ -492,7 +492,6 @@ function MainApp() {
           options={{ headerShown: false, animation: 'none'}}
         />
 
-
         
 
 
