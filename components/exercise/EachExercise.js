@@ -36,6 +36,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const isPremium = useSelector(state => state.subscription.isPremium);
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
+    const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate);
 
     const [volume, setVolume] = useState(0); // volume을 상태로 관리
     // const [preVolume, setPreVolume] = useState(0); // volume을 상태로 관리
@@ -76,6 +77,11 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     const MAX_ADS_PER_DAY = 5;
 
+    const today = new Date();
+    const signupDate = new Date(memberSignupDate);
+    const diffTime = today.getTime() - signupDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
     const resetDailyAdCount = async () => {
         const today = new Date().toISOString().split('T')[0]; // 오늘 날짜 (YYYY-MM-DD)
         const lastResetDate = await AsyncStorage.getItem('lastAdResetDate');
@@ -94,10 +100,10 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         adCount = adCount ? parseInt(adCount) : 0;
 
         // 하루 5번 카운트
-        // if (adCount >= MAX_ADS_PER_DAY) {
-        //     console.log("오늘 광고 제한 초과 (5번)");
-        //     return; // 광고 실행 안 함
-        // }
+        if (adCount >= MAX_ADS_PER_DAY || diffDays < 5) {
+            console.log("오늘 광고 제한 초과 (5번)");
+            return; // 광고 실행 안 함
+        }
 
         // 광고 시작 시간 저장 (닫는 속도 분석)
         const adStartTime = new Date().getTime();
@@ -517,6 +523,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const submitExerciseFilter = async (set, index) => {
         setCurrentSetNumber(index); // 상태 업데이트
         setCurrentSet(set);
+
 
         let count = await AsyncStorage.getItem('exerciseSubmitCount');
         count = count ? parseInt(count) + 1 : 1; // 기존 값이 있으면 +1, 없으면 1부터 시작

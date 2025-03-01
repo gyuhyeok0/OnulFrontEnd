@@ -5,6 +5,7 @@ import { handlerLogOut } from '../../hooks/HandleLogout';
 import DefaultHeader from '../common/DefaultHeader';
 import { deleteAccount } from '../../apis/MemberAPICalls';
 import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
+import { ScrollView } from 'react-native-gesture-handler';
 
 const MenuAccountInfo = ({ navigation }) => {
 
@@ -47,12 +48,12 @@ const MenuAccountInfo = ({ navigation }) => {
         <View style={{ flex: 1, backgroundColor: '#1A1C22' }}>
             <DefaultHeader title="계정 정보" navigation={navigation} />
 
-            <View style={{ flex: 1, paddingHorizontal: 20 }}>
+            <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
                 
-                <Text style={{color:'white', fontSize: 30, textAlign:'center', marginTop:30}}>로그아웃 및 회원탈퇴</Text>
+                <Text style={{color:'white', fontSize: 25, textAlign:'center', marginTop:30}}>로그아웃 및 회원탈퇴</Text>
                 
-                <Text style={{color:'white', marginTop: 40, textAlign:'center', fontSize: 35, fontWeight:'bold'}}>잠깐!</Text>
-                <Text style={{color:'white', marginTop: 10, textAlign:'center', fontSize: 18}}>탈퇴하시기 전에 아래의 정보를 확인해주세요</Text>
+                <Text style={{color:'white', marginTop: 25, textAlign:'center', fontSize: 30, fontWeight:'bold'}}>잠깐!</Text>
+                <Text style={{color:'white', marginTop: 10, textAlign:'center', fontSize: 15, marginBottom:7}}>탈퇴하시기 전에 아래의 정보를 확인해주세요</Text>
 
                 <View style={{ flexGrow: 1 }}></View>
 
@@ -105,7 +106,7 @@ const MenuAccountInfo = ({ navigation }) => {
 
                 </View>
                 
-            </View>
+            </ScrollView>
         </View>
     );
 };

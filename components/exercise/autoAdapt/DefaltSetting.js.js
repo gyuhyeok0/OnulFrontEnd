@@ -13,7 +13,7 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
 
     // 상태 설정 (수정된 상태들)
     const [exerciseGoal, setExerciseGoal] = useState('근비대'); // 기본값: 근비대
-    const [exerciseSplit, setExerciseSplit] = useState(4); // 기본값: 4분할
+    const [exerciseSplit, setExerciseSplit] = useState(3); // 기본값: 4분할
     const [priorityParts, setPriorityParts] = useState(['자동']);  // 빈 배열로 초기화
 
 
