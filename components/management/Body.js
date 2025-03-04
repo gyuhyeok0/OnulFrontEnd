@@ -226,7 +226,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 style={styles.weightDisplay}
                                 value={String(tempState.weight)} // 숫자를 문자열로 변환
                                 onChangeText={(text) => validateAndSet('weight', text, setTempState)}
-                                placeholder="00.0"
+                                placeholder="0.0"
                                 placeholderTextColor="#A0A8BC"
                                 keyboardType="numeric"
                                 inputAccessoryViewID={inputAccessoryViewIDForWeight}
@@ -257,7 +257,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 style={styles.weightDisplay}
                                 value={String(tempState.skeletalMuscleMass)}
                                 onChangeText={(text) => validateAndSet('skeletalMuscleMass', text, setTempState)}
-                                placeholder="00.0"
+                                placeholder="0.0"
                                 placeholderTextColor="#A0A8BC"
                                 keyboardType="numeric"
                                 inputAccessoryViewID={inputAccessoryViewIDForMuscle}
@@ -295,7 +295,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                         : null // undefined일 경우 placeholder가 보이도록 설정
                                 }
                                 onChangeText={(text) => validateAndSet('bodyFatPercentage', text, setTempState)}
-                                placeholder="00.0"
+                                placeholder="0.0"
                                 placeholderTextColor="#A0A8BC"
                                 keyboardType="numeric"
                                 selectTextOnFocus={true}
@@ -327,7 +327,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                     style={styles.weightDisplay}
                                     value={String(tempState.bodyFatMass)}
                                     onChangeText={(text) => validateAndSet('bodyFatMass', text, setTempState)}
-                                    placeholder="00.0"
+                                    placeholder="0.0"
                                     placeholderTextColor="#A0A8BC"
                                     keyboardType="numeric"
                                     inputAccessoryViewID={inputAccessoryViewIDForFatMass}
@@ -429,7 +429,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
         // marginBottom: 5,
-        // backgroundColor:'white'
     },
 
     recordButton: {

@@ -2,9 +2,17 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'react-native-localize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import translationEN from './en/translation.json';
 import translationKO from './ko/translation.json';
-import translationJA from './ja/translation.json'; // 일본어 번역 파일 추가
+import translationJA from './ja/translation.json'; 
+
+import translationDE from './de/translation.json';
+import translationES from './es/translation.json';
+import translationFR from './fr/translation.json'; 
+
+import translationIT from './it/translation.json';
+import translationNL from './nl/translation.json';
 
 // 기기 언어를 감지합니다.
 const locales = Localization.getLocales();
@@ -17,10 +25,27 @@ const resources = {
     ko: {
         translation: translationKO
     },
-    ja: { // 일본어 추가
+    ja: { 
         translation: translationJA
+    },
+    es: { // 스페인어 추가
+        translation: translationES
+    },
+    de: { // 독일어 추가
+        translation: translationDE
+    },
+    fr: { // 프랑스어 추가
+        translation: translationFR
+    },
+    it: { // 이탈리아어 추가
+        translation: translationIT
+    },
+    nl: { // 네덜란드어 추가
+        translation: translationNL
     }
 };
+
+
 
 const initializeI18n = async () => {
     const getStoredLanguage = async () => {

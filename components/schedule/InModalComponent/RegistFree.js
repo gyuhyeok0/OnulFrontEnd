@@ -162,7 +162,7 @@ const RegistFree = () => {
                 return exercise.exerciseType === categories[selectedIndex];
             })
             .filter((exercise) => {
-                const translatedName = t(`exerciseNames.${exercise.exerciseName}`); // 번역된 운동 이름
+                const translatedName = t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName); // 번역된 운동 이름
                 return translatedName && translatedName.toLowerCase().includes(searchQuery.toLowerCase());
             })
             .slice(0, displayCount)
@@ -238,7 +238,7 @@ const RegistFree = () => {
 
                             <View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
                                 {exercise.popularityGroup && (
                                          <Text style={styles.exerciesePopular}>{t('registModal.categoryPopular')}</Text>
                                         )}
@@ -298,7 +298,7 @@ const RegistFree = () => {
                                                 return (
                                                     <View key={exerciseId} style={styles.exerciseItemBox}>
                                                         <View style={styles.scheduleItem}>
-                                                        <Text style={styles.exerciseNameOnly}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                                        <Text style={styles.exerciseNameOnly}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
                                                         <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
                                                                 <Ionicons name="close" size={24} color="white" />
                                                             </TouchableOpacity>

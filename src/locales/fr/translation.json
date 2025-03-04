@@ -1,0 +1,7 @@
+{
+    "welcome_message": "Bienvenue dans l'application !",
+    "app_name": "ONE TOUCH FIT",
+    "start_fresh": "Commencer à zéro",
+    "continue_with_account": "Continuer avec le compte",
+    "languageSwitcher": "Passer de <strong>{{lng}}</strong> :"
+}

@@ -13,6 +13,7 @@
     "analysis": "Analysis"
   },
   
+  
   "inquiry": {
         "title_page": "Contact Us",
         "title": "Title",
@@ -286,11 +287,9 @@
   },
 
   "exerciseNames": {
-    "벤치프레스": "Bench Press",
-    "스쿼트": "Squat",
-    "데드리프트": "Deadlift",
-    "러시안 트위스트": "what"
-
+    "데드리프트": {
+      "name": "Deadlift"
+    }
   },
 
   "onSchedule": {

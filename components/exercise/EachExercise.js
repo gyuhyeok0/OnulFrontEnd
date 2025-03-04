@@ -700,7 +700,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                             
                         </TouchableOpacity>
 
-                        <Text style={styles.exerciseText}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                        <Text style={styles.exerciseText}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
                                                 
                         <View style={styles.volumeContainer}>
                             <Text style={styles.volumeText}>{t('EachExercise.volume')}</Text>

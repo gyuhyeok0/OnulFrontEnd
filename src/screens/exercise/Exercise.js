@@ -114,9 +114,9 @@ const Exercise = ({ navigation }) => {
     const renderSelectedComponent = () => {
         switch (selectedOption) {
             case 'AutoAdapt':
-                return <AutoAdapt />;
+                return <AutoAdapt/>;
             case 'OnSchedule':
-                return <OnSchedule />;
+                return <OnSchedule/>;
             case 'Custom':
                 return <Custom />;
             default:
@@ -145,6 +145,7 @@ const Exercise = ({ navigation }) => {
                         >
                             {t('exercise.autoAdapt')}
                         </Text>
+                        
                         <Image
                             source={
                                 selectedOption === 'AutoAdapt'
@@ -256,7 +257,8 @@ const styles = StyleSheet.create({
     },
     option: {
         alignItems: 'center',
-        position:'relative'
+        position:'relative',
+        width: 100,
     },
     optionText: {
         color: '#9E9E9E',

@@ -50,6 +50,46 @@ const MenuTranslation = ({ navigation }) => {
                 >
                     <Text style={styles.buttonText}>日本語</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, styles.spanishButton]} 
+                    onPress={() => changeLanguage('es')}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.buttonText}>Español</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, styles.germanButton]} 
+                    onPress={() => changeLanguage('de')}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.buttonText}>Deutsch</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, styles.frenchButton]} 
+                    onPress={() => changeLanguage('fr')}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.buttonText}>Français</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, styles.italianButton]} 
+                    onPress={() => changeLanguage('it')}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.buttonText}>Italiano</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, styles.dutchButton]} 
+                    onPress={() => changeLanguage('nl')}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.buttonText}>Nederlands</Text>
+                </TouchableOpacity>
             </View>
         </>
     );
@@ -82,13 +122,28 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     englishButton: {
-        backgroundColor: '#0056B3', // 파란색
+        backgroundColor: '#0056B3', 
     },
     koreanButton: {
-        backgroundColor: '#0056B3', // 빨간색
+        backgroundColor: '#0056B3', 
     },
     japaneseButton: {
-        backgroundColor: '#0056B3', // 초록색
+        backgroundColor: '#0056B3', 
+    },
+    spanishButton: {
+        backgroundColor: '#0056B3', 
+    },
+    germanButton: {
+        backgroundColor: '#0056B3', 
+    },
+    frenchButton: {
+        backgroundColor: '#0056B3', 
+    },
+    italianButton: {
+        backgroundColor: '#0056B3', 
+    },
+    dutchButton: {
+        backgroundColor: '#0056B3', 
     },
 });
 

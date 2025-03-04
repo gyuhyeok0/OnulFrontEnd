@@ -84,7 +84,8 @@ const ExerciseRecord = ({ selectDates, memberId }) => {
                 
                 {Object.keys(groupedExercises).map((exerciseName) => (
                     <View key={exerciseName} style={styles.exerciseContainer}>
-                        <Text style={styles.exerciseName}>{t(`exercisNames.${exerciseName}`)}</Text>
+                        <Text style={styles.exerciseName}>{t(`exerciseNames.${exerciseName}.name`, exerciseName)}</Text>
+                        
                         {groupedExercises[exerciseName]
                             .sort((a, b) => a.setNumber - b.setNumber) // Sort by set number
                             .map((exercise) => (

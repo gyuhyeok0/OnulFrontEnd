@@ -42,7 +42,7 @@ const RegistLowerBody = () => {
     
             const foundExercise = exercises.find(
                 (exercise) => {
-                    const translatedName = t(`exerciseNames.${exercise.exerciseName}`); // 번역된 운동 이름 가져오기
+                    const translatedName = t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName); // 번역된 운동 이름 가져오기
                     const match = exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         translatedName?.toLowerCase().includes(searchQuery.toLowerCase()); // 번역본 검색 추가
                     
@@ -63,7 +63,7 @@ const RegistLowerBody = () => {
             if (foundExercise.mainMuscleGroup !== "하체") {
                 setSearchMessage(
                     t('exerciseMessage', {
-                        exerciseName: t(`exerciseNames.${foundExercise.exerciseName}`),
+                        exerciseName: t(`exerciseNames.${foundExercise.exerciseName}.name`, foundExercise.exerciseName),
                         muscleGroup: t(`bodyParts.${foundExercise.mainMuscleGroup}`)
                     })
                 );
@@ -207,7 +207,7 @@ const RegistLowerBody = () => {
             })
             .filter((exercise) => exercise.mainMuscleGroup === "하체")
             .filter((exercise) => {
-                const translatedName = t(`exerciseNames.${exercise.exerciseName}`);
+                const translatedName = t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName);
                 return exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                        translatedName?.toLowerCase().includes(searchQuery.toLowerCase());
             })
@@ -288,7 +288,7 @@ const RegistLowerBody = () => {
                             </View>                            
                             <View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                     <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                     <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
 
 
                                     {exercise.popularityGroup && (
@@ -355,7 +355,7 @@ const RegistLowerBody = () => {
                                                     exercise && ( // 복근 운동만 렌더링
                                                         <View key={exerciseId} style={styles.exerciseItemBox}>
                                                             <View style={styles.scheduleItem}>
-                                                                <Text style={styles.exerciseNameOnly}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                                                <Text style={styles.exerciseNameOnly}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
                                                                 <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
                                                                     <Ionicons name="close" size={24} color="white" />
                                                                 </TouchableOpacity>
