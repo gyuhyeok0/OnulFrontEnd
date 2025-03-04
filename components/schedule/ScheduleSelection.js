@@ -68,8 +68,11 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
                             </View>
                     ))}
                 </View>
+                
 
-                <Text style={styles.exerciseButtonText}>{t(`exerciseNames.${item.exerciseName}`)}</Text>
+                <Text style={styles.exerciseButtonText}>
+                    {t(`exerciseNames.${item.exerciseName}.name`, item.exerciseName)}
+                </Text>
 
                 
                 <View style={{ width: '20%', height: 30, marginTop: -5, justifyContent: 'center', alignItems: 'center', marginRight: -5 }}>

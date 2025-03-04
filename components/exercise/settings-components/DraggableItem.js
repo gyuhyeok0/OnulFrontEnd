@@ -46,7 +46,7 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
                         ))}
                     </View>
 
-                    <Text style={styles.draggableItemText}>{t(`exerciseNames.${item.exerciseName}`)}</Text>
+                    <Text style={styles.draggableItemText}>{t(`exerciseNames.${item.exerciseName}.name`, item.exerciseName)}</Text>
 
                     <View style={[styles.decorativeBox, styles.rightBox]}>
                         {Array.from({ length: 3 }).map((_, rowIndex) => (
