@@ -12,9 +12,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
 import { saveTotalFoodData } from '../../../apis/FoodApi';
+import { useTranslation } from 'react-i18next';
 
 const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType }) => {
-    
+    const { t } = useTranslation();
     const dispatch = useDispatch();
 
     const [unit, setUnit] = useState('g');
@@ -79,7 +80,7 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
 
 
     const handleSubmit = async () => {
-        const recipeNames = ["임시식단"];
+        const recipeNames = ["Free"];
     
         // 소수점 1자리로 반올림하는 함수
         const roundToOneDecimal = (value) => {
@@ -129,14 +130,16 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
             <View style={styles.overlay}>
                 <View style={styles.modalContainer}>
                     <View style={styles.header}>
-                        <Text style={styles.title}>영양 정보 입력</Text>
+                        <Text style={styles.title}>{t('FreeFoodModal.title')}</Text>
                         <TouchableOpacity onPress={onClose}>
                             <Ionicons name="close" size={24} color="#999" style={styles.closeIcon} />
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView style={styles.content}>
-                        <Text style={{fontSize: 15, fontWeight:'bold', marginBottom: 5}}>단위선택</Text>
+                        <Text style={{fontSize: 15, fontWeight:'bold', marginBottom: 5}}>
+                            {t('FreeFoodModal.unitSelection')}
+                        </Text>
                         <View style={styles.unitSelection}>
                             <TouchableOpacity
                                 style={unit === 'g' ? styles.selectedUnit : styles.unitButton}
@@ -151,39 +154,41 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                                 <Text style={styles.unitText}>oz</Text>
                             </TouchableOpacity>
                         </View>
-                        <Text style={{fontSize: 15, fontWeight:'bold', marginBottom: 5}}>임시 영양성분 입력</Text>
+                        <Text style={{fontSize: 15, fontWeight:'bold', marginBottom: 5}}>
+                            {t('FreeFoodModal.nutritionInput')}
+                        </Text>
 
                         <TextInput
                             style={styles.input}
-                            placeholder="용량"
+                            placeholder={t('FreeFoodModal.quantity')}
                             value={quantity}
                             onChangeText={(text) => setQuantity(handleNumericInput(text))}
                             keyboardType="numeric"
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="칼로리"
+                            placeholder={t('FreeFoodModal.calories')}
                             value={calories}
                             onChangeText={(text) => setCalories(handleNumericInput(text))}
                             keyboardType="numeric"
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="탄수화물"
+                            placeholder={t('FreeFoodModal.carbs')}
                             value={carbs}
                             onChangeText={(text) => setCarbs(handleNumericInput(text))}
                             keyboardType="numeric"
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="단백질"
+                            placeholder={t('FreeFoodModal.protein')}
                             value={protein}
                             onChangeText={(text) => setProtein(handleNumericInput(text))}
                             keyboardType="numeric"
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="지방"
+                            placeholder={t('FreeFoodModal.fat')}
                             value={fat}
                             onChangeText={(text) => setFat(handleNumericInput(text))}
                             keyboardType="numeric"
@@ -192,7 +197,7 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                     </ScrollView>
 
                     <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                        <Text style={styles.submitButtonText}>완료</Text>
+                        <Text style={styles.submitButtonText}>{t('FreeFoodModal.complete')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

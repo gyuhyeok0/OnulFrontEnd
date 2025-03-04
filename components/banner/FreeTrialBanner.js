@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Text, View, Pressable } from "react-native";
+import { useTranslation } from 'react-i18next';
 
 const FreeTrialBanner = ({ fourWeeksLater }) => {
+    const { t } = useTranslation();
     const [showBanner, setShowBanner] = useState(false);
 
     useEffect(() => {
@@ -17,6 +19,7 @@ const FreeTrialBanner = ({ fourWeeksLater }) => {
     }, [fourWeeksLater]);
 
     if (!showBanner) return null; // 배너를 표시하지 않을 경우 렌더링 안 함
+    
 
     return (
         <View style={{
@@ -32,7 +35,7 @@ const FreeTrialBanner = ({ fourWeeksLater }) => {
             zIndex: 1000
         }}>
             <Text style={{ fontWeight: "bold", color: "white" }}>
-                자동적응 무료체험이 {new Date(fourWeeksLater).toLocaleDateString()}에 종료됩니다.
+                {t('freeTrialEnds')} {new Date(fourWeeksLater).toLocaleDateString()}
             </Text>
 
             <Pressable onPress={() => setShowBanner(false)}>

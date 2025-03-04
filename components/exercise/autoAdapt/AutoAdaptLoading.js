@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Animated, Image } from 'react-native';
 import useCheckDateChange from '../../../src/hooks/useCheckDateChange';
+import { useTranslation } from 'react-i18next';
 
 const AutoAdaptLoading = () => {
     const { isDateChanged } = useCheckDateChange();
     const progress = useRef(new Animated.Value(0)).current;
     const fadeAnim = useRef(new Animated.Value(1)).current; // 투명도 조절을 위한 애니메이션 값
+    const { t } = useTranslation();
 
     useEffect(() => {
         Animated.timing(progress, {
@@ -21,12 +23,13 @@ const AutoAdaptLoading = () => {
     });
 
     const messages = [
-        '최근 운동 기록을 불러오는 중...',
-        '운동 피로도를 계산하는 중...',
-        '운동 난이도를 설정하는 중...',
-        '분할 루틴을 최적화하는 중...',
-        '추천 운동을 분석하는 중...',
+        t('autoAdaptLoading.loadingRecentRecords'),
+        t('autoAdaptLoading.calculatingFatigue'),
+        t('autoAdaptLoading.settingDifficulty'),
+        t('autoAdaptLoading.optimizingRoutine'),
+        t('autoAdaptLoading.analyzingRecommendations'),
     ];
+
 
     const [currentMessage, setCurrentMessage] = useState(messages[0]);
 
@@ -82,11 +85,11 @@ const AutoAdaptLoading = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.mainText}>현재 Ai 분석중입니다</Text>
+            <Text style={styles.mainText}>{t('autoAdaptLoading.analyzing')}</Text>
             <View style={styles.progressBarContainer}>
                 <Animated.View style={[styles.progressBar, { width: widthInterpolated }]} />
             </View>
-            <Text style={{color:'white', fontWeight:'bold'}}>내 몸에 맞는 최적의 운동을 찾는 중입니다</Text>
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>{t('autoAdaptLoading.findingOptimalWorkout')}</Text>
 
             <Animated.View style={[styles.jump, { transform: [{ translateY: jumpAnim }] }]}>
                 <Animated.View style={[styles.messageContainer, { opacity: fadeAnim }]}>

@@ -49,7 +49,7 @@ function LoginScreen({ navigation }) {
           </TouchableOpacity>
           
           <TouchableOpacity>
-            <Text style={styles.inquiry} onPress={handleInquiry} >문의하기</Text>
+            <Text style={styles.inquiry} onPress={handleInquiry}>{t('inquiry.title_page')}</Text>
           </TouchableOpacity>
         </View>
 

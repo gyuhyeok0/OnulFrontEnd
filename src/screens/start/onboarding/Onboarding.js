@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBar from '../../common/ProgressBar';
+import { useTranslation } from 'react-i18next';
+
 
 const Onboarding = ({ navigation }) => {
     const [selectedWeightUnit, setSelectedWeightUnit] = useState(null);
     const [selectedHeightUnit, setSelectedHeightUnit] = useState(null);
+    const { t } = useTranslation();
+
 
     // 단위를 선택할 때 로컬스토리지에 저장하는 함수
     const saveUnitSelection = async (key, value) => {
@@ -46,7 +50,7 @@ const Onboarding = ({ navigation }) => {
             ]}
             onPress={() => handleUnitSelection(unitType, unitValue)}
         >
-            <Text style={styles.unitButtonText}>{unitValue}</Text>
+            <Text style={styles.unitButtonText}>{t(`onboarding.${unitValue}`)}</Text>
         </TouchableOpacity>
     );
 
@@ -55,11 +59,11 @@ const Onboarding = ({ navigation }) => {
             <ProgressBar currentStep={1} navigation={navigation} />
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.container}>
-                    <Text style={styles.title}>안녕하세요</Text>
-                    <Text style={styles.subTitle}>회원님에게 맞춤 운동을 위한 몇가지 질문 입니다.</Text>
+                    <Text style={styles.title}>{t("onboarding.greeting")}</Text>
+                    <Text style={styles.subTitle}>{t("onboarding.intro")}</Text>
 
-                    <Text style={styles.question}>회원님에게 맞는 단위를 선택해 주세요</Text>
-                    <Text style={styles.note}>언제든지 변경 가능합니다.</Text>
+                    <Text style={styles.question}>{t("onboarding.question")}</Text>
+                    <Text style={styles.note}>{t("onboarding.note")}</Text>
 
                     <View style={styles.unitContainer}>
                         <UnitButton unitType="weight" unitValue="lbs" selectedUnit={selectedWeightUnit} />
@@ -77,7 +81,7 @@ const Onboarding = ({ navigation }) => {
                         disabled={isNextButtonDisabled}
                     >
                         <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>
-                            다음
+                            {t("onboarding.next")}
                         </Text>
                     </TouchableOpacity>
                 </View>

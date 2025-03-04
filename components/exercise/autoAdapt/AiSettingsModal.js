@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const AiSettingsModal = ({ 
     modalVisible, setModalVisible,
@@ -10,6 +11,8 @@ const AiSettingsModal = ({
     includeCardio, setIncludeCardio,
     onClose, priorityParts
 }) => {
+
+    const { t } = useTranslation();
     
     
     // 운동 스타일 선택 핸들러 (최소 1개 이상 유지)
@@ -34,10 +37,10 @@ const AiSettingsModal = ({
         <Modal transparent={true} visible={modalVisible} animationType="fade">
             <View style={styles.overlay}>
                 <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>상세 설정</Text>
+                    <Text style={styles.modalTitle}>{t('AiSettingsModal.advancedSettings')}</Text>
 
                     {/* 운동 난이도 */}
-                    <Text style={styles.sectionTitle}>운동 난이도</Text>
+                    <Text style={styles.sectionTitle}>{t('AiSettingsModal.difficulty')}</Text>
                     <View style={styles.buttonRow}>
                         {['초급', '중급', '고급'].map((level) => (
                             <Pressable 
@@ -45,13 +48,13 @@ const AiSettingsModal = ({
                                 style={[styles.optionButton, difficulty === level && styles.selected]}
                                 onPress={() => setDifficulty(level)}
                             >
-                                <Text style={styles.optionText}>{level}</Text>
+                                <Text style={styles.optionText}>{t(`difficultyLevels.${level}`)}</Text>
                             </Pressable>
                         ))}
                     </View>
 
                     {/* 운동 시간 설정 */}
-                    <Text style={styles.sectionTitle}>운동 시간</Text>
+                    <Text style={styles.sectionTitle}>{t('AiSettingsModal.exerciseTime')}</Text>
                     <View style={styles.buttonRow}>
                         {['30분 이하', '60분 이하', '60분 초과'].map((time) => (
                             <Pressable 
@@ -59,13 +62,13 @@ const AiSettingsModal = ({
                                 style={[styles.optionButton, exerciseTime === time && styles.selected]}
                                 onPress={() => setExerciseTime(time)}
                             >
-                                <Text style={styles.optionText}>{time}</Text>
+                                <Text style={styles.optionText}>{t(`exerciseTimes.${time}`)}</Text>
                             </Pressable>
                         ))}
                     </View>
 
                     {/* 운동 스타일 */}
-                    <Text style={styles.sectionTitle}>운동 스타일</Text>
+                    <Text style={styles.sectionTitle}>{t('AiSettingsModal.exerciseStyle')}</Text>
                     <View style={styles.buttonRow}>
                         {['머신', '프리웨이트'].map((style) => (
                             <Pressable 
@@ -73,13 +76,13 @@ const AiSettingsModal = ({
                                 style={[styles.optionButton, exerciseStyle.includes(style) && styles.selected]}
                                 onPress={() => toggleWorkoutStyle(style)}
                             >
-                                <Text style={styles.optionText}>{style}</Text>
+                                <Text style={styles.optionText}>{t(`workoutStyles.${style}`)}</Text>
                             </Pressable>
                         ))}
                     </View>
 
                     {/* 특정 부위 제외 */}
-                    <Text style={styles.sectionTitle}>특정 부위 제외</Text>
+                    <Text style={styles.sectionTitle}>{t('AiSettingsModal.excludeBodyParts')}</Text>
                     <View style={styles.buttonRow}>
                         {['등', '가슴', '하체', '어깨', '팔'].map((part) => (
                             <Pressable 
@@ -87,13 +90,16 @@ const AiSettingsModal = ({
                                 style={[styles.optionButton, excludedParts.includes(part) && styles.selected]}
                                 onPress={() => {
                                     if (priorityParts.includes(part)) {
-                                        Alert.alert("제외 불가", `${part} 부위는 부위 우선 선택되어 있어 제외할 수 없습니다.`);
-                                        return; // 클릭 방지
+                                        Alert.alert(
+                                            t('AiSettingsModal.exclusionErrorTitle'), 
+                                            t('AiSettingsModal.exclusionErrorMessage', { part: t(`bodyParts.${part}`) })
+                                        );
+                                         return; // 클릭 방지
                                     }
 
                                      // ✅ 모든 부위를 제외할 수 없도록 제한
                                     if (excludedParts.length === 4 && !excludedParts.includes(part)) {
-                                        Alert.alert("선택 불가", "최소 1개 부위는 반드시 포함되어야 합니다.");
+                                        Alert.alert(t('AiSettingsModal.selectionError'), t('AiSettingsModal.minSelectionMessage'));
                                         return; // 변경하지 않음
                                     }
 
@@ -102,7 +108,7 @@ const AiSettingsModal = ({
                                     );
                                 }}
                             >
-                                <Text style={styles.optionText}>{part}</Text>
+                                <Text style={styles.optionText}>{t(`bodyParts.${part}`)}</Text>
                             </Pressable>
                         ))}
                     </View>
@@ -113,12 +119,12 @@ const AiSettingsModal = ({
                         onPress={() => setIncludeCardio(!includeCardio)}
                     >
                         <Text style={[styles.checkbox, includeCardio && styles.checked]}>✔</Text>
-                        <Text style={styles.label}>유산소 운동 포함</Text>
+                        <Text style={styles.label}>{t('AiSettingsModal.includeCardio')}</Text>
                     </Pressable>
 
                     {/* 닫기 버튼 */}
                     <Pressable style={styles.closeButton} onPress={() => handleClose()}>
-                        <Text style={styles.closeButtonText}>닫기</Text>
+                        <Text style={styles.closeButtonText}>{t('AiSettingsModal.close')}</Text>
                     </Pressable>
                 </View>
             </View>

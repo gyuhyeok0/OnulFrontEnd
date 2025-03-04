@@ -6,10 +6,13 @@ import { MonthlyWeightAndDiet } from '../../../src/apis/AnalysisApi';
 import { LineChart } from 'react-native-chart-kit';
 import FoodGraph from './FoodGraph';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
+import { useTranslation } from 'react-i18next';
 
 const colors = ["#55CBF7", "#FA4638", "#39D76A", "#FFDD33", "#B452FF", "#FF8C00"];
 
 const WeightAndDietGraph = ({ navigation }) => {
+    const { t } = useTranslation();
+
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
     
     const [bodyData, setBodyData] = useState({});
@@ -83,31 +86,32 @@ const WeightAndDietGraph = ({ navigation }) => {
 
     const getChartData = () => {
         const currentMonth = new Date().getMonth() + 1;
-        const labels = Array.from({ length: 10 }, (_, i) => ((currentMonth - i + 11) % 12) + 1 + "월").reverse();
+        const labels = Array.from({ length: 10 }, (_, i) => ((currentMonth - i + 11) % 12) + 1 + t('weightAndDietGraph.month')).reverse();
     
         const dataKeys = Object.keys(bodyData).length > 0 ? Object.keys(Object.values(bodyData)[0]) : [];
     
         const datasets = dataKeys.map((key, index) => {
             let data = labels.map((month) => {
-                const dateKey = Object.keys(bodyData).find(date => date.includes(month.replace("월", "").padStart(2, '0')));
-                return bodyData[dateKey]?.[key] ?? 0;  // null이 아닌 0을 기본값으로 설정
+                const dateKey = Object.keys(bodyData).find(date => date.includes(month.replace(t('weightAndDietGraph.month'), "").padStart(2, '0')));
+                return bodyData[dateKey]?.[key] ?? 0;  // Default to 0 instead of null
             });
     
             const validData = data.filter(value => value !== null && value !== 0);
-            const volumeChange = validData.length > 1 ? validData[validData.length - 1] - validData[0] : 0; // null 대신 0 처리
+            const volumeChange = validData.length > 1 ? validData[validData.length - 1] - validData[0] : 0; 
     
             return {
                 key: `${key}-${index}`,
                 data,
                 color: (opacity = 1) => colors[index % colors.length],
                 strokeWidth: 2,
-                label: key,
+                label: t(`weightAndDietGraph.${key}`), // Translate key labels
                 volumeChange
             };
         });
     
         return { labels, datasets };
     };
+    
     
     
     const chartData = getChartData();
@@ -133,10 +137,10 @@ const WeightAndDietGraph = ({ navigation }) => {
 
     return (
         <>    
-            <DefaultHeader title="몸무게 및 식단 통계" navigation={navigation} />
+            <DefaultHeader title={t('weightAndDietGraph.title')} navigation={navigation} />
             <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.weightAndDietContainer}>
-                    <Text style={styles.graphTitle}>월별 평균 체중 통계</Text>
+                    <Text style={styles.graphTitle}>{t('weightAndDietGraph.monthlyAvgWeightStats')}</Text>
 
                     {hasData ? (
                         <>
@@ -156,7 +160,7 @@ const WeightAndDietGraph = ({ navigation }) => {
                             {chartData.datasets.map(({ color, label, volumeChange }, index) => (
                                 <View key={`${label}-${index}`} style={styles.legendItem}>
                                     <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
-                                    <Text style={styles.legendText}>{label}</Text>
+                                    <Text style={styles.legendText}>{t(`${label}`)}</Text>
                                     <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>  
                                         {volumeChange !== null && volumeChange !== 0 ? (volumeChange > 0 ? "+" : "") + formatVolumeChange(volumeChange) + (weightUnit === 'kg' ? "kg" : "lbs") : ""}
                                     </Text>
@@ -165,7 +169,7 @@ const WeightAndDietGraph = ({ navigation }) => {
                         </View>
                         </>
                     ) : (
-                        <Text style={styles.noDataText}>기록된 데이터가 없습니다.</Text>
+                        <Text style={styles.noDataText}>{t('weightAndDietGraph.noData')}</Text>
                     )}
                 </View>
                 <FoodGraph foodData={foodData}/>

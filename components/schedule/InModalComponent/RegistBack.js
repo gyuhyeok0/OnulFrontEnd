@@ -7,8 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './RegistModal.module';
 import { deleteExerciseFromServer, sendExerciseToServer, fetchMyExercises as fetchMyExercisesAction } from '../../../src/apis/MyExerciseAPI';
 import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
+import { useTranslation } from 'react-i18next';
 
 const RegistBack = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const { exercises } = useSelector((state) => state.exercises);
     const { myExercises: myBack } = useSelector((state) => state.backExercises || {});
@@ -147,6 +149,7 @@ const RegistBack = () => {
         }
     };
 
+     //여기
     const filteredExercises = useMemo(() => {
         return exercises
             .filter((exercise) => {
@@ -155,10 +158,15 @@ const RegistBack = () => {
                 return exercise.exerciseType === categories[selectedIndex];
             })
             .filter((exercise) => exercise.mainMuscleGroup === "등")
-            .filter((exercise) => exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()))
+            .filter((exercise) => {
+                const translatedName = t(`exerciseNames.${exercise.exerciseName}`);
+                return exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                       translatedName?.toLowerCase().includes(searchQuery.toLowerCase());
+            })
             .slice(0, displayCount)
             .sort((a, b) => b.popularityGroup - a.popularityGroup);
-    }, [exercises, likedExercises, selectedIndex, categories, displayCount, searchQuery]);
+    }, [exercises, likedExercises, selectedIndex, categories, displayCount, searchQuery, t]);
+    
 
     const handleDelete = async (exerciseId) => {
         try {
@@ -173,28 +181,50 @@ const RegistBack = () => {
         }
     };
 
+    //여기
     useEffect(() => {
         if (searchQuery.trim() !== '') {
+            console.log("검색어:", searchQuery);
+    
             const foundExercise = exercises.find(
-                (exercise) =>
-                    exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase())
+                (exercise) => {
+                    const translatedName = t(`exerciseNames.${exercise.exerciseName}`); // 번역된 운동 이름 가져오기
+                    const match = exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        translatedName?.toLowerCase().includes(searchQuery.toLowerCase()); // 번역본 검색 추가
+                    
+                    console.log("현재 운동:", exercise.exerciseName, "번역본:", translatedName, "검색 매칭:", match);
+                    return match;
+                }
             );
-
+    
+    
             if (!foundExercise) {
-                setSearchMessage('검색 결과가 없습니다. 다른 검색어를 입력해주세요.');
+                console.log("검색 결과 없음");
+                setSearchMessage(t('registModal.noResults'));
                 return;
             }
-
+    
+            console.log("검색된 운동:", foundExercise);
+    
             if (foundExercise.mainMuscleGroup !== "등") {
-                setSearchMessage(`${foundExercise.exerciseName}은(는) ${foundExercise.mainMuscleGroup} 그룹에 있습니다.`);
+                setSearchMessage(
+                    t('exerciseMessage', {
+                        exerciseName: t(`exerciseNames.${foundExercise.exerciseName}`),
+                        muscleGroup: t(`bodyParts.${foundExercise.mainMuscleGroup}`)
+                    })
+                );
+
                 dispatch(fetchMyExercisesAction(memberId, foundExercise.mainMuscleGroup));
             } else {
                 setSearchMessage(''); // 메시지 초기화
             }
         } else {
+            console.log("검색어 없음, 메시지 초기화");
             setSearchMessage(''); // 검색어가 없을 때 메시지 초기화
         }
     }, [searchQuery, exercises, dispatch, memberId]);
+    
+    
 
     return (
         <SafeAreaView style={styles.container}>
@@ -202,7 +232,7 @@ const RegistBack = () => {
                 <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="운동 검색"
+                     placeholder={t('registModal.searchPlaceholder')}
                     placeholderTextColor="gray"
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -221,7 +251,7 @@ const RegistBack = () => {
                                 styles.categoryButtonText,
                                 selectedIndex === index && { color: '#4A7BF6' }
                             ]}>
-                                {category}
+                             {t(`categories.${category}`)}
                             </Text>
                         </TouchableOpacity>
                     ))}
@@ -252,12 +282,12 @@ const RegistBack = () => {
 
                             <View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={styles.exerciseName}>{exercise.exerciseName}</Text>
+                                     <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
                                     {exercise.popularityGroup && (
-                                        <Text style={styles.exerciesePopular}>인기</Text>
+                                         <Text style={styles.exerciesePopular}>{t('registModal.categoryPopular')}</Text>
                                     )}
                                 </View>
-                                <Text style={styles.exerciseDetails}>{exercise.detailMuscleGroup}</Text>
+                                 <Text style={styles.exerciseDetails}>{t(`muscleGroups.${exercise.detailMuscleGroup}`)}</Text>
                             </View>
                             <TouchableOpacity 
                                 style={[styles.likeIcon, { marginLeft: 'auto' }]} 
@@ -272,7 +302,7 @@ const RegistBack = () => {
                         </TouchableOpacity>
                     ))
                 ) : (
-                    <Text style={styles.noExerciseText}>{searchMessage || '운동 데이터가 없습니다.'}</Text>
+                     <Text style={styles.noExerciseText}>{searchMessage || t('registModal.noExerciseData')}</Text>
                 )}
                 <View style={{ height: 100 }}></View>
             </ScrollView>
@@ -285,7 +315,7 @@ const RegistBack = () => {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.toggleRegist} onPress={addToSchedule}>
                             <Ionicons name="add" size={25} color="#fff" />
-                            <Text style={styles.toggleText}>스케줄 추가 ({selectedExercises.length})</Text> 
+                             <Text style={styles.toggleText}>{t('registModal.toggleSchedule', { count: selectedExercises.length })}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.toggleReset} onPress={() => {
                             setSelectedExercises((prevSelected) => {
@@ -296,13 +326,13 @@ const RegistBack = () => {
                             });
                         }}>
                             <Ionicons name="refresh" size={20} color="#fff" />
-                            <Text style={styles.toggleText}>되돌리기</Text>
+                             <Text style={styles.toggleText}>{t('registModal.undo')}</Text>
                         </TouchableOpacity>
                     </View>
 
                     <View style={styles.myMainExercise}>
-                        <Text style={styles.myExerciseText}>내 등 운동 스케쥴</Text>
-                        {!isCollapsed && (
+                     <Text style={styles.myExerciseText}>{t('registModal.myExerciseSchedule', { bodyParts: t('bodyParts.등') })}</Text>
+                    {!isCollapsed && (
                             <Animated.View style={{ height: height * 0.43, padding: 10 }}>
                                 <ScrollView>
                                     {scheduleExercises.length > 0 ? (
@@ -313,8 +343,8 @@ const RegistBack = () => {
                                                     exercise && ( // 이 조건을 추가해, 복근인 운동만 렌더링되도록 합니다
                                                         <View key={exerciseId} style={styles.exerciseItemBox}>
                                                             <View style={styles.scheduleItem}>
-                                                                <Text style={styles.exerciseNameOnly}>{exercise.exerciseName}</Text>
-                                                                <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
+                                                             <Text style={styles.exerciseNameOnly}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                                            <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
                                                                     <Ionicons name="close" size={24} color="white" />
                                                                 </TouchableOpacity>
                                                             </View>
@@ -324,7 +354,7 @@ const RegistBack = () => {
                                             })}
                                         </View>
                                     ) : (
-                                        <Text style={styles.noSelectedExerciseText}>운동 스케쥴을 추가해주세요.</Text>
+                                         <Text style={styles.noSelectedExerciseText}>{t('registModal.addToSchedule')}</Text>
                                     )}
                                 </ScrollView>
                             </Animated.View>

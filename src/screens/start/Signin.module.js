@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 22,
         paddingBottom: 8,
-        fontWeight: '200'
+        fontWeight: '300'
     },
 
     inputContainer: {

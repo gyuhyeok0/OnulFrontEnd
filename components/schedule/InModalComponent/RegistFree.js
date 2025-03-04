@@ -7,9 +7,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './RegistModal.module';
 import { deleteExerciseFromServer, sendExerciseToServer, fetchMyExercises as fetchMyExercisesAction } from '../../../src/apis/MyExerciseAPI';
 import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
+import { useTranslation } from 'react-i18next';
 
 
 const RegistFree = () => {
+    const { t } = useTranslation();
+
     const dispatch = useDispatch();
     const { exercises } = useSelector((state) => state.exercises);
     const { myExercises: myFree } = useSelector((state) => state.freeExercises || {}); // 사용자 정의 운동 상태 가져오기
@@ -29,6 +32,7 @@ const RegistFree = () => {
     const [scheduleExercises, setScheduleExercises] = useState([]);
     const [memberId, setMemberId] = useState(null);
     
+    const [searchMessage, setSearchMessage] = useState(''); // 검색 메시지 상태 추가
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -157,12 +161,14 @@ const RegistFree = () => {
                 if (selectedIndex === 0) return true;
                 return exercise.exerciseType === categories[selectedIndex];
             })
-            // .filter((exercise) => exercise.mainMuscleGroup === "가슴")
-            .filter((exercise) => exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()))
+            .filter((exercise) => {
+                const translatedName = t(`exerciseNames.${exercise.exerciseName}`); // 번역된 운동 이름
+                return translatedName && translatedName.toLowerCase().includes(searchQuery.toLowerCase());
+            })
             .slice(0, displayCount)
             .sort((a, b) => b.popularityGroup - a.popularityGroup);
-    }, [exercises, likedExercises, selectedIndex, categories, displayCount, searchQuery]);
-
+    }, [exercises, likedExercises, selectedIndex, categories, displayCount, searchQuery, t]);
+    
     const handleDelete = async (exerciseId) => {
         try {
             const muscleGroup = "자유";
@@ -182,7 +188,7 @@ const RegistFree = () => {
                 <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="운동 검색"
+                    placeholder={t('registModal.searchPlaceholder')}
                     placeholderTextColor="gray"
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -201,8 +207,8 @@ const RegistFree = () => {
                                 styles.categoryButtonText,
                                 selectedIndex === index && { color: '#4A7BF6' }
                             ]}>
-                                {category}
-                            </Text>
+                             {t(`categories.${category}`)}
+                             </Text>
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -232,13 +238,13 @@ const RegistFree = () => {
 
                             <View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={styles.exerciseName}>{exercise.exerciseName}</Text>
-                                    {exercise.popularityGroup && (
-                                        <Text style={styles.exerciesePopular}>인기</Text>
-                                    )}
+                                <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                {exercise.popularityGroup && (
+                                         <Text style={styles.exerciesePopular}>{t('registModal.categoryPopular')}</Text>
+                                        )}
                                 </View>
-                                <Text style={styles.exerciseDetails}>{exercise.detailMuscleGroup}</Text>
-                            </View>
+                                <Text style={styles.exerciseDetails}>{t(`muscleGroups.${exercise.detailMuscleGroup}`)}</Text>
+                                </View>
                             <TouchableOpacity 
                                 style={[styles.likeIcon, { marginLeft: 'auto' }]} 
                                 onPress={() => toggleLike(exercise.id)} 
@@ -252,7 +258,7 @@ const RegistFree = () => {
                         </TouchableOpacity>
                     ))
                 ) : (
-                    <Text style={styles.noExerciseText}>운동 데이터가 없습니다.</Text>
+                    <Text style={styles.noExerciseText}>{searchMessage || t('registModal.noExerciseData')}</Text>
                 )}
                 <View style={{ height: 100 }}></View>
             </ScrollView>
@@ -265,8 +271,8 @@ const RegistFree = () => {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.toggleRegist} onPress={addToSchedule}>
                             <Ionicons name="add" size={25} color="#fff" />
-                            <Text style={styles.toggleText}>스케줄 추가 ({selectedExercises.length})</Text> 
-                        </TouchableOpacity>
+                            <Text style={styles.toggleText}>{t('registModal.toggleSchedule', { count: selectedExercises.length })}</Text>
+                            </TouchableOpacity>
                         <TouchableOpacity style={styles.toggleReset} onPress={() => {
                             setSelectedExercises((prevSelected) => {
                                 if (prevSelected.length > 0) {
@@ -276,13 +282,13 @@ const RegistFree = () => {
                             });
                         }}>
                             <Ionicons name="refresh" size={20} color="#fff" />
-                            <Text style={styles.toggleText}>되돌리기</Text>
-                        </TouchableOpacity>
+                            <Text style={styles.toggleText}>{t('registModal.undo')}</Text>
+                            </TouchableOpacity>
                     </View>
 
                     <View style={styles.myMainExercise}>
-                        <Text style={styles.myExerciseText}>내 자유일정</Text>
-                        {!isCollapsed && (
+                    <Text style={styles.myExerciseText}>{t('registModal.myExerciseSchedule', { bodyParts: t('bodyParts.복근') })}</Text>
+                    {!isCollapsed && (
                             <Animated.View style={{ height: height * 0.43, padding: 10 }}>
                                 <ScrollView>
                                     {scheduleExercises.length > 0 ? (
@@ -292,8 +298,8 @@ const RegistFree = () => {
                                                 return (
                                                     <View key={exerciseId} style={styles.exerciseItemBox}>
                                                         <View style={styles.scheduleItem}>
-                                                            <Text style={styles.exerciseNameOnly}>{exercise?.exerciseName}</Text>
-                                                            <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
+                                                        <Text style={styles.exerciseNameOnly}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                                        <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
                                                                 <Ionicons name="close" size={24} color="white" />
                                                             </TouchableOpacity>
                                                         </View>
@@ -302,7 +308,7 @@ const RegistFree = () => {
                                             })}
                                         </View>
                                     ) : (
-                                        <Text style={styles.noSelectedExerciseText}>운동 스케쥴을 추가해주세요.</Text>
+                                        <Text style={styles.noSelectedExerciseText}>{t('registModal.addToSchedule')}</Text>
                                     )}
                                 </ScrollView>
                             </Animated.View>

@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, SafeAr
 import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포트 임포트
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { API_URL } from '@env';
+import { useTranslation } from 'react-i18next';
 
 function Signup({ navigation }) {
     const [memberId, setMemberId] = useState('');
@@ -13,6 +14,7 @@ function Signup({ navigation }) {
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null); 
     const [isIdAvailable, setIsIdAvailable] = useState(false); // 아이디 사용 가능 여부 상태 추가
     const [isIdChecked, setIsIdChecked] = useState(false); // 중복확인 버튼이 클릭되었는지 상태
+    const { t } = useTranslation();
 
     useEffect(() => {
         console.log("===================== 가입 페이지 ========================");
@@ -21,15 +23,15 @@ function Signup({ navigation }) {
     const handleNextStep = () => {
         // 유효성 검증
         if (!isMemberIdValid) {
-            alert('유효한 아이디를 입력해주세요.');
+            alert(t('signup.validIdRequired'));
             return;
         }
         if (!isMemberPasswordValid) {
-            alert('유효한 비밀번호를 입력해주세요.');
+            alert(t('signup.validPasswordRequired'));
             return;
         }
         if (!isConfirmPasswordValid) {
-            alert('비밀번호가 일치하지 않습니다.');
+            alert(t('signup.passwordMismatch'));
             return;
         }
         
@@ -60,7 +62,7 @@ function Signup({ navigation }) {
     // 아이디 중복확인
     const checkMemberIdDuplicate = async () => {
         if (!memberId) {
-            alert('아이디를 입력해주세요.');
+            alert(t('signup.idPlaceholder'));
             return;
         }
     
@@ -79,22 +81,23 @@ function Signup({ navigation }) {
         
             // 서버에서 반환된 state에 따라 처리
             if (result.state === 'DUPLICATE') {
-                alert('이미 사용 중인 아이디입니다.');
+                alert(t('signup.idUnavailable'));
                 setIsIdAvailable(false);
             } else if (result.state === 'AVAILABLE') {
-                alert('사용 가능한 아이디입니다.');
-                setIsIdAvailable(true); // 아이디 사용 가능 상태로 업데이트
+                alert(t('signup.idAvailable'));
+                setIsIdAvailable(true);
             } else if (result.state === 'INVALID_ID') {
-                alert('아이디는 영문자와 숫자를 포함한 6자리 이상이어야 합니다.');
+                alert(t('signup.idInvalid'));
                 setIsIdAvailable(false);
             } else {
-                alert('알 수 없는 상태입니다.');
+                alert(t('signup.serverError'));
                 setIsIdAvailable(false);
             }
+
             setIsIdChecked(true); // 중복확인 버튼이 클릭됨
         } catch (error) {
             console.error('Error checking ID duplication:', error);
-            alert('서버와 통신 중 오류가 발생했습니다.');
+            alert(t('signup.serverError'));
             setIsIdAvailable(false);
             setIsIdChecked(false); // 오류 발생 시 중복확인 상태 초기화
         }
@@ -103,7 +106,7 @@ function Signup({ navigation }) {
 
     return (
         <>
-            <DefaultHeader title="회원가입" navigation={navigation} />
+            <DefaultHeader title={t('signup.title')} navigation={navigation} />
 
             <KeyboardAwareScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
@@ -114,7 +117,7 @@ function Signup({ navigation }) {
                 <View style={styles.container}>
                     <View style={[styles.BackgroundCircle, { top: height * 0.14 }]}></View>
 
-                    <Text style={[styles.label, { marginTop: 50 }]}>아이디</Text>
+                    <Text style={[styles.label, { marginTop: 50 }]}>{t('signup.id')}</Text>
 
                     <View style={styles.idContainer}>
                         {/* 아이디 입력 */}
@@ -124,7 +127,7 @@ function Signup({ navigation }) {
                                 isMemberIdValid === false && styles.invalidInput,
                                 isIdAvailable && styles.availableInput // 아이디 사용 가능 상태일 때 스타일 적용
                             ]}
-                            placeholder="아이디를 입력하세요"
+                            placeholder={t('signup.idPlaceholder')}
                             placeholderTextColor="#888"
                             value={memberId}
                             onChangeText={validateMemberId}
@@ -144,36 +147,35 @@ function Signup({ navigation }) {
                                     isIdAvailable && styles.availableButtonText // 아이디 사용 가능 상태일 때 텍스트 색상 변경
                                 ]}
                             >
-                                중복확인
-                            </Text>
+                                {t('signup.idDuplicateCheck')}
+                                </Text>
                         </TouchableOpacity>
                     </View>
-                    {isMemberIdValid === false && <Text style={styles.errorText}>영문자와 숫자가 모두 포함된 6자리 이상의 아이디를 입력해주세요.</Text>}
+                    {isMemberIdValid === false && <Text style={styles.errorText}>{t('signup.idError')}</Text>}
 
                     <View style={{ marginTop: 20 }}>
                         {/* 비밀번호 입력 */}
-                        <Text style={styles.label}>비밀번호</Text>
+                        <Text style={styles.label}>{t('signup.password')}</Text>
                         <TextInput
                             style={[styles.input, isMemberPasswordValid === false && styles.invalidInput]}
-                            placeholder="비밀번호를 입력하세요"
-                            placeholderTextColor="#888"
+                            placeholder={t('signup.passwordPlaceholder')}                            placeholderTextColor="#888"
                             secureTextEntry
                             value={memberPassword}
                             onChangeText={validateMemberPassword}
                         />
-                        {isMemberPasswordValid === false && <Text style={styles.errorText}>영문 대/소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
+                        {isMemberPasswordValid === false && <Text style={styles.errorText}>{t('signup.passwordError')}</Text>}
 
                         {/* 비밀번호 확인 입력 */}
-                        <Text style={styles.label}>비밀번호 확인</Text>
+                        <Text style={styles.label}>{t('signup.confirmPassword')}</Text>
                         <TextInput
                             style={[styles.input, isConfirmPasswordValid === false && styles.invalidInput]}
-                            placeholder="비밀번호를 다시 입력하세요"
+                            placeholder={t('signup.confirmPasswordPlaceholder')}                            
                             placeholderTextColor="#888"
                             secureTextEntry
                             value={confirmPassword}
                             onChangeText={validateConfirmPassword}
                         />
-                        {isConfirmPasswordValid === false && <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>}
+                        {isConfirmPasswordValid === false && <Text style={styles.errorText}>{t('signup.confirmPasswordError')}</Text>}
                     </View>
 
                     <View style={styles.buttonContainer}>
@@ -183,7 +185,7 @@ function Signup({ navigation }) {
                             onPress={handleNextStep}
                             disabled={!isIdAvailable || !isIdChecked || !isMemberPasswordValid || !isConfirmPasswordValid} // 조건 충족 여부에 따른 버튼 활성화/비활성화
                         >
-                            <Text style={styles.nextButtonText}>다음</Text>
+                            <Text style={styles.nextButtonText}>{t('signup.next')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

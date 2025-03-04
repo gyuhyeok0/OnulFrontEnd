@@ -13,9 +13,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {saveFoodData} from '../../../apis/FoodApi'
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 
 const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipeName = '' }) => {
+    const { t } = useTranslation();
+
     const [rows, setRows] = useState([
         {
             id: Date.now(), // 기본 상태
@@ -45,7 +48,6 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                 const storedUnit = await AsyncStorage.getItem('gOrOzUnit') || 'g'; // 단위 가져오기, 기본값은 'g'
     
                 if (foodItems && foodItems.length > 0) {
-                    console.log("뭔가있어")
                     const mappedRows = foodItems.map((item) => ({
                         id: Date.now() + Math.random(), // 고유 ID 생성
                         foodName: item.foodName || '',
@@ -191,10 +193,11 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                     </View>
 
                     <ScrollView style={styles.content}>
-                        <Text style={[styles.label, {color:'red'} ]}>식단 이름</Text>
+                        <Text style={[styles.label, { color: 'red' }]}>{t('recipeEditModal.recipeName')}</Text>
+
                         <TextInput
                             style={styles.input}
-                            placeholder="레시피 이름"
+                            placeholder={t('recipeEditModal.recipePlaceholder')}
                             maxLength={maxLength}
                             value={recipeName} // recipeName이 있으면 표시
                             onChangeText={(text) => setRecipeName(sanitizeInput(text))}
@@ -230,16 +233,18 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.sectionTitle}>음식 등록</Text>
-                        <Text style={styles.subtitle}>반드시 음식 이름과 용량을 먼저 입력해주세요</Text>
+                        <Text style={styles.sectionTitle}>{t('recipeEditModal.addFood')}</Text>
+                        <Text style={styles.subtitle}>{t('recipeEditModal.foodInstructions')}</Text>
 
                         {rows.map((row) => (
                             <View key={row.id} style={styles.row}>
                                 <View style={{ width: '30%', backgroundColor: 'white', minHeight: 100, borderRadius: 15, padding: 5 }}>
-                                    <Text style={{ fontSize: 12, margin: 1, color:'#F52121', fontWeight:'bold' }}>음식 이름</Text>
+                                    <Text style={{ fontSize: 12, margin: 1, color:'#F52121', fontWeight:'bold' }}>
+                                        {t('recipeEditModal.foodName')}
+                                    </Text>
                                     <TextInput
                                         style={styles.inputDetail}
-                                        placeholder="음식 이름"
+                                        placeholder={t('recipeEditModal.foodPlaceholder')}
                                         maxLength={maxLength}
                                         value={row.foodName} // 개별 row 상태와 연동
                                         onChangeText={(text) => {
@@ -248,7 +253,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                         }}
                                     />
 
-                                    <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>용량</Text>
+                                <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>{t('recipeEditModal.quantity')}</Text>
                                     <TextInput
                                         style={styles.inputDetail}
                                         value={row.quantity}
@@ -266,7 +271,8 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                 <View style={{ width: '70%', backgroundColor: 'white', minHeight: 100, borderRadius: 15, flexDirection: 'row', padding: 5, justifyContent: 'space-between' }}>
                                     <View style={{ width: '87%', flexDirection: 'row', gap: 15 }}>
                                         <View style={{ width: '48%' }}>
-                                            <Text style={{ fontSize: 12, margin: 1 }}>칼로리</Text>
+                                            <Text style={{ fontSize: 12, margin: 1 }}>{t('recipeEditModal.calories')}</Text>
+
                                             <TextInput
                                                 style={styles.inputDetail}
                                                 value={row.calories}
@@ -280,7 +286,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                                 selectTextOnFocus={true}
                                             />
 
-                                            <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>단백질</Text>
+                                            <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>{t('recipeEditModal.protein')}</Text>
                                             <TextInput
                                                 style={styles.inputDetail}
                                                 value={row.protein}
@@ -296,7 +302,8 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                         </View>
 
                                         <View style={{ width: '48%' }}>
-                                            <Text style={{ fontSize: 12, margin: 1 }}>탄수화물</Text>
+                                            <Text style={{ fontSize: 12, margin: 1 }}>{t('recipeEditModal.carbs')}</Text>
+
                                             <TextInput
                                                 style={styles.inputDetail}
                                                 value={row.carbs}
@@ -310,7 +317,8 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                                 selectTextOnFocus={true}
                                             />
 
-                                            <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>지방</Text>
+                                            <Text style={{ fontSize: 12, marginTop: 5, margin: 1 }}>{t('recipeEditModal.fat')}</Text>
+
                                             <TextInput
                                                 style={styles.inputDetail}
                                                 value={row.fat}
@@ -346,7 +354,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                         disabled={isSubmitDisabled} // 비활성화 상태 적용
                         onPress={handleSubmit} // handleSubmit 호출
                     >
-                        <Text style={styles.completeButtonText}>완료</Text>
+                        <Text style={styles.completeButtonText}>{t('recipeEditModal.complete')}</Text>
                     </TouchableOpacity>
 
                 </View>

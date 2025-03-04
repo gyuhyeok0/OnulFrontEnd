@@ -4,10 +4,12 @@ import DefaultHeader from '../common/DefaultHeader';
 import CustomModal from '../modal/ServiceAgree';
 import { useDispatch, useSelector } from 'react-redux';
 import SubscriptionModal from '../modal/SubscriptionModal';
+import { useTranslation } from 'react-i18next';
 
 const screenHeight = Dimensions.get('window').height;
 
 const Menu = ({ navigation }) => {
+    const { t } = useTranslation();
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalY] = useState(new Animated.Value(screenHeight)); 
@@ -54,7 +56,7 @@ const Menu = ({ navigation }) => {
 
         // ✅ 이용약관 / 개인정보처리방침 모달 열기
     const handleViewTerms = (type) => {
-        const content = type === 'service' ? '서비스 이용약관 내용' : '개인정보 처리방침 내용';
+        const content = type === 'service' ? t('menu.termsContent') : t('menu.privacyContent');
         setModalContent(content);  
         setModalVisible(true);
         Animated.timing(modalY, {
@@ -75,15 +77,17 @@ const Menu = ({ navigation }) => {
 
     return (
         <>
-            <DefaultHeader title="메뉴" navigation={navigation} />
+            <DefaultHeader title={t('menu.title')} navigation={navigation} />
+
             <View style={styles.container}>
-                <CustomButton title="번역" onPress={handleTranslation} />
-                <CustomButton title="단위 설정" onPress={handleAsyncStorage} />
-                <CustomButton title="계정정보" onPress={handleAccountInfo} />
-                <CustomButton title="문의하기" onPress={handleInquiry} />
-                <CustomButton title="이용약관" onPress={() => handleViewTerms('service')} />
-                <CustomButton title="개인정보처리방침" onPress={() => handleViewTerms('privacy')} />
+                <CustomButton title={t('menu.translation')} onPress={handleTranslation} />
+                <CustomButton title={t('menu.unitSettings')} onPress={handleAsyncStorage} />
+                <CustomButton title={t('menu.accountInfo')} onPress={handleAccountInfo} />
+                <CustomButton title={t('menu.inquiry')} onPress={handleInquiry} />
+                <CustomButton title={t('menu.termsOfService')} onPress={() => handleViewTerms('service')} />
+                <CustomButton title={t('menu.privacyPolicy')} onPress={() => handleViewTerms('privacy')} />
             </View>
+        
 
 
             <View style={{
@@ -102,16 +106,16 @@ const Menu = ({ navigation }) => {
 
                 {!isPremium && new Date(fourWeeksLater) > new Date() && (
                     <>
-                        <Text style={{ color: 'white', fontSize: 13 }}>현재 무료체험 이용중입니다</Text>
-                        <Text style={{ color: 'white', fontSize: 13 }}>자동적응 기능은 무료체험 종료 후 구독 후 이용 가능합니다.</Text>
+                        <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.freeTrialActive')}</Text>
+                        <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.autoAdaptAfterSubscription')}</Text>
                         <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginTop: 5 }}>
-                            <Text style={{ color: 'white', fontSize: 13 }}>무료체험 종료일: {fourWeeksLater}</Text>
+                            <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.freeTrialEnds')}: {fourWeeksLater}</Text>
 
                             <Pressable 
                                 onPress={() => setIsPaymentModalVisible(true)} // 버튼 누르면 모달 표시
                                 style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
                             >
-                                <Text style={{ color: '#007AFF', fontSize: 13, fontWeight: 'bold' }}>바로 구독하기</Text>
+                                <Text style={{ color: '#007AFF', fontSize: 13, fontWeight: 'bold' }}>{t('menu.subscribeNow')}</Text>
                             </Pressable>
                         </View>
                     </>
@@ -125,7 +129,7 @@ const Menu = ({ navigation }) => {
                 isVisible={isModalVisible}
                 onClose={closeModal}
                 modalY={modalY}
-                title="약관 내용"
+                title={t('menu.termsTitle')}
                 content={modalContent}
             />
 

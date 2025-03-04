@@ -5,8 +5,10 @@ import { loadFoodRecordsForDate } from '../../apis/RecordApi';
 import { selectTodayFoodData } from '../../modules/TotalFoodSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const FoodRecord = ({ selectDates, memberId }) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const dateKey = selectDates;
     const [unit, setUnit] = useState('g'); // 기본 단위는 'g'
@@ -76,41 +78,41 @@ const FoodRecord = ({ selectDates, memberId }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>식단기록</Text>
-
+            <Text style={styles.title}>{t('foodRecord.title')}</Text>
+    
             {todayFoodData && todayFoodData.length > 0 ? (
                 todayFoodData.map((food, index) => (
                     <View key={index} style={styles.foodRecord}>
-                        <Text style={styles.mealType}>{food.mealType.toUpperCase()}</Text>
-                        <Text style={styles.recipeNames}>• 레시피: {food.recipeNames.join(', ')}</Text>
+                        <Text style={styles.mealType}>{t(`foodRecord.${food.mealType}`)}</Text>
+                        <Text style={styles.recipeNames}>• {t('foodRecord.recipe')}: {food.recipeNames.join(', ')}</Text>
                         <View style={styles.nutritionContainer}>
-                            <Text style={styles.nutritionLabel}>총 용량:</Text>
+                            <Text style={styles.nutritionLabel}>{t('foodRecord.totalQuantity')}:</Text>
                             <Text style={styles.nutritionValue}>{convertValue(food.totalNutrition.grams, unit)} {unit}</Text>
                         </View>
                         <View style={styles.nutritionContainer}>
-                            <Text style={styles.nutritionLabelPlus}>칼로리:</Text>
+                            <Text style={styles.nutritionLabelPlus}>{t('foodRecord.calories')}:</Text>
                             <Text style={styles.nutritionValuePlus}>{food.totalNutrition.kcal} kcal</Text>
                         </View>
                         <View style={styles.nutritionContainer}>
-                            <Text style={styles.nutritionLabelPlus}>단백질:</Text>
+                            <Text style={styles.nutritionLabelPlus}>{t('foodRecord.protein')}:</Text>
                             <Text style={styles.nutritionValuePlus}>{convertValue(food.totalNutrition.protein, unit)} {unit}</Text>
                         </View>
                         <View style={styles.nutritionContainer}>
-                            <Text style={styles.nutritionLabel}>탄수화물:</Text>
+                            <Text style={styles.nutritionLabel}>{t('foodRecord.carbs')}:</Text>
                             <Text style={styles.nutritionValue}>{convertValue(food.totalNutrition.carbs, unit)} {unit}</Text>
                         </View>
                         <View style={styles.nutritionContainer}>
-                            <Text style={styles.nutritionLabel}>지방:</Text>
+                            <Text style={styles.nutritionLabel}>{t('foodRecord.fat')}:</Text>
                             <Text style={styles.nutritionValue}>{convertValue(food.totalNutrition.fat, unit)} {unit}</Text>
                         </View>
                     </View>
                 ))
             ) : (
-                <Text style={styles.noDataText}>식단 기록이 없습니다.</Text>
+                <Text style={styles.noDataText}>{t('foodRecord.noRecords')}</Text>
             )}
         </View>
     );
-};
+};    
 
 const styles = StyleSheet.create({
     container: {

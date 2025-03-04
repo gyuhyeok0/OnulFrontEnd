@@ -28,11 +28,13 @@ import analytics from '@react-native-firebase/analytics';
 import { AppState } from 'react-native';
 
 import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+import { useTranslation } from 'react-i18next';
+
 
 const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
-
+    const { t } = useTranslation();
     const isPremium = useSelector(state => state.subscription.isPremium);
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
@@ -698,19 +700,21 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                             
                         </TouchableOpacity>
 
-                        <Text style={styles.exerciseText}>{exercise.exerciseName}</Text>
-                        
+                        <Text style={styles.exerciseText}>{t(`exerciseNames.${exercise.exerciseName}`)}</Text>
+                                                
                         <View style={styles.volumeContainer}>
-                            <Text style={styles.volumeText}>볼륨</Text>
+                            <Text style={styles.volumeText}>{t('EachExercise.volume')}</Text>
                             <Text style={styles.volumeSeparator}> {volume}</Text>
                             <Text style={styles.volumeUnit}>
-                                {kmAndTime 
-                                    ? kmUnit
+
+                                {kmAndTime
+                                    ? kmUnit 
                                     : time 
-                                    ? '시간' 
+                                    ? t('EachExercise.time') 
                                     : number 
-                                    ? '회' 
+                                    ? t('EachExercise.reps') 
                                     : weightUnit}
+
                             </Text>
                         </View>
 
@@ -723,13 +727,15 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                             </Text>
 
                             <Text style={styles.weightChangeUnit}>
-                                {kmAndTime 
-                                    ? kmUnit
+
+
+                                {kmAndTime ? kmUnit 
                                     : time 
-                                    ? '초' 
-                                    : number 
-                                    ? '회' 
+                                    ? t('EachExercise.time') 
+                                    : number ? 
+                                    t('EachExercise.reps') 
                                     : weightUnit}
+
                             </Text>
                         </View>
 
@@ -742,7 +748,8 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                 ]}
                                 onPress={handleExerciseInfoPress}
                             >
-                                <Text style={styles.buttonText}>운동 정보</Text>
+                                <Text style={styles.buttonText}>{t('EachExercise.exerciseInfo')}</Text>
+
                             </Pressable>
 
                             <Pressable
@@ -752,7 +759,8 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                 ]}
                                 onPress={handlePreviousRecordPress}
                             >
-                                <Text style={styles.buttonText}>이전 기록</Text>
+                            <Text style={styles.buttonText}>{t('EachExercise.previousRecord')}</Text>
+
                             </Pressable>
                         </View>
 
@@ -810,7 +818,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                             // backgroundColor:'blue'                                  
                                         }}
                                     >
-                                    {time || kmAndTime ? '시간' : '횟수'}
+                                        {time || kmAndTime ? t('EachExercise.time') : t('EachExercise.reps')}
                                     </Text>
                                 </View>
                             
@@ -825,7 +833,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                             // backgroundColor:'red',
                                         }}
                                     >
-                                        완료
+                                        {t('EachExercise.complete')}
                                     </Text>
                                 </View>                    
                             </View>
@@ -952,7 +960,9 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                                 color: set.completed ? '#55E3C1' : '#B0B0B0', 
                                                 fontWeight: 'bold', 
                                                 textAlign: 'center' 
-                                            }}>완료</Text>
+                                            }}>                                        
+                                                {t('EachExercise.complete2')}
+                                            </Text>
                                         </Pressable>
                                     </View>
                                 ))}
@@ -961,18 +971,18 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                     )}
                         {!showExerciseInfo && !showPreviousRecord && (                        
                             <View style={styles.setting}>
-                                <Text style={styles.settingTitle}>세트 설정</Text>
+                                <Text style={styles.settingTitle}>{t('EachExercise.setSettings')}</Text>
                                 <View style={styles.settingButtonsContainer}>
                                     <Pressable style={styles.settingButton} onPress={addSet}>
-                                        <Text style={styles.buttonText}>세트 추가</Text>
+                                        <Text style={styles.buttonText}>{t('EachExercise.addSet')}</Text>
                                     </Pressable>
 
                                     <Pressable style={styles.settingButton} onPress={removeSet}>
-                                        <Text style={styles.buttonText}>세트 삭제</Text>
+                                        <Text style={styles.buttonText}>{t('EachExercise.removeSet')}</Text>
                                     </Pressable>
 
                                     <Pressable style={styles.settingButton} onPress={completeAllSets}>
-                                        <Text style={styles.buttonText}>모든 세트완료</Text>
+                                        <Text style={styles.buttonText}>{t('EachExercise.completeAllSets')}</Text>
                                     </Pressable>
                                 </View>
                             </View>

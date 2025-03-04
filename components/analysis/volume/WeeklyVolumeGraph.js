@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { WeeklyAndMonthlyExerciseVolume } from '../../../src/apis/AnalysisApi';
+import { useTranslation } from 'react-i18next';
 
 // kg에서 lbs로 변환하는 함수
 const convertToLbs = (kg) => {
@@ -9,6 +10,8 @@ const convertToLbs = (kg) => {
 };
 
 const WeeklyVolumeGraph = ({ memberId, weightUnit }) => {
+    const { t } = useTranslation();
+
     const [selectedPeriod, setSelectedPeriod] = useState('weekly');
     const [weeklyVolume, setWeeklyVolume] = useState([]);
     const [monthlyVolume, setMonthlyVolume] = useState([]);
@@ -43,9 +46,16 @@ const WeeklyVolumeGraph = ({ memberId, weightUnit }) => {
         const muscleGroups = {};
         const currentMonth = new Date().getMonth() + 1;
         const labels = isWeekly
-            ? ['5주 전', '4주 전', '3주 전', '2주 전', '저번주', '이번주']
-            : Array.from({ length: 10 }, (_, i) => ((currentMonth - i + 11) % 12) + 1 + "월").reverse();
-    
+            ? [
+                t('weeklyVolumeGraph.5weeksAgo'),
+                t('weeklyVolumeGraph.4weeksAgo'),
+                t('weeklyVolumeGraph.3weeksAgo'),
+                t('weeklyVolumeGraph.2weeksAgo'),
+                t('weeklyVolumeGraph.lastWeek'),
+                t('weeklyVolumeGraph.thisWeek')
+            ]
+            : Array.from({ length: 10 }, (_, i) => ((currentMonth - i + 11) % 12) + 1 + t('weeklyVolumeGraph.month')).reverse();
+
         data.forEach(({ mainMuscleGroup, startDate, totalVolume }) => {
             if (!muscleGroups[mainMuscleGroup]) {
                 muscleGroups[mainMuscleGroup] = Array(labels.length).fill(null);
@@ -97,7 +107,8 @@ const WeeklyVolumeGraph = ({ memberId, weightUnit }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.graphTitle}>월별 평균 운동량 통계</Text>
+            <Text style={styles.graphTitle}>{t('weeklyVolumeGraph.monthlyAvgStats')}</Text>
+
             <LineChart
                 data={formattedData.datasets.length > 0 ? formattedData : { labels: [], datasets: [{ data: [0] }] }}
                 width={Dimensions.get('window').width - 30}
@@ -109,17 +120,20 @@ const WeeklyVolumeGraph = ({ memberId, weightUnit }) => {
             />
             <View style={styles.toggleContainer}>
                 <TouchableOpacity onPress={() => setSelectedPeriod('weekly')} style={[styles.toggleButton, selectedPeriod === 'weekly' && styles.activeButton]}>
-                    <Text style={styles.toggleText}>주별</Text>
+
+                    <Text style={styles.toggleText}>{t('weeklyVolumeGraph.weekly')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setSelectedPeriod('monthly')} style={[styles.toggleButton, selectedPeriod === 'monthly' && styles.activeButton]}>
-                    <Text style={styles.toggleText}>월별</Text>
+
+                    <Text style={styles.toggleText}>{t('weeklyVolumeGraph.monthly')}</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.legendContainer}>
                 {formattedData.datasets.map(({ color, label, volumeChange }, index) => (
                     <View key={`${label}-${index}`} style={styles.legendItem}>
                         <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
-                        <Text style={styles.legendText}>{label}</Text>
+                        <Text style={styles.legendText}>{t(`bodyParts.${label}`)}</Text>
+
                         <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>
                             {volumeChange !== null && volumeChange !== 0 ? 
                                 (volumeChange > 0 ? "+" : "") + 

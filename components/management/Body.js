@@ -9,8 +9,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { selectBodyDataByDate } from '../../src/modules/BodySlice';
 import { Platform } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const Body = ({ weightUnit, setWeightUnit }) => {
+    const { t } = useTranslation();
+
     const dispatch = useDispatch();
 
 
@@ -198,9 +201,11 @@ const Body = ({ weightUnit, setWeightUnit }) => {
             <KeyboardAvoidingView style={styles.container}>
                 <View style={styles.body}>
                         <View>
-                            <Text style={styles.titleText}>신체</Text>
+                            <Text style={styles.titleText}>{t('Body.title')}</Text>
 
-                            <Text style={{marginLeft:10, color:'#B8BFD1', fontWeight:'bold', fontSize: 13}}>오늘의 신체 데이터를 기록해주세요</Text>
+                            <Text style={{marginLeft:10, color:'#B8BFD1', fontWeight:'bold', fontSize: 13}}>
+                                {t('Body.description')}
+                            </Text>
                         </View>
 
                         {Platform.OS === 'android' && (
@@ -212,7 +217,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                     <View style={[styles.rowCommon, styles.row1]}>    
 
                         <View style={styles.recordContainer}>
-                            <Text style={styles.subTitle}>체중</Text>
+                            <Text style={styles.subTitle}>{t('Body.weight')}</Text>
 
                             
                             <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
@@ -238,13 +243,13 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 ]}
                                 onPress={() => handleComplete('weight')}
                             >
-                                <Text style={styles.recordButtonText}>완료</Text>
+                                <Text style={styles.recordButtonText}>{t('Body.complete')}</Text>
                             </Pressable>
                         </View>
 
 
                         <View style={styles.recordContainer}>
-                            <Text style={styles.subTitle}>골격근량</Text>
+                            <Text style={styles.subTitle}>{t('Body.skeletalMuscleMass')}</Text>
 
                             <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
                                 
@@ -269,7 +274,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 ]}
                                 onPress={() => handleComplete('skeletalMuscleMass')}
                             >
-                                <Text style={styles.recordButtonText}>완료</Text>
+                                <Text style={styles.recordButtonText}>{t('Body.complete')}</Text>
                             </Pressable>
 
                         </View>
@@ -278,7 +283,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
 
                     <View style={[styles.rowCommon, styles.row2]}>
                         <View style={styles.recordContainer}>
-                            <Text style={styles.subTitle}>체지방률</Text>
+                            <Text style={styles.subTitle}>{t('Body.bodyFatPercentage')}</Text>
 
                             <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
                                 
@@ -308,13 +313,13 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                 ]}
                                 onPress={() => handleComplete('bodyFatPercentage')}
                             >
-                                <Text style={styles.recordButtonText}>완료</Text>
+                                <Text style={styles.recordButtonText}>{t('Body.complete')}</Text>
                             </Pressable>
 
                         </View>
 
                         <View style={styles.recordContainer}>
-                                <Text style={styles.subTitle}>체지방량</Text>
+                            <Text style={styles.subTitle}>{t('Body.bodyFatMass')}</Text>
 
                             <View style={{flexDirection:'row', margin:5, marginTop: 10, alignItems: 'center'}}>
                                 
@@ -339,7 +344,7 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                                     ]}
                                     onPress={() => handleComplete('bodyFatMass')}
                                 >
-                                    <Text style={styles.recordButtonText}>완료</Text>
+                                    <Text style={styles.recordButtonText}>{t('Body.complete')}</Text>
                                 </Pressable>
 
                         </View>

@@ -7,8 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import { ActivityIndicator } from 'react-native'; // 로딩 스피너
+import { useTranslation } from 'react-i18next';
 
 const ExerciseRecord = ({ selectDates, memberId }) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [units, setUnits] = useState({ weightUnit: 'kg', heightUnit: 'cm' });
     const [parsedExerciseData, setParsedExerciseData] = useState([]);
@@ -78,10 +80,11 @@ const ExerciseRecord = ({ selectDates, memberId }) => {
     
         return (
             <View style={styles.recordContainer}>
-                <Text style={styles.recordTitle}>{title}</Text>
+                <Text style={styles.recordTitle}>{t(title)}</Text>
+                
                 {Object.keys(groupedExercises).map((exerciseName) => (
                     <View key={exerciseName} style={styles.exerciseContainer}>
-                        <Text style={styles.exerciseName}>{exerciseName}</Text>
+                        <Text style={styles.exerciseName}>{t(`exercisNames.${exerciseName}`)}</Text>
                         {groupedExercises[exerciseName]
                             .sort((a, b) => a.setNumber - b.setNumber) // Sort by set number
                             .map((exercise) => (
@@ -147,10 +150,10 @@ const ExerciseRecord = ({ selectDates, memberId }) => {
     
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>운동기록</Text>
-            {renderExerciseRecords('1', '맞춤일정 기록')}
-            {renderExerciseRecords('2', '자유일정 기록')}
-            {renderExerciseRecords('3', '자동적응 기록')}
+            <Text style={styles.title}>{t('exerciseRecord.title')}</Text>
+            {renderExerciseRecords('1', t('exerciseRecord.customSchedule'))}
+            {renderExerciseRecords('2', t('exerciseRecord.freeSchedule'))}
+            {renderExerciseRecords('3', t('exerciseRecord.autoAdaptSchedule'))}
         </View>
     );
 };

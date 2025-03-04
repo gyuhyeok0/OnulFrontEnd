@@ -10,8 +10,12 @@ import Exercise from '../exercise/Exercise';
 import ExerciseRecord from './ExerciseRocord';
 import FoodRecord from './FoodRecord';
 import BodyRecord from './BodyRecord';
+import { useTranslation } from 'react-i18next';
+
 
 const Record = ({ navigation }) => {
+    const { t, i18n } = useTranslation();
+
     const dispatch = useDispatch();
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 
@@ -142,24 +146,24 @@ const Record = ({ navigation }) => {
                         textDayHeaderFontWeight: 'bold',
                     }}
                     markingType="multi-dot"
-                    monthFormat="yyyy-MM"
+                    monthFormat={i18n.language === 'en' ? 'MMMM yyyy' : 'yyyy-MM'} // 영어면 "January 2024", 한국어면 "2024-01"
                 />
 
                 <View style={styles.explanation}>
                     <View style={{ marginLeft: 15, flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ width: 8, height: 8, backgroundColor: '#00adf5', borderRadius: 10 }}></View>
-                        <Text style={styles.explanationText}>운동기록</Text>
+                        <Text style={styles.explanationText}>{t('record.exercise')}</Text>
                         <View style={{ width: 8, height: 8, backgroundColor: '#FAF335', borderRadius: 10 }}></View>
-                        <Text style={styles.explanationText}>식단기록</Text>
+                        <Text style={styles.explanationText}>{t('record.food')}</Text>
                         <View style={{ width: 8, height: 8, backgroundColor: '#FF76CF', borderRadius: 10 }}></View>
-                        <Text style={styles.explanationText}>신체기록</Text>
+                        <Text style={styles.explanationText}>{t('record.body')}</Text>
                     </View>
                 </View>
 
                 <View style={{ marginTop: 15 }}>
                     {selectedDateData.exerciseExists === undefined && selectedDateData.foodExists === undefined && selectedDateData.bodyExists === undefined ? (
                         <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold', fontSize: 15 }}>
-                            기록을 확인할 날짜를 선택해 주세요
+                            {t('record.selectDate')}
                         </Text>
                     ) : (
                         <>

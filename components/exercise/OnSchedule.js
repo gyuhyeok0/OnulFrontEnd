@@ -29,9 +29,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { addDefaultSetsToRedux, resetState } from '../../src/modules/StateExerciseSlice'; // Redux 액션
 import _ from 'lodash';
 // import {callVolumeExerciseRecord} from '../../src/apis/ExerciseRecordAPI'
+import { useTranslation } from 'react-i18next';
 
 
 const OnSchedule = () => {
+    const { t } = useTranslation();
     const navigation = useNavigation();
     const dispatch = useDispatch();
     // const [memberId, setMemberId] = useState(null);
@@ -469,9 +471,14 @@ const OnSchedule = () => {
                     })),
                 ]);
             } else {
-                Alert.alert(`${part} 운동 등록 필요`, `먼저 ${part} 운동을 등록해주세요.`, [
-                    { text: "확인", onPress: () => openModal(part) },
-                ]);
+                Alert.alert(
+                    t('onSchedule.exerciseRegistrationRequired', { part: t(`bodyParts.${part}`) }),
+                    t('onSchedule.pleaseRegisterExercise', { part: t(`bodyParts.${part}`) }),
+                    [{ text: t('onSchedule.confirm'), onPress: () => openModal(part) }]
+                );
+                
+
+                
                 setSelectedParts((prevParts) => ({ ...prevParts, [part]: false }));
 
                 return;
@@ -500,7 +507,7 @@ const OnSchedule = () => {
                 console.error('Error communicating with the server:', error);
             }
         } else {
-            Alert.alert('회원 ID를 찾을 수 없습니다.');
+            // Alert.alert('회원 ID를 찾을 수 없습니다.');
         }
     }, [selectedParts, memberId, selectedWeekType, selectedDay, dispatch, exerciseMap]);
 
@@ -535,10 +542,10 @@ const OnSchedule = () => {
                                 pressed && styles.refreshInnerPressed // 눌렀을 때 스타일 추가
                             ]}
                         >
-                                <Text style={styles.refreshText}>{todayKorean}</Text>
+                                <Text style={styles.refreshText}>{t(`days.${todayKorean}`)}</Text>
                             <Icon name="rotate-cw" size={15} color="white" style={styles.refreshIcon} />
                         </Pressable>
-                        <Text style={styles.refreshLabel}>맞춤운동</Text>
+                        <Text style={styles.refreshLabel}>{t("onSchedule.customWorkout")}</Text>
                     </View>
                     <Pressable style={styles.caretButton} onPress={toggleVisibility}>
                         <Icon2 name={isVisible ? "caret-up" : "caret-down"} size={28} color="white" />
@@ -555,7 +562,7 @@ const OnSchedule = () => {
                                     onPress={() => handlePress(part)}
                                 >
                                     <Text style={[styles.buttonText, selectedParts[part] && styles.selectedButtonText]}>
-                                        {part}
+                                        {t(`bodyParts.${part}`)}
                                     </Text>
                                 </Pressable>
                             ))}
@@ -563,7 +570,7 @@ const OnSchedule = () => {
                     )}
                 </Animated.View>
             </View>
-            <Text style={{color:'#999999', marginLeft: 10, marginBottom: 10, fontSize: 12}}>운동이 보이지 않으면 새로고침하거나 부위 버튼을 다시 눌러주세요</Text>
+            <Text style={{color:'#999999', marginLeft: 10, marginBottom: 10, fontSize: 12}}>{t("onSchedule.refreshHint")}</Text>
 
 
             {reorderedExercises.length > 0 ? (
@@ -587,9 +594,9 @@ const OnSchedule = () => {
                 </View>
             ) : (
                 <View style={styles.noSchedule}>
-                    <Text style={styles.noScheduleText}>현재 스케쥴에 등록된 운동이 없습니다.</Text>
+                    <Text style={styles.noScheduleText}>{t("onSchedule.noSchedule")}</Text>
                     <Pressable style={styles.noScheduleButton} onPress={() => navigation.navigate('Schedule')}>
-                        <Text style={styles.noScheduleButtonText}>스케쥴 등록하러 가기</Text>
+                        <Text style={styles.noScheduleButtonText}>{t("onSchedule.goToSchedule")}</Text>
                     </Pressable>
                 </View>
             )}

@@ -8,12 +8,15 @@ import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';
 import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExerciseModal';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 // import { updateReorderedExercises } from '../../src/modules/ReorderedExercisesSlice';  // 액션 임포트
+import { useTranslation } from 'react-i18next';
 
 
 // import { updateExercises } from './yourActions'; // 실제 액션 파일 경로로 수정
 
 // DraggableItem 컴포넌트 수정: 텍스트를 <Text> 컴포넌트로 감쌈
 const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDragEnd }) => {
+
+    const { t } = useTranslation();
 
     // 드래그 관련
     const handleGestureEvent = Animated.event(
@@ -66,7 +69,8 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
                     ))}
                 </View>
 
-                <Text style={styles.exerciseButtonText}>{item.exerciseName}</Text>
+                <Text style={styles.exerciseButtonText}>{t(`exerciseNames.${item.exerciseName}`)}</Text>
+
                 
                 <View style={{ width: '20%', height: 30, marginTop: -5, justifyContent: 'center', alignItems: 'center', marginRight: -5 }}>
                     {Array.from({ length: 3 }).map((_, rowIndex) => (
@@ -95,6 +99,7 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
 };
 
 const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
+    const { t } = useTranslation();
     const [memberId, setMemberId] = useState(null);
     const [selectedParts, setSelectedParts] = useState({});
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -391,9 +396,13 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
             try {
                 if (!isPartSelected) {
                     if (!hasExercisesForPart) {
-                        Alert.alert(`${part} 운동 등록 필요`, `먼저 ${part} 운동을 등록해주세요.`, [
-                            { text: "확인", onPress: () => console.log("확인 버튼 눌림") }
-                        ]);
+
+                        Alert.alert(
+                            t('onSchedule.exerciseRegistrationRequired', { part: t(`bodyParts.${part}`) }),
+                            t('onSchedule.pleaseRegisterExercise', { part: t(`bodyParts.${part}`) }),
+                            [{ text: t('onSchedule.confirm')}]
+                        );
+                        
                         openModal(part);
                         setSelectedParts((prevParts) => ({ ...prevParts, [part]: false }));
                         return;
@@ -415,7 +424,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
                 console.error('서버와의 통신 중 오류 발생:', error);
             }
         } else {
-            Alert.alert('회원 ID를 찾을 수 없습니다.');
+            // Alert.alert('회원 ID를 찾을 수 없습니다.');
         }
     }, [selectedParts, memberId, chestExercises, backExercises, lowerBodyExercises, shouldersExercises, absExercises, armsExercises, aerobicExercises, customExercises, selectedWeekType, selectedDay, dispatch, openModal]);
 
@@ -450,7 +459,14 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     
     return (
         <View style={styles.registration}>
-            <Text style={styles.title}>{weekInfo} {selectedDay} 에 운동할 부위를 선택해 주세요.</Text>
+
+            <Text style={styles.title}>
+                {t('weeklySchedule.selectBodyPart', { 
+                    week: t(`week.${weekInfo}`), 
+                    day: selectedDay
+                })}
+            </Text>
+
             <View style={styles.buttonContainer}>
                 {bodyParts.map((part) => (
                     <Pressable
@@ -465,7 +481,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
                             styles.buttonText,
                             selectedParts[part] && styles.selectedButtonText
                         ]}>
-                            {part}
+                            {t(`bodyParts.${part}`)}
                         </Text>
                     </Pressable>
                 ))}
@@ -474,7 +490,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
             {reorderedExercises.length > 0 && (
                 <View style={styles.detailedType}>
                     <Text style={styles.detailTitle}>
-                        등록된 운동목록입니다. ({reorderedExercises.length}개)
+                        {t('weeklySchedule.registeredExercises', { count: reorderedExercises.length })}
                     </Text>
 
                     <View style={styles.detailExerciseList}>
@@ -499,7 +515,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
                     </View>
 
                     <Text style={{color:'#E6E2E2', fontWeight: '600', fontSize: 11, marginTop:2, marginLeft:4}}>
-                        운동 순서를 변경해주세요
+                        {t('weeklySchedule.changeExerciseOrder')}
                     </Text>
                 </View>
             )}

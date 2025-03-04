@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBar from '../../common/ProgressBar';
+import { useTranslation } from 'react-i18next';
+
 
 const Onboarding2 = ({ navigation }) => {
     const [selectedGender, setSelectedGender] = useState(null);
+    const { t } = useTranslation();
 
     // 성별을 저장하는 함수
     const saveGenderSelection = async (gender) => {
@@ -28,15 +31,15 @@ const Onboarding2 = ({ navigation }) => {
 
     const isNextButtonDisabled = !selectedGender;
 
-    const GenderButton = ({ gender }) => (
+    const GenderButton = ({ genderKey }) => (
         <TouchableOpacity
             style={[
                 styles.genderButton,
-                selectedGender === gender && styles.selectedGenderButton,
+                selectedGender === genderKey && styles.selectedGenderButton,
             ]}
-            onPress={() => handleGenderSelection(gender)}
+            onPress={() => handleGenderSelection(genderKey)}
         >
-            <Text style={styles.genderButtonText}>{gender}</Text>
+            <Text style={styles.genderButtonText}>{t(`onboarding2.${genderKey}`)}</Text>
         </TouchableOpacity>
     );
 
@@ -45,17 +48,17 @@ const Onboarding2 = ({ navigation }) => {
             <ProgressBar currentStep={2} navigation={navigation} />
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.container}>
-                    <Text style={styles.title}>회원님의 성별은 무엇인가요?</Text>
-                    <Text style={styles.subTitle}>회원님만을 위한 운동 프로그램</Text>
+                    <Text style={styles.title}>{t("onboarding2.question")}</Text>
+                    <Text style={styles.subTitle}>{t("onboarding2.subtitle")}</Text>
 
                     <View style={styles.genderContainer}>
-                        <GenderButton gender="남자" />
-                        <GenderButton gender="여자" />
+                        <GenderButton genderKey="male" />
+                        <GenderButton genderKey="female" />
                     </View>
 
                     <View style={styles.genderContainer}>
-                        <GenderButton gender="기타" />
-                        <GenderButton gender="무응답" />
+                        <GenderButton genderKey="other" />
+                        <GenderButton genderKey="noResponse" />
                     </View>
 
                     <TouchableOpacity
@@ -64,7 +67,7 @@ const Onboarding2 = ({ navigation }) => {
                         disabled={isNextButtonDisabled}
                     >
                         <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>
-                            다음
+                            {t("onboarding2.next")}
                         </Text>
                     </TouchableOpacity>
                 </View>

@@ -4,6 +4,7 @@ import * as Localization from 'react-native-localize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import translationEN from './en/translation.json';
 import translationKO from './ko/translation.json';
+import translationJA from './ja/translation.json'; // 일본어 번역 파일 추가
 
 // 기기 언어를 감지합니다.
 const locales = Localization.getLocales();
@@ -15,12 +16,14 @@ const resources = {
     },
     ko: {
         translation: translationKO
+    },
+    ja: { // 일본어 추가
+        translation: translationJA
     }
 };
 
 const initializeI18n = async () => {
     const getStoredLanguage = async () => {
-
         try {
             const storedLanguage = await AsyncStorage.getItem('user-language');
             return storedLanguage || deviceLanguageTag; // 저장된 언어가 없으면 기기 언어 사용
@@ -47,8 +50,7 @@ const initializeI18n = async () => {
             },
         });
 
-        console.log("================= i18n 초기화 완료 ==================");
-
+    console.log("================= i18n 초기화 완료 ==================");
 };
 
 export default initializeI18n;

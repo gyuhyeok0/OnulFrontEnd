@@ -2,8 +2,10 @@ import React from 'react';
 import { View, Text, Pressable, SafeAreaView } from 'react-native';
 import FooterStyles from './FooterStyles.module'; // 스타일 import
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Material 아이콘 import
+import { useTranslation } from 'react-i18next';
 
 const Footer = ({ navigation }) => {
+    const { t } = useTranslation();
     const currentRoute = navigation.getState().routes[navigation.getState().index].name; // 현재 활성화된 페이지 이름
 
     return (
@@ -24,7 +26,8 @@ const Footer = ({ navigation }) => {
                                 { color: currentRoute === 'Exercise' ? '#fff' : '#ccc' } // 현재 페이지면 흰색, 아니면 회색
                             ]}
                         >
-                            Exercise
+                    
+                            {t('footer.exercise')}
                         </Text>
                     </View>
                 </Pressable>
@@ -44,7 +47,8 @@ const Footer = ({ navigation }) => {
                                 { color: currentRoute === 'Schedule' ? '#fff' : '#ccc' } // 현재 페이지면 흰색, 아니면 회색
                             ]}
                         >
-                            Schedule
+                            
+                            {t('footer.schedule')}
                         </Text>
                     </View>
                 </Pressable>
@@ -64,7 +68,7 @@ const Footer = ({ navigation }) => {
                                 { color: currentRoute === 'Management' ? '#fff' : '#ccc' } // 현재 페이지면 흰색, 아니면 회색
                             ]}
                         >
-                            Management
+                            {t('footer.management')}
                         </Text>
                     </View>
                 </Pressable>
@@ -84,7 +88,7 @@ const Footer = ({ navigation }) => {
                                 { color: currentRoute === 'Record' ? '#fff' : '#ccc' } // 현재 페이지면 흰색, 아니면 회색
                             ]}
                         >
-                            Record
+                            {t('footer.record')}
                         </Text>
                     </View>
                 </Pressable>
@@ -104,7 +108,7 @@ const Footer = ({ navigation }) => {
                                 { color: currentRoute === 'Analysis' ? '#fff' : '#ccc' } // 현재 페이지면 흰색, 아니면 회색
                             ]}
                         >
-                            Analysis
+                            {t('footer.analysis')}
                         </Text>
                     </View>
                 </Pressable>

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import RegistExerciseModal from '../../src/screens/modal/scheduleModal/RegistExerciseModal';
 import ScheduleSelection from './ScheduleSelection'; 
+import { useTranslation } from 'react-i18next';
 
 const WorkoutRegistration = () => {
+    const { t } = useTranslation();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedExercise, setSelectedExercise] = useState('');
 
@@ -19,63 +21,63 @@ const WorkoutRegistration = () => {
 
     return (
         <>
-            <Text style={styles.title}>운동 등록</Text>
+            <Text style={styles.title}>{t('workoutRegistration.exerciseRegistration')}</Text>
 
             <View style={styles.container}>
                 <View style={styles.boxContainer}>
                     <TouchableOpacity onPress={() => openModal('가슴')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/Chest.webp')} style={styles.chestIcon} />
-                            <Text style={styles.text}>가슴 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.가슴') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => openModal('등')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/Back.webp')} style={styles.backIcon} />
-                            <Text style={styles.text}>등 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.등') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => openModal('하체')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/LowerBody.webp')} style={styles.lowerBodyIcon} />
-                            <Text style={styles.text}>하체 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.하체') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => openModal('어깨')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/Shoulders.webp')} style={styles.shouldersIcon} />
-                            <Text style={styles.text}>어깨 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.어깨') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => openModal('팔')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/Arms.webp')} style={styles.armsIcon} />
-                            <Text style={styles.text}>팔 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.팔') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => openModal('복근')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/Abs.webp')} style={styles.absIcon} />
-                            <Text style={styles.text}>복근 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.복근') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => openModal('기타')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/EtcRegist.webp')} style={styles.aerobicIcon} />
-                            <Text style={styles.text}>기타 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.기타') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => openModal('커스텀')} style={styles.reigstBox}>
                         <View style={styles.reigstWrap}>
                             <Image source={require('../../src/assets/regist/CustomRegist.webp')} style={styles.customIcon} />
-                            <Text style={styles.text}>커스텀 운동</Text>
+                            <Text style={styles.text}>{t('bodyParts.커스텀') + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

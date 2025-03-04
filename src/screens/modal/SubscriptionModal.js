@@ -4,11 +4,13 @@ import Purchases from "react-native-purchases"; // 🚀 추가
 import CustomModal from './ServiceAgree';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSubscriptionStatus, setPremiumStatus } from '../../modules/SubscriptionSlice';
+import { useTranslation } from 'react-i18next';
 
 
 const screenHeight = Dimensions.get('window').height;
 
 const SubscriptionModal = ({ visible, onClose }) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
 
 
@@ -98,86 +100,75 @@ const SubscriptionModal = ({ visible, onClose }) => {
                             source={require('../../assets/WhiteLogo.png')}
                             style={styles.logo}
                         />
-                        <Text style={{color:'white', margin:5, fontSize: 20}}>프리미엄 맴버십</Text>
+                        <Text style={{ color: 'white', margin: 5, fontSize: 20 }}>{t('subscription.title')}</Text>
+
                     </View>
 
                     <View style={styles.priceContainer}>
-                        <Text style={styles.priceSubText}>향후 가격 변동 가능</Text>
+                        <Text style={styles.priceSubText}>{t('subscription.priceChangeNotice')}</Text>
+
                         <View style={{flexDirection:'row', alignItems:'center', marginBottom: 5}}>
-                            <Text style={styles.priceHighlight}>출시 기념 특가!</Text>
-                            <Text style={styles.priceText}>현재 <Text style={styles.priceAmount}>1,100원</Text></Text>
+                            <Text style={styles.priceHighlight}>{t('subscription.launchOffer')}</Text>
+
+                            <Text style={styles.priceText}>{t('subscription.currentPrice')}</Text>
                         </View>
                     </View>
 
                     <View style={styles.payBox}>
-                        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-                            <Text style={{color:'white', fontSize: 25, fontWeight:'bold'}}>1개월</Text>
-                            <Text style={{color:'white', fontSize: 20}}>1100원</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={{ color: 'white', fontSize: 25, fontWeight: 'bold' }}>{t('subscription.oneMonthPlan')}</Text>
+                            <Text style={{ color: 'white', fontSize: 20 }}>1,100원</Text>
                         </View>
 
                         <View style={styles.infoTextBox}>
-                            <Text style={styles.infoText}>AI 자동적응 이용가능</Text>
-                            <Text style={styles.infoText}>모든 광고 제거</Text>
+                            <Text style={styles.infoText}>{t('subscription.aiFeature')}</Text>
+                            <Text style={styles.infoText}>{t('subscription.removeAds')}</Text>
                         </View>
                     </View>
 
                     <Text style={styles.noticeText}>
-                        {Platform.OS === 'ios' 
-                            ? "애플 앱스토어에서 언제든지 자동 갱신을 해제할 수 있습니다." 
-                            : "Google Play 스토어에서 언제든지 자동 갱신을 해제할 수 있습니다."}
-                    </Text>    
+                        {Platform.OS === 'ios' ? t('subscription.cancelNoticeIos') : t('subscription.cancelNoticeAndroid')}
+                    </Text>
+
 
                     {/* 구매하기 버튼 */}
                     <Pressable style={styles.subscribeButton} onPress={handlePurchase}>
-                        <Text style={styles.subscribeButtonText}>구매하기</Text>
+                        <Text style={styles.subscribeButtonText}>{t('subscription.purchase')}</Text>
                     </Pressable>
 
                     {/* 닫기 버튼 */}
                     <Pressable style={styles.closeButton} onPress={onClose}>
-                        <Text style={styles.closeButtonText}>닫기</Text>
+                        <Text style={styles.closeButtonText}>{t('subscription.close')}</Text>
                     </Pressable>
 
                     <View style={styles.infoContainer}>
-                        {Platform.OS === 'ios' ? (
-                            <>
-                                <Text style={styles.requiredInfoText}>
-                                    구입 확정 시 Apple 계정으로 요금이 청구됩니다.
-                                </Text>
-                                <Text style={styles.requiredInfoText}>
-                                    구독은 자동으로 갱신되며, 구독 종료 24시간 전까지 해지하지 않으면 다음 결제 주기에 요금이 청구됩니다.
-                                </Text>
-                            </>
-                        ) : (
-                            <>
-                                <Text style={styles.requiredInfoText}>
-                                    구입 확정 시 Google Play 계정으로 요금이 청구됩니다.
-                                </Text>
-                                <Text style={styles.requiredInfoText}>
-                                    구독은 자동으로 갱신되며, 구독 종료 24시간 전까지 해지하지 않으면 다음 결제 주기에 요금이 청구됩니다.
-                                </Text>
-                            </>
-                        )}
+                        <Text style={styles.requiredInfoText}>
+                            {Platform.OS === 'ios' ? t('subscription.purchaseNoticeIos') : t('subscription.purchaseNoticeAndroid')}
+                        </Text>
+                        <Text style={styles.requiredInfoText}>
+                            {Platform.OS === 'ios' ? t('subscription.renewalNoticeIos') : t('subscription.renewalNoticeAndroid')}
+                        </Text>
                     </View>
 
-                    {/* 약관 / 개인정보처리방침 링크 */}
                     <View style={styles.termsContainer}>
                         <Pressable onPress={() => handleViewTerms('privacy')}>
-                            <Text style={styles.termsLink}>개인정보처리방침</Text>
+                            <Text style={styles.termsLink}>{t('subscription.privacyPolicy')}</Text>
                         </Pressable>
                         <Text style={styles.separator}> | </Text>
                         <Pressable onPress={() => handleViewTerms('service')}>
-                            <Text style={styles.termsLink}>이용약관</Text>
+                            <Text style={styles.termsLink}>{t('subscription.termsOfService')}</Text>
                         </Pressable>
                     </View>
 
-                    {/* 커스텀 모달 (약관 내용 표시) */}
-                    <CustomModal
-                        isVisible={isModalVisible}
-                        onClose={closeModal}
-                        modalY={modalY}
-                        title="약관 내용"
-                        content={modalContent}
+
+                    <CustomModal 
+                        isVisible={isModalVisible} 
+                        onClose={closeModal} 
+                        modalY={modalY} 
+                        title={t('subscription.termsOfService')} 
+                        content={modalContent} 
                     />
+
                 </View>
             </View>
         </Modal>

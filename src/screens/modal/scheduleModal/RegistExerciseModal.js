@@ -11,10 +11,12 @@ import RegistCustom from '../../../../components/schedule/InModalComponent/Regis
 import RegistLowerBody from '../../../../components/schedule/InModalComponent/RegistLowerBody';
 import RegistShoulders from '../../../../components/schedule/InModalComponent/RegistShoulders';
 import RegistFree from '../../../../components/schedule/InModalComponent/RegistFree';
+import { useTranslation } from 'react-i18next';
 
 const screenHeight = Dimensions.get('window').height;
 
 const RegistExerciseModal = ({ isVisible, onClose, exercise, onSelectExercise }) => {
+    const { t } = useTranslation();
     const [modalY] = useState(new Animated.Value(screenHeight));
     const [overlayOpacity] = useState(new Animated.Value(0));
     const [isExerciseSelected, setIsExerciseSelected] = useState(false);  // 운동 선택 여부
@@ -101,7 +103,8 @@ const RegistExerciseModal = ({ isVisible, onClose, exercise, onSelectExercise })
                                     style={styles.icon}
                                 />
                             </TouchableOpacity>
-                            <Text style={styles.title}>{exercise} 운동 등록</Text>
+                            <Text style={styles.title}>{t(`bodyParts.${exercise}`)
+                                                            + ' ' + t('workoutRegistration.exercise')}</Text>
                         </View>
 
                         {renderExerciseComponent()}

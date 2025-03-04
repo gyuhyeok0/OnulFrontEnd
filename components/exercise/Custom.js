@@ -17,10 +17,12 @@ import {reorderMyFreeExercises} from '../../src/modules/MyExerciseSclice'
 import DraggableItem from './settings-components/DraggableItem'; // 파일 경로를 실제 파일 위치에 맞게 설정
 
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
+import { useTranslation } from 'react-i18next';
 
 
 // 운동 메뉴의 커스텀 코드
 const Custom = () => {
+    const { t } = useTranslation();
     const freeExercises = useSelector((state) => state.freeExercises?.myExercises || []);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedExercise, setSelectedExercise] = useState('');
@@ -228,7 +230,7 @@ const Custom = () => {
                     <View style={styles.headerContent}>
                         <Pressable style={styles.refreshInner} onPress={openModal}>
             
-                            <Text style={styles.refreshLabel}>자율 운동 등록</Text>
+                            <Text style={styles.refreshLabel}>{t('customWorkout.register')}</Text>
                         </Pressable>
                         
                         <Pressable style={styles.caretButton} onPress={toggleVisibility}>
@@ -239,7 +241,7 @@ const Custom = () => {
                         {isVisible && (
                             <View style={styles.buttonContainer}>
 
-                                <Text style={{color:'white', fontWeight:'bold', fontSize: 12, marginBottom: 5}}>운동 순서를 변경해 주세요</Text>
+                                <Text style={{color:'white', fontWeight:'bold', fontSize: 12, marginBottom: 5, zIndex:10}}>{t('customWorkout.changeOrder')}</Text>
 
                                 {reorderedExercises.map((item, index) => (
                                     <DraggableItem
@@ -278,7 +280,7 @@ const Custom = () => {
                 ) : (
                     <View style={{}}>
                         <Text style={{ textAlign: 'center', color: 'white', fontSize: 15, fontWeight: '500' }}>
-                            먼저 위의 버튼을 눌러 운동을 등록해주세요.
+                            {t('customWorkout.pleaseRegister')}
                         </Text>
                     </View>
                 )}
