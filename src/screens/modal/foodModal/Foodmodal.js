@@ -19,11 +19,13 @@ import { getAllFoodData } from '../../../apis/FoodApi';
 import { saveTotalFoodData } from '../../../apis/FoodApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FreeFoodModal from './FreeFoodModal';
+import { useTranslation } from 'react-i18next';
 
 
 const screenHeight = Dimensions.get('window').height;
 
 const Foodmodal = ({ isVisible, onClose, mealType }) => {
+    const { t } = useTranslation();
 
     const dispatch = useDispatch();
 
@@ -234,7 +236,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
     const [recipes, setRecipes] = useState([
         {
             id: 1,
-            name: '레시피 1',
+            name: 'Recipe 1',
             foodItems: [], // foodItems 초기화
             grams: 0,
             kcal: 0,
@@ -295,7 +297,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
             ...prevRecipes,
             {
                 id: newId,
-                name: `레시피 ${newId}`,
+                name: `Recipe ${newId}`,
                 grams: 0,
                 kcal: 0,
                 carbs: 0,
@@ -409,7 +411,8 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                             <TouchableOpacity onPress={handleClose} style={modalstyles.backIcon}>
                                 <Ionicons name="chevron-back" size={32} style={modalstyles.icon} />
                             </TouchableOpacity>
-                            <Text style={modalstyles.title}>{mealType} 식단</Text>
+                            <Text style={modalstyles.title}>{mealType} {t('foodModal.title')}</Text>
+
                         </View>
 
                         <KeyboardAwareScrollView
@@ -418,7 +421,9 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                             enableOnAndroid={true}
                         >
                             <ScrollView>                
-                                <Text style={{color: '#F0F0F0', margin:5, marginTop:15, fontWeight: 'bold'}}>레시피를 선택한 후 완료버튼을 눌러주세요</Text>                
+                                <Text style={{color: '#F0F0F0', margin:5, marginTop:15, fontWeight: 'bold'}}>
+                                    {t('foodModal.selectRecipe')}
+                                </Text>                
                                 {recipes.map((item) => (
                                     <TouchableOpacity
                                         key={item.id}
@@ -437,23 +442,25 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                                                     }}
                                                     onPress={() => openRecipeModal(item.id)} // id 전달
                                                 >
-                                                    <Text style={modalstyles.editButton}>수정하기</Text>
-                                                </TouchableOpacity>
+                                                <Text style={modalstyles.editButton}>{t('foodModal.edit')}</Text>
+                                            </TouchableOpacity>
                                             </View>
                                             <TouchableOpacity onPress={() => deleteRecipe(item.id)}>
-                                                <Text style={{ color: '#F87777', fontWeight: 'bold' }}>삭제</Text>
+                                                <Text style={{ color: '#F87777', fontWeight: 'bold' }}>
+                                                    {t('foodModal.delete')}
+                                                </Text>
                                             </TouchableOpacity>
                                         </View>
 
                                         <View style={{ marginTop: 5 }}>
                                             <Text style={modalstyles.recipeDetail}>
-                                                용량: {formatNumber(item.grams)}{unit} | 
-                                                칼로리: {formatNumber(item.kcal)}kcal
+                                                {t('foodModal.quantity')}: {formatNumber(item.grams)}{unit} | 
+                                                {t('foodModal.calories')}: {formatNumber(item.kcal)}kcal
                                             </Text>
                                             <Text style={modalstyles.recipeDetail}>
-                                                탄수화물: {formatNumber(item.carbs)}{unit} | 
-                                                단백질: {formatNumber(item.protein)}{unit} | 
-                                                지방: {formatNumber(item.fat)}{unit}
+                                                {t('foodModal.carbs')}: {formatNumber(item.carbs)}{unit} | 
+                                                {t('foodModal.protein')}: {formatNumber(item.protein)}{unit} | 
+                                                {t('foodModal.fat')}: {formatNumber(item.fat)}{unit}
                                             </Text>
                                         </View>
                                     </TouchableOpacity>
@@ -467,11 +474,11 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                             </ScrollView>
 
                             <TouchableOpacity onPress={completeButton} style={modalstyles.completeButton}>
-                                <Text style={modalstyles.completeButtonText}>완료</Text>
+                                <Text style={modalstyles.completeButtonText}>{t('foodModal.complete')}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity style={modalstyles.freeCompleteButton} onPress={openFreeFoodModal}>
-                                <Text style={modalstyles.freeCompleteButtonText}>임시식단</Text>
+                                <Text style={modalstyles.freeCompleteButtonText}>{t('foodModal.freeMeal')}</Text>
                             </TouchableOpacity>
                             
                         </KeyboardAwareScrollView>

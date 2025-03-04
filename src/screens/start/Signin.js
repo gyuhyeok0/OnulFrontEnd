@@ -7,6 +7,7 @@ import styles from './Signin.module';
 import FindPassword from '../modal/FindPassword';
 import { callLoginAPI } from '../../apis/MemberAPICalls';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useTranslation } from 'react-i18next';
 
 
 const { width, height } = Dimensions.get('window');
@@ -20,6 +21,8 @@ function Signin({ navigation }) {
     });
     const [isLoginAttempted, setIsLoginAttempted] = useState(false);
     const [loginError, setLoginError] = useState(null); // 에러 상태 추가
+    const { t } = useTranslation();
+
 
     const handleSignIn = async () => {
         setIsLoginAttempted(true); // 로그인 시도 상태 설정
@@ -31,7 +34,7 @@ function Signin({ navigation }) {
         } else if (result && result.errorMessage) {
             console.error(result.errorMessage);
         } else {
-            console.error("로그인에 실패했습니다.");
+            console.error(t('signin.error_login_failed'));
         }
     };
 
@@ -59,14 +62,14 @@ function Signin({ navigation }) {
                 enableOnAndroid={true} // Android에서도 작동하도록 설정
             >
 
-            <DefaultHeader title="로그인" navigation={navigation} />
+            <DefaultHeader title={t('signin.title_page')} navigation={navigation} />
             <View style={styles.container}>
                 <View style={[styles.BackgroundCircle, { top: height * 0.13 }]}></View>
 
                 <View style={styles.logoContainer}>
-                    <Text style={styles.wellcome}>환영합니다</Text>
-                    <Text style={styles.logoText}>나를 위한, 나만의 운동</Text>
-                    <Text style={styles.logoText}>이제 시작하세요</Text>
+                    <Text style={styles.wellcome}>{t('signin.welcome')}</Text>
+                    <Text style={styles.logoText}>{t('signin.tagline_1')}</Text>
+                    <Text style={styles.logoText}>{t('signin.tagline_2')}</Text>
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -74,7 +77,7 @@ function Signin({ navigation }) {
                     <TextInput
                         style={styles.input}
                         name="memberId"
-                        placeholder="아이디"
+                        placeholder={t('signin.placeholder_id')}
                         placeholderTextColor="gray"
                         value={form.memberId}
                         onChangeText={(value) => handleInputChange('memberId', value)}
@@ -85,7 +88,7 @@ function Signin({ navigation }) {
                     <TextInput
                         style={styles.input}
                         name="memberPassword"
-                        placeholder="비밀번호"
+                        placeholder={t('signin.placeholder_password')}
                         placeholderTextColor="gray"
                         secureTextEntry={true}
                         value={form.memberPassword}
@@ -94,15 +97,15 @@ function Signin({ navigation }) {
                 </View>
 
                 <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
-                    <Text style={styles.loginButtonText}>로그인</Text>
+                    <Text style={styles.loginButtonText}>{t('signin.login_button')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Signup')}>
-                    <Text style={styles.registerButtonText}>회원가입</Text>
+                    <Text style={styles.registerButtonText}>{t('signin.signup_button')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={openFindPasswordModal}>
-                    <Text style={styles.forgotText}>비밀번호 찾기</Text>
+                    <Text style={styles.forgotText}>{t('signin.forgot_password')}</Text>
                 </TouchableOpacity>
             </View>
 

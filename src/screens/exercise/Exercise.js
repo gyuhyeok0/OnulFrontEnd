@@ -15,11 +15,13 @@ import { getSubscriptionStatus } from '../../hooks/Subscription';
 import Icon from 'react-native-vector-icons/FontAwesome'; // FontAwesome에서 Lock 아이콘 가져오기
 import SubscriptionModal from '../modal/SubscriptionModal';
 import FreeTrialBanner from '../../../components/banner/FreeTrialBanner';
+import { useTranslation } from 'react-i18next';
 
 
 const Exercise = ({ navigation }) => {
     const userId = useSelector((state) => state.member.userInfo?.memberId); // Optional chaining 사용
     const accessToken = useSelector((state) => state.member.userInfo?.accessToken); // Optional chaining 사용
+    const { t } = useTranslation();
 
     const [selectedOption, setSelectedOption] = useState('AutoAdapt');
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });
@@ -133,7 +135,7 @@ const Exercise = ({ navigation }) => {
 
                     <Pressable
                         style={styles.option}
-                        onPress={() => handlePress('AutoAdapt', '운동 스케줄을 자동으로 생성합니다. 회원님의 성과에 따라 점진적으로 발전합니다.')}
+                        onPress={() => handlePress('AutoAdapt', t('exercise.autoAdaptDescription'))}
                     >
                         <Text
                             style={[
@@ -141,7 +143,7 @@ const Exercise = ({ navigation }) => {
                                 selectedOption === 'AutoAdapt' && styles.selectedTextColor
                             ]}
                         >
-                            자동적응
+                            {t('exercise.autoAdapt')}
                         </Text>
                         <Image
                             source={
@@ -162,7 +164,7 @@ const Exercise = ({ navigation }) => {
 
                     <Pressable
                         style={styles.option}
-                        onPress={() => handlePress('OnSchedule', '미리 설정한 운동 스케줄에 따라 진행됩니다.')}
+                        onPress={() => handlePress('OnSchedule', t('exercise.onScheduleDescription'))}
                     >
                         <Text
                             style={[
@@ -170,7 +172,7 @@ const Exercise = ({ navigation }) => {
                                 selectedOption === 'OnSchedule' && styles.selectedTextColor
                             ]}
                         >
-                            맞춤일정
+                            {t('exercise.onSchedule')}
                         </Text>
                         <Image
                             source={
@@ -184,7 +186,7 @@ const Exercise = ({ navigation }) => {
 
                     <Pressable
                         style={styles.option}
-                        onPress={() => handlePress('Custom', '정해진 스케줄과는 별도로, 그날의 컨디션과 목표에 맞춰 자유롭게 운동 계획을 구성하세요.')}
+                        onPress={() => handlePress('Custom', t('exercise.customDescription'))}
                     >
                         <Text
                             style={[
@@ -192,7 +194,7 @@ const Exercise = ({ navigation }) => {
                                 selectedOption === 'Custom' && styles.selectedTextColor
                             ]}
                         >
-                            자유일정
+                            {t('exercise.custom')}
                         </Text>
                         <Image
                             source={
@@ -237,7 +239,7 @@ const styles = StyleSheet.create({
     
     selectionContainer: {
         marginTop: 20,
-        borderWidth: 0.5,
+        borderWidth: 1,
         borderColor: 'white',
         borderRadius: 20,
         // margin: 10,

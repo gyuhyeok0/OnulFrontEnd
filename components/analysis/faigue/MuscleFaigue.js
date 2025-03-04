@@ -5,10 +5,12 @@ import { useSelector } from 'react-redux';
 import DefaultHeader from '../../../src/screens/common/DefaultHeader';
 import { getMuscleFaigue } from '../../../src/apis/AnalysisApi';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 
 const screenWidth = Dimensions.get('window').width;
 
 const MuscleFatigue = ({ navigation }) => {
+    const { t } = useTranslation();
     const [data, setData] = useState(null);
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 
@@ -19,7 +21,7 @@ const MuscleFatigue = ({ navigation }) => {
                 
                 if (response && Object.keys(response).length > 0) {
                     const chartData = {
-                        labels: Object.keys(response),
+                        labels: Object.keys(response).map(muscle => t(`muscleGroups.${muscle}`)), // 🔥 X축 라벨 번역
                         datasets: [
                             {
                                 data: Object.values(response).map(
@@ -37,22 +39,24 @@ const MuscleFatigue = ({ navigation }) => {
             }
         };
         fetchData();
-    }, [memberId]);
+    }, [memberId, t]); // 🔥 `t`를 의존성 배열에 추가 (언어 변경 시 자동 업데이트)
+    
 
     const getRecoveryStatus = (score) => {
-        if (score < 3) return '정상';
-        if (score < 5) return '피로 누적';
-        return '과훈련 위험';
+        if (score < 3) return t('muscleFatigue.normal');
+        if (score < 5) return t('muscleFatigue.fatigueAccumulated');
+        return t('muscleFatigue.overtrainingRisk');
     };
+    
 
     return (
         <>
-            <DefaultHeader title="근육 피로도" navigation={navigation} />
+            <DefaultHeader title={t('muscleFatigue.title')} navigation={navigation} />
             <ScrollView style={styles.container}>
                 <View style={styles.graphContainer}>
                     {data ? (
                         <>
-                            <Text style={styles.graphTitle}>월별 평균 체중 통계</Text>
+                            <Text style={styles.graphTitle}>{t('muscleFatigue.monthlyAvgWeightStats')}</Text>
 
                 
                             {/* Horizontal scrollable BarChart */}
@@ -71,17 +75,19 @@ const MuscleFatigue = ({ navigation }) => {
                             </ScrollView>
             
                             <View style={{position:'relative'}}>
-                            <Text style={styles.infoText}>* 3 이상 피로누적, 5 이상 과훈련 위험 *</Text>
+                            <Text style={styles.infoText}>{t('muscleFatigue.fatigueInfo')}</Text>
 
                             <View style={styles.scrollHint}>
-                                <Text style={styles.scrollHintText}>오른쪽으로 스크롤</Text>
+                                <Text style={styles.scrollHintText}>{t('muscleFatigue.scrollRight')}</Text>
                             </View>
                             </View>
                             <View style={styles.legendContainer}>
                                 {Object.entries(data.rawData).map(([muscle, fatigueArray]) => (
                                     fatigueArray.length > 0 ? (
                                         <View key={muscle} style={styles.legendItem}>
-                                            <Text style={styles.legendText}>{muscle}: </Text>
+                                
+                                            <Text style={styles.legendText}>{t(`muscleGroups.${muscle}`)} :</Text>
+
                                             <Text style={[styles.legendText2, 
                                                 fatigueArray[0].fatigueScore >= 5 ? styles.highFatigue :
                                                 fatigueArray[0].fatigueScore >= 3 ? styles.mediumFatigue :
@@ -94,7 +100,7 @@ const MuscleFatigue = ({ navigation }) => {
                             </View>
                         </>
                     ) : (
-                        <Text style={styles.noDataText}>데이터가 없습니다.</Text>
+                        <Text style={styles.noDataText}>{t('muscleFatigue.noData')}</Text>
                     )}
                 </View>
             </ScrollView>

@@ -9,6 +9,7 @@ import { handleVerification, fetchUserPhoneNumber } from '../../hooks/HandlePhon
 import { Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { API_URL } from '@env';
+import { useTranslation } from 'react-i18next';
 
 
 const screenHeight = Dimensions.get('window').height;
@@ -35,6 +36,7 @@ const FindPassword = ({ isVisible, onClose }) => {
     const [isMemberPasswordValid, setIsMemberPasswordValid] = useState(null); 
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null); 
     const [isExpired, setIsExpired] = useState(false); // 타이머 만료 상태 추가
+    const { t } = useTranslation();
 
 
     const resetState = () => {
@@ -104,7 +106,7 @@ const FindPassword = ({ isVisible, onClose }) => {
         } else if (timeLeft === 0) {
             clearInterval(timerRef.current);
             setIsExpired(true); // 타이머 만료 시 상태 설정
-            Alert.alert("시간 초과", "인증 시간이 초과되었습니다. 다시 요청해 주세요.");
+            Alert.alert(t('findPassword.timeOver'), t('findPassword.timeOverMessage'));
         }
         return () => clearInterval(timerRef.current);
     }, [timeLeft, isVerified, isTimerRunning]);
@@ -126,7 +128,7 @@ const FindPassword = ({ isVisible, onClose }) => {
     const handleVerificationCodeChange = (text) => {
         const filteredText = text.replace(/[^0-9]/g, ''); // 숫자만 허용
         if (isExpired) {
-            Alert.alert("오류", "인증 시간이 만료되었습니다. 다시 요청해 주세요.");
+            Alert.alert(t('findPassword.timeOver'), t('findPassword.timeOverMessage'));
             return; // 만료되었을 경우 입력을 막음
         }
         setVerificationCode(filteredText);
@@ -143,19 +145,19 @@ const FindPassword = ({ isVisible, onClose }) => {
                 setShowInputFields(true);
                 setIsInputDisabled(true); // 아이디가 존재하면 비활성화
             } else {
-                Alert.alert("아이디 오류", "입력하신 아이디가 존재하지 않습니다.");
+                Alert.alert(t('findPassword.idError'), t('findPassword.idNotFound'));
             }
         } catch (error) {
             console.error("Error fetching phone number:", error);
-            Alert.alert("오류", "서버에 접근할 수 없습니다. 다시 시도해 주세요.");
+            Alert.alert(t('findPassword.verificationError'), t('findPassword.serverConnectionError'));
         }
     };
-
+    
     const handleNext = async (formattedValue, userId, setTimeLeft, setIsTimerRunning) => {
         const isValid = phoneInput.current?.isValidNumber(formattedValue);
 
         if (!isValid) {
-            Alert.alert("유효하지 않은 전화번호", "올바른 전화번호를 입력해 주세요.");
+            Alert.alert(t('findPassword.invalidPhoneNumber'), t('findPassword.invalidPhoneNumberMessage'));
             return;
         }
     
@@ -175,31 +177,31 @@ const FindPassword = ({ isVisible, onClose }) => {
     
             switch (data.status) {
                 case 'SUCCESS':
-                    Alert.alert("성공", "인증번호를 입력해주세요.");
+                    Alert.alert(t('findPassword.verificationSuccess'), t('findPassword.verificationSuccessMessage'));
                     setTimeLeft(300);
                     setIsTimerRunning(true);
                     setIsExpired(false); // 타이머 초기화 시 만료 상태 초기화
                     break;
                 case 'INVALID_USER_ID':
-                    Alert.alert("오류", "유효하지 않은 사용자 ID입니다.");
+                    Alert.alert(t('findPassword.verificationError'), t('findPassword.invalidUserId'));
                     break;
                 case 'PHONE_NOT_REGISTERED':
-                    Alert.alert("오류", "등록된 휴대전화가 아닙니다.");
+                    Alert.alert(t('findPassword.verificationError'), t('findPassword.phoneNotRegistered'));
                     break;
                 case 'LIMIT_EXCEEDED':
-                    Alert.alert("오류", "요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
+                    Alert.alert(t('findPassword.verificationError'), t('findPassword.limitExceeded'));
                     break;
                 case 'DAILY_LIMIT_EXCEEDED':
-                    Alert.alert("오류", "일일 요청 횟수를 초과했습니다. 내일 다시 시도해 주세요.");
+                    Alert.alert(t('findPassword.verificationError'), t('findPassword.dailyLimitExceeded'));
                     break;
                 default:
-                    Alert.alert("오류", "인증번호 전송 중 문제가 발생했습니다.");
+                    Alert.alert(t('findPassword.verificationError'), t('findPassword.verificationSendError'));
                     break;
             }
-        } catch (error) {
-            Alert.alert("오류", "서버에 연결할 수 없습니다.");
-            console.error('Error:', error);
-        }
+            
+            } catch (error) {
+                Alert.alert(t('findPassword.verificationError'), t('findPassword.serverConnectionError'));
+            }
     };
 
 
@@ -221,21 +223,21 @@ const FindPassword = ({ isVisible, onClose }) => {
 
             if (response.ok) {
                 if (data === "Verification successful") {
-                    Alert.alert("성공", "인증이 완료되었습니다.");
+                    Alert.alert(t('findPassword.verificationSuccess'), t('findPassword.verificationSuccessMessage'));
                     setIsVerified(true); 
                     clearInterval(timerRef.current);
                     setIsComplete(true);
                 } else if (data === "Invalid or expired code") {
-                    Alert.alert("오류", "잘못 입력하셨습니다.");
+                    Alert.alert(t('findPassword.verificationError'), t('findPassword.verificationErrorMessage'));
                     setVerificationCode(''); 
                 } else {
-                    Alert.alert("오류", data);
+                    Alert.alert(t('findPassword.verificationError'), data);
                 }
             } else {
-                Alert.alert("오류", data || "인증번호 검증 중 문제가 발생했습니다.");
+                Alert.alert(t('findPassword.verificationError'), data || t('findPassword.verificationCheckError'));
             }
         } catch (error) {
-            Alert.alert("오류", "서버에 연결할 수 없습니다.");
+            Alert.alert(t('findPassword.verificationError'), t('findPassword.serverConnectionError'));
         }
     };
 
@@ -259,35 +261,33 @@ const FindPassword = ({ isVisible, onClose }) => {
                     // 서버에서 반환된 상태에 따른 처리
                     switch (data.state) {
                         case 'SUCCESS':
-                            Alert.alert("성공", "비밀번호가 성공적으로 변경되었습니다.");
+                            Alert.alert(t('findPassword.verificationSuccess'), t('findPassword.passwordResetSuccess'));
                             // handleClose();  // 모달 닫기
                             break;
                         case 'INVALID_REQUEST':
-                            Alert.alert("오류", "모든 필드를 입력해 주세요.");
+                            Alert.alert(t('findPassword.verificationError'), t('findPassword.invalidRequest'));
                             break;
                         case 'INVALID_PASSWORD':
-                            Alert.alert("오류", "비밀번호는 영문자와 숫자가 포함된 6~20자리여야 합니다.");
+                            Alert.alert(t('findPassword.verificationError'), t('findPassword.passwordInvalid'));
                             break;
                         case 'ERROR':
                         default:
-                            Alert.alert("오류", "비밀번호 변경 중 오류가 발생했습니다.");
+                            Alert.alert(t('findPassword.verificationError'), t('findPassword.passwordResetError'));
                             break;
                     }
                 } else {
-                    Alert.alert("오류", "비밀번호 변경 중 오류가 발생했습니다.");
+                    Alert.alert(t('findPassword.verificationError'), t('findPassword.passwordResetError'));
                 }
             } catch (error) {
-                Alert.alert("오류", "서버에 연결할 수 없습니다. 다시 시도해 주세요.");
+                Alert.alert(t('findPassword.verificationError'), t('findPassword.serverConnectionError'));
                 console.error('Error:', error);
             }
         } else {
-            Alert.alert("오류", "비밀번호가 일치하지 않습니다.");
+            Alert.alert(t('findPassword.verificationError'), t('findPassword.passwordMismatch'));
         }
     };
     
     
-    
-
     
     const validateMemberPassword = (text) => {
         setNewPassword(text);
@@ -308,7 +308,7 @@ const FindPassword = ({ isVisible, onClose }) => {
                         <TouchableOpacity onPress={handleClose} style={modalstyles.backIcon}>
                             <Ionicons name="chevron-back" size={32} style={modalstyles.icon} />
                         </TouchableOpacity>
-                        <Text style={modalstyles.title}>비밀번호 찾기</Text>
+                        <Text style={modalstyles.title}>{t('findPassword.title')}</Text>
                     </View>
 
                     <KeyboardAwareScrollView
@@ -321,10 +321,11 @@ const FindPassword = ({ isVisible, onClose }) => {
                             {/* 아이디 입력과 본인 확인 영역 숨기기 */}
                             {!isComplete && (
                                 <>
-                                    <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginBottom: 10}}>아이디 입력</Text>
+                                    <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginBottom: 10}}>{t('findPassword.enterId')}</Text>
+
                                     <TextInput
                                         style={[styles.idInput, isVerified && { color: '#6D6E6F' }, isInputDisabled && { backgroundColor: '#242732', color: '#AAAAAA' }]}
-                                        placeholder="아이디 입력"
+                                        placeholder={t('findPassword.idPlaceholder')}
                                         placeholderTextColor="#CCCCCC"
                                         keyboardType="default"
                                         onChangeText={text => {
@@ -335,12 +336,12 @@ const FindPassword = ({ isVisible, onClose }) => {
                                         editable={!isInputDisabled} 
                                     />
                                     <TouchableOpacity style={[styles.completeButton, isInputDisabled && { backgroundColor: '#242732' }]} onPress={handleComplete} disabled={isInputDisabled}>
-                                        <Text style={styles.completeButtonText}>완료</Text>
+                                        <Text style={styles.completeButtonText}>{t('findPassword.complete')}</Text>
                                     </TouchableOpacity>
 
                                     {showInputFields && (
                                         <>
-                                            <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>본인 확인</Text>
+                                            <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>{t('findPassword.verification')}</Text>
                                             <PhoneInput
                                                 key={defaultCountryCode}
                                                 ref={phoneInput}
@@ -352,7 +353,7 @@ const FindPassword = ({ isVisible, onClose }) => {
                                                 containerStyle={{
                                                     marginTop: 10,
                                                     width: '100%',
-                                                    height: 55,
+                                                    minHeight: 55,
                                                     backgroundColor: '#3B404B',
                                                     borderRadius: 8,
                                                 }}
@@ -383,7 +384,7 @@ const FindPassword = ({ isVisible, onClose }) => {
                                                     onPress={() => handleNext(formattedValue, userId, setTimeLeft, setIsTimerRunning)} 
                                                     disabled={isVerified}
                                                 >
-                                                    <Text style={styles.requestButtonText}>인증번호 요청</Text>
+                                                    <Text style={styles.requestButtonText}>{t('findPassword.requestVerification')}</Text>
                                                 </TouchableOpacity>
 
                                                 <TextInput
@@ -391,14 +392,16 @@ const FindPassword = ({ isVisible, onClose }) => {
                                                         styles.verificationInput,
                                                         isVerified && { color: '#6D6E6F' }
                                                     ]}
-                                                    placeholder="인증번호 입력"
+                                                    placeholder={t('findPassword.enterVerification')}
                                                     placeholderTextColor="#CCCCCC"
                                                     keyboardType="numeric"
                                                     maxLength={6}
                                                     onChangeText={(text) => {
                                                         const filteredText = text.replace(/[^0-9]/g, ''); // 숫자만 허용
                                                         if (isExpired) {
-                                                            Alert.alert("오류", "인증 시간이 만료되었습니다. 다시 요청해 주세요.");
+
+                                                            Alert.alert(t('findPassword.verificationError'), t('findPassword.timeOverMessage'));
+
                                                             return; // 만료되었을 경우 입력을 막음
                                                         }
                                                         handleVerificationCodeChange(filteredText);
@@ -420,42 +423,49 @@ const FindPassword = ({ isVisible, onClose }) => {
                                     )}
                                 </>
                             )}
-                            <Text style={styles.note}>메시지를 수신하기 위해 국외발신 차단 설정을 해제해 주시기 바랍니다</Text>
+                            <Text style={styles.note}>{t('findPassword.messageNote')}</Text>
 
                             {/* 비밀번호 재설정 영역 */}
                             {isComplete && (
                                 <View>
-                                    <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>비밀번호 재설정</Text>
+                                    <Text style={{color: '#EBEBEB', fontSize:16, fontWeight: 'bold', marginTop: 20}}>{t('findPassword.passwordReset')}</Text>
 
                                     <View>
                                         {/* 새 비밀번호 입력 */}
                                         <TextInput
                                             style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white' }]}
-                                            placeholder="새 비밀번호 입력"
+                                            placeholder={t('findPassword.enterNewPassword')}
                                             placeholderTextColor="#CCCCCC"
                                             secureTextEntry={true}
                                             onChangeText={validateMemberPassword} // validateMemberPassword로 변경
                                         />
-                                        {isMemberPasswordValid === false && <Text style={styles.errorText}>영문자와 소문자와 숫자를 조합하여 6~20자로 입력해주세요.</Text>}
+                                        {isMemberPasswordValid === false && <Text style={styles.errorText}>{t('findPassword.passwordInvalid')}</Text>}
 
                                         
                                         {/* 비밀번호 확인 입력 */}
                                         <TextInput
                                             style={[styles.passwordInput, { backgroundColor: '#3B404B', color: 'white', marginTop: 10 }]}
-                                            placeholder="새 비밀번호 확인"
+                                            placeholder={t('findPassword.enterConfirmPassword')}
                                             placeholderTextColor="#CCCCCC"
                                             secureTextEntry={true}
                                             onChangeText={validateConfirmPassword} // 여기서 validateConfirmPassword로 변경
                                         />
-                                        {isConfirmPasswordValid === false && <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>}
-
+                                        {isConfirmPasswordValid === false && <Text style={styles.errorText}>{t('findPassword.passwordMismatch')}
+                                        </Text>}
 
                                         {/* 완료 버튼 */}
                                         <TouchableOpacity 
                                             style={[styles.completeButton, { marginTop: 20 }]} 
                                             onPress={handlePasswordResetComplete}
                                         >
-                                            <Text style={styles.completeButtonText}>완료</Text>
+                                        <Text style={styles.completeButtonText}>{t('findPassword.complete')}</Text>
+
+
+
+
+
+
+
                                         </TouchableOpacity>
                                     </View>
                                 </View>

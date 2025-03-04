@@ -9,10 +9,13 @@ import moment from 'moment';
 
 import { deleteExerciseRecordSuccess} from '../../../src/modules/ExerciseRecordSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 
 
 const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }) => {
+
+    const { t, i18n } = useTranslation();  // ✅ useTranslation 사용
     const [storedDates, setStoredDates] = useState([]);
     const [renderingDate, setRenderingDate] = useState(null);
     const [disablePrev, setDisablePrev] = useState(true);
@@ -26,13 +29,16 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
     const exerciseId = exercise.id;
 
 
-    const today = moment().format('YYYY-MM-DD');
+    const today = moment();
 
     useEffect(() => {
         const fetchStoredDates = async () => {
             try {
                 const dates = await previousRecordDate(memberId, exerciseId, exerciseService);
-                const filteredDates = dates.filter(date => date !== today);
+
+                // 🔥 오늘 날짜를 현재 설정된 언어에 맞춰 변환
+                const todayFormatted = formatDate(moment()); 
+                const filteredDates = dates.filter(date => formatDate(date) !== todayFormatted);
 
                 setStoredDates(filteredDates);
                 if (filteredDates.length > 0) {
@@ -86,6 +92,12 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
         setRenderingDate(storedDates[updatedIndex]);
     };
 
+    // 🔥 날짜 포맷 변환 함수
+    const formatDate = (date) => {
+        return new Date(date).toLocaleDateString(i18n.language);
+    };
+    
+
     
     const renderRow = () => {
 
@@ -105,7 +117,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                 
                 {exerciseType === 1 && (
                     <View style={{width: '40%'}}>
-                        <Text style={styles.headerText}>횟수</Text>
+                        <Text style={styles.headerText}>{t('EachExercise.reps')}</Text>
                     </View>
                 )}
                 {exerciseType === 2 && (
@@ -116,7 +128,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
 
                         <View style={{width: '40%'}}>
 
-                            <Text style={styles.headerText}>시간</Text>
+                            <Text style={styles.headerText}>{t('EachExercise.time')}</Text>
                         </View>
                     </>
                 )}
@@ -127,13 +139,13 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                         </View>
 
                         <View style={{width: '40%'}}>
-                            <Text style={styles.headerText}>횟수</Text>
+                            <Text style={styles.headerText}>{t('EachExercise.reps')}</Text>
                         </View>
                     </>
                 )}
                 {exerciseType === 4 && (
                     <View style={{width: '40%'}}>
-                        <Text style={styles.headerText}>시간</Text>
+                        <Text style={styles.headerText}>{t('EachExercise.time')}</Text>
                     </View>
                 )}
             </View>
@@ -152,8 +164,9 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                     <Icon name="arrow-back-outline" size={21} color={disablePrev ? 'gray' : '#fff'} />
                 </TouchableOpacity>
                 <Text style={renderingDate ? styles.dateText : styles.nonDateText}>
-                    {renderingDate || moment(today).subtract(1, 'days').format('YYYY-MM-DD')}
+                    {formatDate(renderingDate || today.subtract(1, 'days'))}
                 </Text>
+                
                 <TouchableOpacity
                     onPress={() => changeDate('next')}
                     style={[styles.iconButton, disableNext && styles.disabledButton]}
@@ -223,7 +236,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                             {/* Exercise Type 4 */}
                             {set.exerciseType === 4 && (
                                 <View style={styles.recordSection}>
-                                    <Text style={styles.recordText}>{set?.set?.time || '없음'}</Text>
+                                    <Text style={styles.recordText}>{set?.set?.time || t('exerciseRecords.none')}</Text>
                                 </View>
                             )}
                         </View>
@@ -232,7 +245,7 @@ const DateChanger = ({ exercise, memberId, exerciseService, kmUnit, weightUnit }
                 </View>
             ) : (
                 <View style={styles.NonContainer}>
-                    <Text style={styles.recordText}>운동 기록이 없습니다.</Text>
+                    <Text style={styles.recordText}>{t('exerciseRecords.noRecord')}</Text>
                 </View>
             )}
 

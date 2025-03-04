@@ -4,8 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loadBodyRecordsForDate } from '../../apis/RecordApi';
 import { selectBodyDataByDate } from '../../modules/BodySlice';
+import { useTranslation } from 'react-i18next';
 
 const BodyRecord = ({ selectDates, memberId }) => {
+    const { t } = useTranslation();
+
     const dispatch = useDispatch();
 
     const dateKey = selectDates;
@@ -43,13 +46,13 @@ const BodyRecord = ({ selectDates, memberId }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>신체기록</Text>
+            <Text style={styles.title}>{t('body.title')}</Text>
 
             <View style={styles.recordsContainer}>
                 <View style={styles.bodyRecordRow}>
                     <View style={styles.bodyRecordItem}>
                         <View style={[styles.circle, { backgroundColor: '#FF9FD4' }]}></View>
-                        <Text style={styles.label}>체중</Text>
+                        <Text style={styles.label}>{t('body.weight')}</Text>
                         <View style={styles.valueContainer}>
                             <Text style={styles.value}>{renderWeight(todayBodyData?.weight, todayBodyData?.weightInLbs)}</Text>
                             <Text style={styles.unit}>{weightUnit}</Text>
@@ -57,7 +60,7 @@ const BodyRecord = ({ selectDates, memberId }) => {
                     </View>
                     <View style={styles.bodyRecordItem}>
                         <View style={[styles.circle, { backgroundColor: '#FF92D2' }]}></View>
-                        <Text style={styles.label}>골격근량</Text>
+                        <Text style={styles.label}>{t('body.skeletalMuscleMass')}</Text>
                         <View style={styles.valueContainer}>
                             <Text style={styles.value}>{renderWeight(todayBodyData?.skeletalMuscleMass, todayBodyData?.skeletalMuscleMassInLbs)}</Text>
                             <Text style={styles.unit}>{weightUnit}</Text>
@@ -68,7 +71,7 @@ const BodyRecord = ({ selectDates, memberId }) => {
                 <View style={styles.bodyRecordRow}>
                     <View style={styles.bodyRecordItem}>
                         <View style={[styles.circle, { backgroundColor: '#FF85D0' }]}></View>
-                        <Text style={styles.label}>체지방률</Text>
+                        <Text style={styles.label}>{t('body.bodyFatPercentage')}</Text>
                         <View style={styles.valueContainer}>
                             <Text style={styles.value}>{todayBodyData?.bodyFatPercentage}</Text>
                             <Text style={styles.unit}>%</Text>
@@ -76,7 +79,7 @@ const BodyRecord = ({ selectDates, memberId }) => {
                     </View>
                     <View style={styles.bodyRecordItem}>
                         <View style={[styles.circle, { backgroundColor: '#FFABD6' }]}></View>
-                        <Text style={styles.label}>체지방량</Text>
+                        <Text style={styles.label}>{t('body.bodyFatMass')}</Text>
                         <View style={styles.valueContainer}>
                             <Text style={styles.value}>{renderWeight(todayBodyData?.bodyFatMass, todayBodyData?.bodyFatMassInLbs)}</Text>
                             <Text style={styles.unit}>{weightUnit}</Text>
@@ -140,6 +143,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
         marginBottom: 5,
+        textAlign:'center'
     },
     valueContainer: {
         flexDirection: 'row',

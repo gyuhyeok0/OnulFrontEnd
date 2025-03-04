@@ -9,6 +9,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { callLoginAPI } from '../../apis/MemberAPICalls';
 import { useDispatch } from 'react-redux';
 import { API_URL } from '@env';
+import { useTranslation } from 'react-i18next';
+
 
 
 function SignupStep1({ navigation, route }) {
@@ -27,6 +29,8 @@ function SignupStep1({ navigation, route }) {
 
     const { memberId, memberPassword } = route.params || {};
 
+    const { t } = useTranslation();
+
     useEffect(() => {
         const locales = Localize.getLocales();
         if (locales.length > 0) {
@@ -42,7 +46,7 @@ function SignupStep1({ navigation, route }) {
             }, 1000);
         } else if (timeLeft === 0) {
             clearInterval(timerRef.current);
-            Alert.alert("시간 초과", "인증 시간이 초과되었습니다. 다시 요청해 주세요.");
+            Alert.alert(t('signupStep1.timeOver'), t('signupStep1.timeOverMessage'));
         }
         return () => clearInterval(timerRef.current);
     }, [timeLeft, isVerified, isTimerRunning]);
@@ -57,7 +61,7 @@ function SignupStep1({ navigation, route }) {
         const isValid = phoneInput.current?.isValidNumber(formattedValue);
 
         if (!isValid) {
-            Alert.alert("유효하지 않은 전화번호", "올바른 전화번호를 입력해 주세요.");
+            Alert.alert(t('signupStep1.invalidPhoneNumber'), t('signupStep1.invalidPhoneMessage'));
             return;
         }
 
@@ -75,20 +79,14 @@ function SignupStep1({ navigation, route }) {
             const data = await response.json();
 
             if (data.status === 'success') {
-                Alert.alert("성공", "인증번호를 입력해주세요.");
+                Alert.alert(t('signupStep1.success'), t('signupStep1.successMessage'));
                 setTimeLeft(300);
                 setIsTimerRunning(true);
-            } else if (data.status === 'alreadyPhoneNumber') {
-                Alert.alert("오류", "전화번호는 계정당 한번만 사용 가능합니다.");
-            } else if (data.status === 'LIMIT_EXCEEDED') {
-                Alert.alert("오류", "요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
-            } else if (data.status === 'DAILY_LIMIT_EXCEEDED') {
-                Alert.alert("오류", "일일 요청 횟수를 초과했습니다. 내일 다시 시도해 주세요.");
             } else {
-                Alert.alert("오류", data.message || "인증번호 전송 중 문제가 발생했습니다.");
+                Alert.alert(t('signupStep1.error'), t(`signupStep1.${data.status}`) || t('signupStep1.error'));
             }
         } catch (error) {
-            Alert.alert("오류", "서버에 연결할 수 없습니다.");
+            Alert.alert(t('signupStep1.error'), "server error.");
             console.error('Error:', error);
         }
     };
@@ -111,20 +109,20 @@ function SignupStep1({ navigation, route }) {
 
             if (response.ok) {
                 if (data === "Verification successful") {
-                    Alert.alert("성공", "인증이 완료되었습니다.");
-                    setIsVerified(true); 
+                    Alert.alert(t("signupStep1.success"), t("signupStep1.verificationSuccess"));
+                    setIsVerified(true);
                     clearInterval(timerRef.current);
                 } else if (data === "Invalid or expired code") {
-                    Alert.alert("오류", "잘못 입력하셨습니다.");
-                    setVerificationCode(''); 
+                    Alert.alert(t("signupStep1.error"), t("signupStep1.verificationFail"));
+                    setVerificationCode('');
                 } else {
-                    Alert.alert("오류", data);
+                    Alert.alert(t("signupStep1.error"), data);
                 }
             } else {
-                Alert.alert("오류", data || "인증번호 검증 중 문제가 발생했습니다.");
+                Alert.alert(t("signupStep1.error"), data || t("signupStep1.signupError"));
             }
         } catch (error) {
-            Alert.alert("오류", "서버에 연결할 수 없습니다.");
+            Alert.alert(t("signupStep1.error"), "server error.");
         }
     };
 
@@ -141,12 +139,12 @@ function SignupStep1({ navigation, route }) {
     // 회원가입
     const handleComplete = async () => {
         if (!isVerified) {
-            Alert.alert('인증 필요', '휴대폰 번호 인증을 완료해주세요.');
+            Alert.alert(t('signupStep1.verificationRequired'), t('signupStep1.verificationRequiredMessage'));
             return;
         }
 
         if (!isAllAgreed) {
-            Alert.alert('동의 필요', '약관 동의를 완료해주세요.');
+            Alert.alert(t('signupStep1.agreeRequired'), t('signupStep1.agreeRequiredMessage'));
             return;
         }
 
@@ -167,7 +165,7 @@ function SignupStep1({ navigation, route }) {
 
             if (!response.ok) {
                 const data = await response.json();
-                Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
+                Alert.alert(t("signupStep1.error"), data.message || t("signupStep1.signupError"));
                 return;
             }
 
@@ -187,37 +185,40 @@ function SignupStep1({ navigation, route }) {
                     // 로그인 성공 시 Onboarding 페이지로 이동
                     navigation.navigate('Onboarding');
                 } else if (result && result.errorMessage) {
-                    Alert.alert('로그인 오류', result.errorMessage || '로그인 중 문제가 발생했습니다.');
+                    Alert.alert(t("signupStep1.loginError"), result.errorMessage || t("signupStep1.loginFailed"));
                     console.error(result.errorMessage);
                 } else {
-                    Alert.alert('로그인 실패', '로그인에 실패했습니다.');
-                    console.error("로그인에 실패했습니다.");
+                    Alert.alert(t("signupStep1.loginError"), t("signupStep1.loginFailed"));
+                    console.error(t("signupStep1.loginFailed"));
                 }
                 
             } else {
-                Alert.alert('오류', data.message || '회원가입 중 문제가 발생했습니다.');
+                Alert.alert(t("signupStep1.error"), data.message || t("signupStep1.signupError"));
             }
+                
 
         } catch (error) {
-            Alert.alert('오류', '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.');
+            Alert.alert(t("signupStep1.error"), t("signupStep1.connectionError"));
             console.error('Error:', error);
         }
+        
     };
 
     const timerColor = isTimerRunning ? (timeLeft <= 60 ? 'red' : 'white') : '#6D6E6F';
 
     return (
         <>
-            <DefaultHeader title="본인인증" navigation={navigation} />
+            <DefaultHeader title={t('signupStep1.title')} navigation={navigation} />
 
             <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }}>
-                <Text style={styles.phoneNumberTitle}>핸드폰 번호</Text>
+                <Text style={styles.phoneNumberTitle}>{t('signupStep1.phoneNumber')}</Text>
                 <Text style={styles.description}>
-                    원활한 onul 서비스 이용을 위해 최초 1회 인증이 필요합니다.
+                    {t("signupStep1.description")}
                 </Text>
                 <Text style={styles.note}>
-                    하나의 전화번호에는 최대 한 개의 계정만 연결할 수 있습니다.
+                    {t("signupStep1.note")}
                 </Text>
+
 
                 <PhoneInput
                     key={defaultCountryCode}  
@@ -257,7 +258,7 @@ function SignupStep1({ navigation, route }) {
 
                 <View style={styles.requestBox}>
                     <TouchableOpacity style={styles.requestButton} onPress={handleNext} disabled={isVerified}>
-                        <Text style={styles.requestButtonText}>인증번호 요청</Text>
+                        <Text style={styles.requestButtonText}>{t("signupStep1.requestCode")}</Text>
                     </TouchableOpacity>
 
                     <TextInput
@@ -265,7 +266,7 @@ function SignupStep1({ navigation, route }) {
                             styles.verificationInput,
                             isVerified && { color: '#6D6E6F' }
                         ]}
-                        placeholder="인증번호 입력"
+                        placeholder={t("signupStep1.enterCode")}
                         placeholderTextColor="#CCCCCC"
                         keyboardType="numeric"
                         maxLength={6}
@@ -293,7 +294,7 @@ function SignupStep1({ navigation, route }) {
                     </View>
 
                 </View>
-                <Text style={styles.note}>메시지를 수신하기 위해 국외발신 차단 설정을 해제해 주시기 바랍니다</Text>
+                <Text style={styles.note}>{t("signupStep1.messageReceiveNote")}</Text>
 
                 <Agree setIsAllAgreed={setIsAllAgreed} /> 
 
@@ -310,7 +311,7 @@ function SignupStep1({ navigation, route }) {
                                 : { color: '#FFFFFF' } 
                         ]}
                     >
-                        완료
+                        {t("signupStep1.complete")}
                     </Text>
                 </TouchableOpacity>
             </ScrollView>

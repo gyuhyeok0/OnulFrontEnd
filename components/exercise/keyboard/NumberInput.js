@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const NumberInput = ({ set, index, sets, setSets, style, deleteExerciseFilter}) => {
     const [inputValue, setInputValue] = useState(""); // km 값을 상태로 관리
+    const { t } = useTranslation();
 
     // 초기화 및 sets 변경 시 동기화
     useEffect(() => {
@@ -58,7 +60,7 @@ const NumberInput = ({ set, index, sets, setSets, style, deleteExerciseFilter}) 
                     },
                 ]}
                 onChangeText={handleTextChange}
-                placeholder="횟수"
+                placeholder={t('keyboard.reps')}
                 placeholderTextColor="#B0B0B0"
                 keyboardType="numeric"
                 value={inputValue} // 로컬 상태로부터 값 연동

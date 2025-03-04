@@ -15,14 +15,16 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import SubscriptionModal from '../modal/SubscriptionModal';
+import { useTranslation } from 'react-i18next';
 
 const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
 
-const MAX_ADS_PER_DAY = 35;
+const MAX_ADS_PER_DAY = 5;
 const STORAGE_KEY = 'adDisplayCount';
 const DATE_KEY = 'lastAdDate';
 
 const Analysis = ({ navigation }) => {
+    const { t } = useTranslation();
     const isPremium = useSelector(state => state.subscription.isPremium);
     const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate);
     console.log('memberSignupDate: ', memberSignupDate);
@@ -195,11 +197,11 @@ const Analysis = ({ navigation }) => {
         }
 
         Alert.alert(
-            "이용 방법 선택",
-            "광고를 시청하면 한 번 동안 분석 기능을 무료로 이용할 수 있습니다.",
+            t('analysis.chooseMethod'),
+            t('analysis.adMessage'),
             [
                 {
-                    text: "광고 보고 이용하기",
+                    text: t('analysis.watchAd'),
                     onPress: async () => {
                         if (isAdLoaded && adCount < MAX_ADS_PER_DAY) {
                             await showRewardedAd();
@@ -208,17 +210,16 @@ const Analysis = ({ navigation }) => {
                     },
                 },
                 {
-
-                    text: "구독하고 광고 없이 이용하기",
+                    text: t('analysis.subscribe'),
                     onPress: async () => {
-                        // 구독 로직 추가 가능 (예: in-app purchase)
-                        console.log("🚀 유저가 구독을 선택했습니다.");
-                        setIsPaymentModalVisible(true); // 구독 모달 표시
+                        console.log("🚀 User chose subscription.");
+                        setIsPaymentModalVisible(true);
                     },
                 },
-                { text: "취소", style: "cancel" },
+                { text: t('analysis.cancel'), style: "cancel" },
             ]
         );
+        
     };
 
     return (
@@ -234,14 +235,17 @@ const Analysis = ({ navigation }) => {
                         <Image source={require('../../assets/GraphText.png')} 
                             style={{width: 130, height: 35}}
                         />
-                        <Text style={{color:'white', fontSize: 15, fontWeight:'bold'}}>나는 운동을 잘하고 있을까?</Text>
+                        <Text style={{color:'white', fontSize: 15, fontWeight:'bold'}}>{t('analysis.exerciseQuestion')}</Text>
 
                     </View>
 
                     <Pressable style={styles.navButton} onPress={() => handlePress('ExerciseVolumeGraph')}>
-                        <Text style={styles.navButtonText}>내 운동 상태 확인하기</Text>
+                        <Text style={styles.navButtonText}>{t('analysis.checkExercise')}</Text>
+
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>이 이미지는 실제 데이터 시각화가 아닌 디자인 요소입니다</Text>
+                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>
+                    {t('analysis.imageNote')}
+                    </Text>
 
                 </ImageBackground>
 
@@ -254,14 +258,16 @@ const Analysis = ({ navigation }) => {
                         <Image source={require('../../assets/GraphText.png')} 
                             style={{width: 130, height: 35}}
                         />
-                        <Text style={{color:'white', fontSize: 15, fontWeight:'bold'}}>내 몸 상태를 제대로 관리하고 있을까?</Text>
+                        <Text style={{color:'white', fontSize: 15, fontWeight:'bold'}}>{t('analysis.bodyManagementQuestion')}</Text>
 
                     </View>
 
                     <Pressable style={styles.navButton} onPress={() => handlePress('WeightAndDietGraph')}>
-                        <Text style={styles.navButtonText}>몸무게 및 식단 확인하기</Text>
+                        <Text style={styles.navButtonText}>{t('analysis.checkDiet')}</Text>
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>이 이미지는 실제 데이터 시각화가 아닌 디자인 요소입니다</Text>
+                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>
+                    {t('analysis.imageNote')}
+                    </Text>
 
                 </ImageBackground>
 
@@ -274,14 +280,16 @@ const Analysis = ({ navigation }) => {
                         <Image source={require('../../assets/GraphText.png')} 
                             style={{width: 130, height: 35}}
                         />
-                        <Text style={{color:'white', fontSize: 15, fontWeight:'bold'}}>내 근육은 얼마나 지쳤을까?</Text>
+                        <Text style={{color:'white', fontSize: 15, fontWeight:'bold'}}>{t('analysis.muscleFatigueQuestion')}</Text>
                         
                     </View>
 
                     <Pressable style={styles.navButton} onPress={() => handlePress('MuscleFatigue')}>
-                        <Text style={styles.navButtonText}>근육 피로도 확인하기</Text>
+                        <Text style={styles.navButtonText}>{t('analysis.checkFatigue')}</Text>
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>이 이미지는 실제 데이터 시각화가 아닌 디자인 요소입니다</Text>
+                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>
+                    {t('analysis.imageNote')}
+                    </Text>
 
                 </ImageBackground>
                 <View style={{ height: 100 }} />

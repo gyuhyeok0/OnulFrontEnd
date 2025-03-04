@@ -3,8 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DefaultHeader from '../common/DefaultHeader';
+import { useTranslation } from 'react-i18next';
 
 const AsyncStorage2 = ({ navigation }) => {
+    const { t } = useTranslation();
+
     const [selectedWeightUnit, setSelectedWeightUnit] = useState(null);
     const [selectedHeightUnit, setSelectedHeightUnit] = useState(null);
 
@@ -54,10 +57,12 @@ const AsyncStorage2 = ({ navigation }) => {
 
     return (
         <>
-            <DefaultHeader title="단위 설정" navigation={navigation} />
+            <DefaultHeader title={t('unitSettings.title')} navigation={navigation} />
 
             <View style={{ flex: 1, backgroundColor:'#1A1C22' }}>
-                <Text style={{color:'white', fontSize: 18, marginLeft: 10, marginTop: 20,marginBottom:10}}>단위를 설정해 주세요</Text>
+                <Text style={{color:'white', fontSize: 18, marginLeft: 10, marginTop: 20,marginBottom:10}}>
+                    {t('unitSettings.selectUnit')}
+                </Text>
 
                 <View style={styles.unitContainer}>
                     <UnitButton unitType="weight" unitValue="lbs" selectedUnit={selectedWeightUnit} onPress={() => handleUnitSelection('weight', 'lbs')} />

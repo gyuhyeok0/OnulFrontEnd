@@ -4,10 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import AiSettingsModal from './AiSettingsModal'; // 모달 컴포넌트 추가
 import Icon from 'react-native-vector-icons/Ionicons'
 import { getAutoAdaptSetting, updateAutoAdaptSetting } from '../../../src/apis/AutoAdapt';
+import { useTranslation } from 'react-i18next';
 
 // 운동 메뉴의 자동적응 코드
 const DefaltSetting = ({setUpdateCount, isLoading}) => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
+
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 
@@ -156,7 +159,10 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
     
             // ✅ 최대 개수 초과 시 알림 후 추가 선택 방지
             if (newParts.length > maxSelectableParts) {
-                Alert.alert("선택 불가", `최대 ${maxSelectableParts}개의 부위만 선택할 수 있습니다.`);
+                Alert.alert(
+                    t('defaultSetting.selectionError'),
+                    t('defaultSetting.maxSelectionMessage', { max: maxSelectableParts })
+                );
                 return prev; // 변경하지 않음
             }
     
@@ -254,7 +260,10 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
     }, []);
 
     const showLoadingAlert = () => {
-        Alert.alert("업데이트 중", "현재 업데이트 중입니다. 잠시 기다려주세요.");
+        Alert.alert(
+            t('defaultSetting.updatingTitle'), 
+            t('defaultSetting.updatingMessage')
+        );
     };
     
     const [viewWidth, setViewWidth] = useState(null);
@@ -279,7 +288,7 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                     disabled={isLoading}
 
                 >
-                    <Text style={styles.buttonText}>근비대</Text>
+                    <Text style={styles.buttonText}>{t('defaultSetting.muscleGrowth')}</Text>
                 </Pressable>
                 <Pressable 
                     style={[styles.goalButton, exerciseGoal === '체지방 감소' && styles.selected]}
@@ -287,12 +296,12 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                     disabled={isLoading}
 
                 >
-                    <Text style={styles.buttonText}>체지방 감소</Text>
+                    <Text style={styles.buttonText}>{t('defaultSetting.fatLoss')}</Text>
                 </Pressable>
             </View>
 
             {/* 분할 선택 */}
-            <Text style={styles.sectionTitle}>분할 루틴 선택</Text>
+            <Text style={styles.sectionTitle}>{t('defaultSetting.splitRoutine')}</Text>
             <View style={styles.splitRow}>
                 {[1, 2, 3, 4, 5].map((num) => (
                     <Pressable 
@@ -302,13 +311,13 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                         disabled={isLoading}
 
                     >
-                        <Text style={styles.buttonText}>{num}분할</Text>
+                        <Text style={styles.buttonText}>{num}{t('defaultSetting.split')}</Text>
                     </Pressable>
                 ))}
             </View>
 
             {/* 부위 우선 선택 */}
-            <Text style={styles.sectionTitle}>부위 우선 선택</Text>
+            <Text style={styles.sectionTitle}>{t('defaultSetting.prioritySelection')}</Text>
             <View style={styles.priorityRow}>
                 {['자동', '등', '가슴', '하체', '어깨', '팔'].map((part) => (
                     <Pressable 
@@ -316,7 +325,11 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                         style={[styles.partButton, Array.isArray(priorityParts) && priorityParts.includes(part) && styles.selected]} 
                         onPress={() => {
                             if (excludedParts.includes(part)) {
-                                Alert.alert("선택 불가", `${part} 부위는 특정 부위 제외되어 있어 우선 선택할 수 없습니다.`);
+                                Alert.alert(
+                                    t('defaultSetting.selectionError'),
+                                    t('defaultSetting.exclusionMessage', { part: t(`bodyParts.${part}`) })
+                                );
+
                                 return; // 클릭 방지
                             }
                             handlePriorityChange(part);
@@ -324,7 +337,7 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                         disabled={isLoading}
 
                     >
-                        <Text style={styles.buttonText}>{part}</Text>
+                        <Text style={styles.buttonText}>{t(`bodyParts.${part}`)}</Text>
                     </Pressable>
                 ))}
             </View>
@@ -333,7 +346,8 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
             {/* 상세 설정 버튼 (작고 심플한 스타일) */}
             <Pressable onPress={() => openModal()} style={styles.settingsContainer}>
                 <Icon name="settings-outline" size={16} color="#AAB2C8" />
-                <Text style={styles.detailText}>상세 설정</Text>
+
+                <Text style={styles.detailText}>{t('defaultSetting.advancedSettings')}</Text>            
             </Pressable>
 
             {/* 모달 */}

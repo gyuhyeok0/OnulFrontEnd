@@ -14,6 +14,7 @@ import { store } from '../../../src/store.js';
 import { addDefaultSetsToRedux } from '../../../src/modules/StateExerciseSlice.js';
 import EachExercise from '../EachExercise.js';
 import AutoAdaptLoading from './AutoAdaptLoading.js';
+import { useTranslation } from 'react-i18next';
 
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
@@ -32,6 +33,7 @@ const AutoAdapt = () => {
 
     const [isReadyWeight, setIsReadyWeight] = useState(false); // 로딩 상태 추가
     const [isReadyKm, setIsReadyKm] = useState(false); // 로딩 상태 추가
+    const { t } = useTranslation();
 
 
     // ✅ 운동 세팅을 바꿨을 때 실행 (단, isDateChanged로 인해 실행된 경우 제외)
@@ -211,11 +213,11 @@ const AutoAdapt = () => {
                 onPress={toggleVisibility}
             >   
                 <View style={{flexDirection:'row', alignItems:'center'}}>
-                    <Text style={styles.refreshLabel}>오늘의 AI 운동</Text>
-                    {isLoading && (
+                <Text style={styles.refreshLabel}>{t('autoAdapt.todayWorkout')}</Text>
+                {isLoading && (
                     <View style={{marginLeft: 10, flexDirection:'row', alignItems:'center'}}>
                         <ActivityIndicator size="small" color="white" />
-                        <Text style={{color:'white', marginLeft: 5}}>잠시 기다려주세요</Text>
+                        <Text style={{ color: 'white', marginLeft: 5 }}>{t('autoAdapt.waitMessage')}</Text>
                     </View>
                     )}
                 </View>

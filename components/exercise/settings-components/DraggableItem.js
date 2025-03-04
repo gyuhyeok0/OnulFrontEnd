@@ -1,8 +1,12 @@
 import React from 'react';
 import { Animated, Text, View, StyleSheet } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
+
 
 const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDragEnd }) => {
+    const { t } = useTranslation();
+
     const handleGestureEvent = Animated.event(
         [{ nativeEvent: { translationY: translateY } }],
         { useNativeDriver: false }
@@ -42,7 +46,7 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
                         ))}
                     </View>
 
-                    <Text style={styles.draggableItemText}>{item.exerciseName}</Text>
+                    <Text style={styles.draggableItemText}>{t(`exerciseNames.${item.exerciseName}`)}</Text>
 
                     <View style={[styles.decorativeBox, styles.rightBox]}>
                         {Array.from({ length: 3 }).map((_, rowIndex) => (

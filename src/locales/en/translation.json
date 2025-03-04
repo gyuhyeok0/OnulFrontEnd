@@ -3,5 +3,678 @@
   "app_name": "ONE TOUCH FIT",
   "start_fresh": "Start Fresh",
   "continue_with_account": "Continue with Account",
-  "languageSwitcher": "Switch from <strong>{{lng}}</strong> to:"
+  "languageSwitcher": "Switch from <strong>{{lng}}</strong> to:",
+
+  "footer": {
+    "exercise": "Exercise",
+    "schedule": "Schedule",
+    "management": "Management",
+    "record": "Record",
+    "analysis": "Analysis"
+  },
+  
+  "inquiry": {
+        "title_page": "Contact Us",
+        "title": "Title",
+        "id": "ID",
+        "email": "Email",
+        "email_description": "We will send a response to your email.",
+        "content": "Inquiry Content",
+        "submit": "Submit",
+        "placeholder_id": "Enter ID",
+        "placeholder_email": "Enter Email",
+        "placeholder_title": "Enter Title",
+        "placeholder_content": "Enter Inquiry Content",
+        "error": "Error",
+        "error_fill_required_fields": "Please fill in all required fields.",
+        "error_invalid_email": "Please enter a valid email address.",
+        "error_title_limit": "Title must be 50 characters or less.",
+        "error_content_limit": "Inquiry content must be 500 characters or less.",
+        "error_inquiry_failed": "Failed to submit inquiry.",
+        "error_inquiry_submission": "An error occurred while submitting the inquiry.",
+        "success": "Success",
+        "inquiry_success": "Your inquiry has been successfully submitted."
+    },
+
+  "signin": {
+        "title_page": "Sign In",
+        "welcome": "Welcome",
+        "tagline_1": "Your personalized workout",
+        "tagline_2": "Start now",
+        "placeholder_id": "Enter your ID",
+        "placeholder_password": "Enter your password",
+        "login_button": "Sign In",
+        "signup_button": "Sign Up",
+        "forgot_password": "Forgot Password?",
+        "error_login_failed": "Login failed. Please try again."
+    },
+
+  "findPassword": {
+    "title": "Find Password",
+    "enterId": "Enter ID",
+    "idPlaceholder": "Enter ID",
+    "complete": "Complete",
+    "verification": "Verification",
+    "requestVerification": "Request Code",
+    "enterVerification": "Enter Code",
+    "timeOver": "Time Over",
+    "timeOverMessage": "Verification time has expired. Please request again.",
+    "invalidPhoneNumber": "Invalid Phone Number",
+    "invalidPhoneNumberMessage": "Please enter a valid phone number.",
+    "verificationSuccess": "Success",
+    "verificationSuccessMessage": "Verification completed.",
+    "verificationError": "Error",
+    "verificationErrorMessage": "Incorrect input.",
+    "passwordReset": "Reset Password",
+    "enterNewPassword": "Enter New Password",
+    "enterConfirmPassword": "Confirm New Password",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordInvalid": "Please enter 6-20 characters combining letters and numbers.",
+    "passwordResetSuccess": "Password has been successfully changed.",
+    "messageNote": "Please disable international message blocking to receive messages."
+  },
+
+  "signup": {
+    "title": "Sign Up",
+    "id": "ID",
+    "idPlaceholder": "Enter your ID",
+    "idError": "Please enter an ID that includes both letters and numbers and is at least 6 characters long.",
+    "idDuplicateCheck": "Check Availability",
+    "idAvailable": "The ID is available.",
+    "idUnavailable": "The ID is already in use.",
+    "idInvalid": "The ID must include both letters and numbers and be at least 6 characters long.",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "passwordError": "Please enter a password with 6-20 characters, including both letters and numbers.",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "confirmPasswordError": "Passwords do not match.",
+    "next": "Next",
+    "validIdRequired": "Please enter a valid ID.",
+    "validPasswordRequired": "Please enter a valid password.",
+    "passwordMismatch": "Passwords do not match.",
+    "serverError": "An error occurred while communicating with the server."
+  },
+
+  "signupStep1": {
+    "title": "Phone Verification",
+    "phoneNumber": "Phone Number",
+    "description": "For seamless use of the onul service, one-time verification is required.",
+    "note": "Only one account can be linked to a single phone number.",
+    "requestCode": "Request Code",
+    "enterCode": "Enter Verification Code",
+    "timeOver": "Time Over",
+    "timeOverMessage": "Verification time has expired. Please request again.",
+    "invalidPhoneNumber": "Invalid Phone Number",
+    "invalidPhoneMessage": "Please enter a valid phone number.",
+    "success": "Success",
+    "successMessage": "Please enter the verification code.",
+    "error": "Error",
+    "alreadyPhoneNumber": "A phone number can only be used once per account.",
+    "limitExceeded": "Request limit exceeded. Please try again later.",
+    "dailyLimitExceeded": "Daily request limit exceeded. Please try again tomorrow.",
+    "verificationSuccess": "Verification completed.",
+    "verificationFail": "Incorrect input.",
+    "verificationRequired": "Verification Required",
+    "verificationRequiredMessage": "Please complete phone number verification.",
+    "agreeRequired": "Agreement Required",
+    "agreeRequiredMessage": "Please complete the terms agreement.",
+    "signupError": "An error occurred during signup.",
+    "signupSuccess": "Signup Complete",
+    "signupSuccessMessage": "Signup has been completed.",
+    "loginError": "Login Error",
+    "loginFailed": "Login Failed",
+    "complete": "Complete",
+    "connectionError": "Cannot connect to the server. Please check your internet connection.",
+    "messageReceiveNote": "Please disable international message blocking to receive messages."
+
+  },
+
+  "agree": {
+    "title": "Please agree to the terms",
+    "allAgree": "Agree to all",
+    "allAgreeNote": "You must agree to all terms below to use the service.",
+    "age": "I am over 14 years old.",
+    "service": "Agree to Terms of Service",
+    "privacy": "Agree to Privacy Policy",
+    "view": "View",
+    "termsTitle": "Terms Details",
+    "serviceContent": "Terms of Service content",
+    "privacyContent": "Privacy Policy content"
+  },
+
+  "onboarding": {
+    "greeting": "Hello",
+    "intro": "We have a few questions to personalize your workout.",
+    "question": "Please select your preferred measurement units.",
+    "note": "You can change these anytime.",
+    "lbs": "Pounds (lbs)",
+    "kg": "Kilograms (kg)",
+    "feet": "Feet (feet)",
+    "cm": "Centimeters (cm)",
+    "next": "Next"
+  },
+
+  "onboarding2": {
+    "question": "What is your gender?",
+    "subtitle": "A workout program tailored for you",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "noResponse": "Prefer not to say",
+    "next": "Next"
+  },
+
+  "onboarding3": {
+    "title": "What is your current height and weight?",
+    "subtitle": "You can change this anytime.",
+    "next": "Next"
+  },
+
+  "onboarding4": {
+    "title": "Enter the maximum weight you can lift at once",
+    "subtitle": "A workout program tailored for you",
+    "benchPress": "Bench Press",
+    "deadlift": "Deadlift",
+    "squat": "Squat",
+    "unknown": "Unsure",
+    "next": "Next"
+  },
+
+  "exercise": {
+    "autoAdapt": "Auto Adapt",
+    "autoAdaptDescription": "Automatically generates a workout schedule. It gradually evolves based on your performance.",
+    "onSchedule": "Scheduled",
+    "onScheduleDescription": "Follow your pre-set workout schedule.",
+    "custom": "Free",
+    "customDescription": "Freely plan your workout based on your condition and goals for the day."
+  },
+
+  "autoAdaptLoading": {
+    "analyzing": "AI is currently analyzing",
+    "findingOptimalWorkout": "Finding the optimal workout for your body",
+    "loadingRecentRecords": "Loading recent workout records...",
+    "calculatingFatigue": "Calculating workout fatigue...",
+    "settingDifficulty": "Setting workout difficulty...",
+    "optimizingRoutine": "Optimizing split routine...",
+    "analyzingRecommendations": "Analyzing recommended exercises..."
+  },
+
+  "autoAdapt": {
+    "todayWorkout": "Today's AI Workout",
+    "waitMessage": "Please wait a moment"
+  },
+
+  "defaultSetting": {
+    "loading": "Updating",
+    "waitMessage": "Currently updating. Please wait a moment.",
+    "muscleGrowth": "Muscle Growth",
+    "fatLoss": "Fat Loss",
+    "splitRoutine": "Select Split Routine",
+    "split": " Split",
+    "advancedSettings": "Advanced Settings",
+    "updatingTitle": "Updating",
+    "updatingMessage": "Currently updating. Estimated time: 10 seconds.",
+    "selectionError": "Selection Error",
+    "maxSelectionMessage": "You can select up to {{max}} parts.",
+    "exclusionMessage": "{{part}} is excluded and cannot be prioritized.",
+    "prioritySelection": "Priority Selection"
+
+  },
+
+  "bodyParts": {
+    "자동": "Auto",
+    "등": "Back",
+    "가슴": "Chest",
+    "하체": "Legs",
+    "어깨": "Shoulders",
+    "팔": "Arms",
+    "복근": "Abs",
+    "기타": "Etc",
+    "커스텀": "Custom",
+    "자유": "Free"
+
+  },
+
+
+  "AiSettingsModal": {
+    "advancedSettings": "Advanced Settings",
+    "difficulty": "Exercise Difficulty",
+    "exerciseTime": "Exercise Duration",
+    "exerciseStyle": "Exercise Style",
+    "excludeBodyParts": "Exclude Specific Body Parts",
+    "includeCardio": "Include Cardio",
+    "close": "Close",
+    "exclusionErrorTitle": "Exclusion Not Allowed",
+    "exclusionErrorMessage": "{{part}} part is selected as priority and cannot be excluded.",
+    "selectionError": "Selection Not Allowed",
+    "minSelectionMessage": "At least one body part must be included."
+  },
+  "difficultyLevels": {
+    "초급": "Beginner",
+    "중급": "Intermediate",
+    "고급": "Advanced"
+  },
+  "exerciseTimes": {
+    "30분 이하": "Under 30 minutes",
+    "60분 이하": "Under 60 minutes",
+    "60분 초과": "More than 60 minutes"
+  },
+  "workoutStyles": {
+    "머신": "Machine",
+    "프리웨이트": "Free Weights"
+  },
+
+  "EachExercise": {
+    "exerciseInfo": "Info",
+    "previousRecord": "Past Record",
+    "volume": "Volume",
+    "up": "Up",
+    "record": "Record",
+    "set": "SET",
+    "time": "Time",
+    "reps": "Reps",
+    "complete": "Done",
+    "complete2": "done",
+    "setSettings": "Set Settings",
+    "addSet": "Add Set",
+    "removeSet": "Remove Set",
+    "completeAllSets": "Complete All Sets"
+  },
+  "keyboard": {
+    "reps" : "reps"
+  },
+
+  "exerciseNames": {
+    "벤치프레스": "Bench Press",
+    "스쿼트": "Squat",
+    "데드리프트": "Deadlift",
+    "러시안 트위스트": "what"
+
+  },
+
+  "onSchedule": {
+    "customWorkout": "Planned Workout",
+    "refreshHint": "If the workouts are not visible, refresh or press the body part button again.",
+    "noSchedule": "No workouts registered in the current schedule.",
+    "goToSchedule": "Go to Schedule Registration",
+    "exerciseRegistrationRequired": "{{part}} Workout Registration Required",
+    "pleaseRegisterExercise": "Please register {{part}} workout first.",
+    "confirm": "Confirm"
+
+  },
+
+  "days": {
+    "월요일": "Monday",
+    "화요일": "Tuesday",
+    "수요일": "Wednesday",
+    "목요일": "Thursday",
+    "금요일": "Friday",
+    "토요일": "Saturday",
+    "일요일": "Sunday"
+  },
+
+  "customWorkout": {
+    "register": "Register Free Workout",
+    "changeOrder": "Reorder the exercises above",
+    "pleaseRegister": "Please register your workout by clicking the button above."
+  },
+
+  "exerciseRecords": {
+    "recordHistory": "Exercise Record",
+    "noRecord": "No exercise record available.",
+    "none": "none"
+
+  },
+
+  "weeklySchedule": {
+    "thisWeek": "This Week",
+    "nextWeek": "Next Week",
+    "touchDay": "Please touch the desired day",
+    "selectBodyPart": "Select the body part to exercise on {{week}} {{day}}.",
+    "registeredExercises": "Registered exercises {{count}}",
+    "changeExerciseOrder": "Reorder your exercises"
+  },
+
+  "week": {
+    "이번주": "This Week",
+    "다음주": "Next Week"
+  },
+
+  "workoutRegistration": {
+    "exerciseRegistration": "Workout Registration",
+    "exercise": "Workout"
+  },
+
+  "registModal": {
+    "searchPlaceholder": "Search for exercises",
+    "categoryPopular": "Popular",
+    "toggleSchedule": "Add ({{count}})",
+    "undo": "Undo",
+    "myExerciseSchedule": "My {{bodyParts}} Workout Schedule",
+    "addToSchedule": "Please add a workout to the schedule.",
+    "noExerciseData": "No exercise data available.",
+    "noResults": "No results found. Please enter a different search term."
+
+  },
+
+  "categories": {
+    "전체": "All",
+    "좋아요": "Favorites",
+    "맨몸": "Bodyweight",
+    "덤벨": "Dumbbell",
+    "바벨": "Barbell",
+    "스미스머신": "Smith Machine",
+    "머신": "Machine",
+    "밴드": "Band",
+    "케이블": "Cable",
+    "케틀벨": "Kettlebell",
+    "이지바": "EZ Bar",
+    "로프": "Rope",
+    "플레이트": "Plate",
+    "랜드마인": "Landmine",
+    "폼롤러": "Foam Roller",
+    "벨트": "Belt",
+    "짐볼": "Gym Ball"
+  },
+
+  "muscleGroups": {
+    "광배근": "Latissimus Dorsi",
+    "둔근": "Glutes",
+    "대퇴사두근": "Quadriceps",
+    "심폐 지구력": "Cardiorespiratory Endurance",
+    "코어": "Core",
+    "복직근": "Rectus Abdominis",
+    "외측 대퇴사두근": "Lateral Quadriceps",
+    "내측 대퇴사두근": "Medial Quadriceps",
+    "하부 등": "Lower Back",
+    "하부 가슴": "Lower Chest",
+    "중간 가슴": "Mid Chest",
+    "윗가슴": "Upper Chest",
+    "이두근": "Biceps",
+    "전완근": "Forearms",
+    "종아리": "Calves",
+    "전면 삼각근": "Front Deltoid",
+    "승모근": "Trapezius",
+    "삼두근": "Triceps",
+    "후면 삼각근": "Rear Deltoid",
+    "햄스트링": "Hamstrings",
+    "측면 삼각근": "Lateral Deltoid",
+    "하복부": "Lower Abdominals",
+    "측면 복근": "Obliques",
+    "전신 지구력": "Full-body Endurance",
+    "전신 근력": "Full-body Strength",
+    "유연성": "Flexibility",
+    "가슴": "Chest",
+    "어깨": "Shoulders",
+    "등": "Back",
+    "회복": "Recovery",
+    "상부 가슴": "Upper Chest",
+    "회전근개": "Rotator Cuff",
+    "대흉근": "Pectoralis Major"
+  },
+
+  "exerciseMessage": "{{exerciseName}} is in the {{muscleGroup}} group.",
+
+  "Body": {
+      "title": "Body",
+      "description": "Please record today's body data.",
+      "weight": "Weight",
+      "skeletalMuscleMass": "Skeletal Muscle Mass",
+      "bodyFatPercentage": "Body Fat Percentage",
+      "bodyFatMass": "Body Fat Mass",
+      "complete": "Complete",
+      "placeholder": "00.0"
+  },
+
+  "food": {
+      "title": "Diet",
+      "description": "Please add today's meals.",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snack": "Snack",
+      "noRecords": "No records yet",
+      "carbs": "Carbs",
+      "protein": "Protein",
+      "fat": "Fat"
+    },
+
+    "FreeFoodModal": {
+      "title": "Enter Nutrition Information",
+      "unitSelection": "Select Unit",
+      "nutritionInput": "Enter Temporary Nutrition Data",
+      "quantity": "Quantity",
+      "calories": "Calories",
+      "carbs": "Carbohydrates",
+      "protein": "Protein",
+      "fat": "Fat",
+      "complete": "Complete"
+    },
+
+    "foodModal": {
+      "title": "Meal Plan",
+      "selectRecipe": "Select a recipe and press the complete button.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "quantity": "Quantity",
+      "calories": "Calories",
+      "carbs": "Carbohydrates",
+      "protein": "Protein",
+      "fat": "Fat",
+      "complete": "Complete",
+      "freeMeal": "Temporary Meal"
+    },
+
+    "recipeEditModal": {
+      "title": "Register Recipe",
+      "recipeName": "Meal Name",
+      "recipePlaceholder": "Recipe Name",
+      "addFood": "Add Food",
+      "foodInstructions": "Please enter the food name and quantity first.",
+      "foodName": "Food Name",
+      "foodPlaceholder": "Food Name",
+      "quantity": "Quantity",
+      "calories": "Calories",
+      "carbs": "Carbohydrates",
+      "protein": "Protein",
+      "fat": "Fat",
+      "complete": "Complete"
+    },
+
+    "record": {
+      "title": "Record",
+      "exercise": "Exercise Record",
+      "food": "Food Record",
+      "body": "Body Record",
+      "selectDate": "Please select a date to check the record."
+    },
+
+
+  "exerciseRecord": {
+      "title": "Exercise Record",
+      "customSchedule": "Schedule Record",
+      "freeSchedule": "Free Record",
+      "autoAdaptSchedule": "Auto Adapt Record"
+    },
+
+  "body": {
+      "title": "Body Record",
+      "weight": "Weight",
+      "skeletalMuscleMass": "Skeletal Muscle Mass",
+      "bodyFatPercentage": "Body Fat Percentage",
+      "bodyFatMass": "Body Fat Mass"
+    },
+
+  "foodRecord": {
+      "title": "Food Record",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snack": "Snack",
+      "recipe": "Recipe",
+      "totalQuantity": "Total Quantity",
+      "calories": "Calories",
+      "carbs": "Carbohydrates",
+      "protein": "Protein",
+      "fat": "Fat",
+      "noRecords": "No food records available."
+    },
+
+  "analysis": {
+      "title": "Analysis",
+      "chooseMethod": "Choose Usage Method",
+      "adMessage": "Watch an ad to use the analysis feature once for free.",
+      "watchAd": "Watch Ad and Use",
+      "subscribe": "Subscribe and Use Without Ads",
+      "cancel": "Cancel",
+      "exerciseQuestion": "Am I working out effectively?",
+      "checkExercise": "Check My Exercise Status",
+      "bodyManagementQuestion": "Am I managing my body properly?",
+      "checkDiet": "Check Weight & Diet",
+      "muscleFatigueQuestion": "How fatigued are my muscles?",
+      "checkFatigue": "Check Muscle Fatigue",
+      "imageNote": "This image is a design element and not actual data visualization."
+    },
+
+  "exerciseVolumeGraph": {
+      "title": "Exercise Volume Graph",
+      "recentVolumeChange": "Recent Exercise Volume Change",
+      "kg": "kg",
+      "lbs": "lbs",
+      "가슴": "Chest",
+      "등": "Back",
+      "하체": "Legs",
+      "어깨": "Shoulders",
+      "팔": "Arms",
+      "복근": "Abs"
+    },
+
+  "weeklyVolumeGraph": {
+      "monthlyAvgStats": "Monthly Average Exercise Volume Statistics",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+
+      "5weeksAgo": "5w ago",
+      "4weeksAgo": "4w ago",
+      "3weeksAgo": "3w ago",
+      "2weeksAgo": "2w ago",
+      "lastWeek": "Last wk",
+      "thisWeek": "This wk",
+      "month": "Mo"
+    },
+
+  "weightAndDietGraph": {
+      "title": "Weight and Diet Statistics",
+      "monthlyAvgWeightStats": "Monthly Average Weight Statistics",
+      "noData": "No recorded data available.",
+      "month": "Mo",
+      "몸무게": "Weight",
+      "체지방량": "Body Fat Mass",
+      "골격근량": "Skeletal Muscle Mass"
+    },
+
+  "foodGraph": {
+      "monthlyAvgNutrientStats": "Monthly Average Nutrient Statistics",
+      "kcal": "kcal",
+      "g": "g",
+      "oz": "oz",
+      "calories": "Calories",
+      "carbsAndProtein": "Carbohydrates & Protein",
+      "noData": "No recorded data available.",
+      "칼로리": "Calories",
+      "탄수화물": "Carbohydrates",
+      "단백질": "Protein",
+      "지방": "Fat",
+      "month": "Mo"
+    },
+
+  "muscleFatigue": {
+      "title": "Muscle Fatigue",
+      "monthlyAvgWeightStats": "Monthly Average Weight Statistics",
+      "fatigueInfo": "* Fatigue accumulation over 3, risk of overtraining over 5 *",
+      "scrollRight": "Scroll to the right",
+      "noData": "No data available.",
+      "normal": "Normal",
+      "fatigueAccumulated": "Fatigue Accumulated",
+      "overtrainingRisk": "Overtraining Risk"
+    },
+
+  "menu": {
+      "title": "Menu",
+      "translation": "Translation",
+      "unitSettings": "Unit Settings",
+      "accountInfo": "Account Info",
+      "inquiry": "Inquiry",
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "termsContent": "Terms of Service content",
+      "privacyContent": "Privacy Policy content",
+      "termsTitle": "Terms Content",
+      "freeTrialActive": "You are currently using a free trial.",
+      "autoAdaptAfterSubscription": "Auto Adapt feature is available after subscribing.",
+      "freeTrialEnds": "Free trial ends",
+      "subscribeNow": "Subscribe Now"
+    },
+
+  "freeTrialEnds": "Auto Adapt free trial ends on",
+
+
+  "unitSettings": {
+      "title": "Unit Settings",
+      "selectUnit": "Please select a unit"
+  },
+
+  "translation": "Translation",
+
+  "accountInfo": {
+    "title": "Account Information",
+    "logoutAndDelete": "Logout & Account Deletion",
+    "wait": "Wait!",
+    "checkInfoBeforeLeaving": "Before you leave, please check the information below.",
+    "subscriptionNotice": "Even if you delete your Onul account, your subscription will not be automatically canceled. Subscription cancellations must be handled separately.",
+    "dataDeletionNotice": "When you delete your account, all associated data will be removed. However, some data required by legal obligations will be retained for a certain period and will be deleted afterward.",
+    "deleteSpecificData": "If you want to delete specific data without deleting your account, please request it through the Inquiry function.",
+    "logout": "Logout",
+    "deleteAccount": "Delete Account",
+    "deleteConfirmTitle": "Are you sure you want to delete your account?",
+    "deleteConfirmMessage": "Once you delete your account, all associated data will be removed permanently and cannot be recovered. Are you sure you want to proceed?",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete",
+    "errorTitle": "Error Occurred",
+    "errorMessage": "Sorry, there is a problem with the server. Please contact support for assistance.",
+    "confirm": "OK"
+  },
+
+
+  "subscription": {
+    "title": "Premium Membership",
+    "launchOffer": "Limited-Time Launch Offer!",
+    "currentPrice": "Current Price",
+    "priceChangeNotice": "Price may change in the future",
+    "oneMonthPlan": "1 Month",
+    "aiFeature": "AI Auto-Adaptation Available",
+    "removeAds": "All Ads Removed",
+    "cancelNoticeIos": "You can disable auto-renewal anytime in the Apple App Store.",
+    "cancelNoticeAndroid": "You can disable auto-renewal anytime in the Google Play Store.",
+    "purchase": "Purchase",
+    "close": "Close",
+    "purchaseNoticeIos": "Upon confirmation of purchase, the fee will be charged to your Apple account.",
+    "renewalNoticeIos": "Subscriptions automatically renew unless canceled at least 24 hours before the end of the current period.",
+    "purchaseNoticeAndroid": "Upon confirmation of purchase, the fee will be charged to your Google Play account.",
+    "renewalNoticeAndroid": "Subscriptions automatically renew unless canceled at least 24 hours before the end of the current period.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "subscriptionEnd": "Your free trial ends on",
+    "freeTrialNotice": "Currently on a free trial. AI Auto-Adaptation will require a subscription after the trial ends.",
+    "freeTrialEndDate": "Free trial end date:",
+    "subscribeNow": "Subscribe Now"
+  }
+
+  
+
+
+
+
+  
 }

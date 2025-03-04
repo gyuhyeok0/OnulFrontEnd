@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert, StyleSheet, Dimensions, Animated } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';  // @react-native-community/checkbox에서 임포트
 import CustomModal from '../../src/screens/modal/ServiceAgree';  // CustomModal 임포트
+import { useTranslation } from 'react-i18next';
+
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -13,6 +15,7 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalY] = useState(new Animated.Value(screenHeight)); 
     const [modalContent, setModalContent] = useState('');  
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (isOver14Agreed && isServiceAgreed && isPrivacyAgreed) {
@@ -38,7 +41,7 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
     };
 
     const handleViewTerms = (type) => {
-        const content = type === 'service' ? '서비스 이용약관 내용' : '개인정보 처리방침 내용';
+        const content = type === 'service' ? t("agree.serviceContent") : t("agree.privacyContent");
         setModalContent(content);  
         setModalVisible(true);
         Animated.timing(modalY, {
@@ -58,7 +61,7 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
 
     return (
         <View style={styles.termBox}>
-            <Text style={{ color: 'white', fontSize: 17, fontWeight: 'bold', marginBottom: 5 }}>약관에 동의해 주세요</Text>
+            <Text style={{ color: 'white', fontSize: 17, fontWeight: 'bold', marginBottom: 5 }}>{t("agree.title")}</Text>
 
             {/* 모두 동의 */}
             <View style={styles.agreementBox}>
@@ -71,9 +74,9 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
                         marginTop: 7 
                     }}
                 />
-                <Text style={styles.allAgreeText}>모두 동의</Text>
+                <Text style={styles.allAgreeText}>{t("agree.allAgree")}</Text>
             </View>
-            <Text style={{color: '#999999', fontSize: 11, marginLeft: 36}}> 서비스 이용을 위해 아래 약관에 모두 동의합니다</Text>
+            <Text style={{color: '#999999', fontSize: 11, marginLeft: 36}}>{t("agree.allAgreeNote")}</Text>
 
             {/* 만 14세 이상 동의 */}
             <View style={styles.agreementBox}>
@@ -86,7 +89,7 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
                         marginTop: 7 
                     }}
                 />
-                <Text style={styles.agreementText}>만 14세 이상입니다.</Text>
+                <Text style={styles.agreementText}>{t("agree.age")}</Text>
             </View>
 
             {/* 서비스 이용약관 동의 */}
@@ -100,9 +103,9 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
                         marginTop: 7 
                     }}
                 />
-                <Text style={styles.agreementText}>서비스 이용약관 동의</Text>
+                <Text style={styles.agreementText}>{t("agree.service")}</Text>
                 <TouchableOpacity onPress={() => handleViewTerms('service')} style={{ marginLeft: 'auto' }}>
-                    <Text style={styles.viewText}>보기</Text>
+                    <Text style={styles.viewText}>{t("agree.view")}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -117,10 +120,10 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
                         marginTop: 7 
                     }}
                 />
-                <Text style={styles.agreementText}>개인정보 처리방침 동의</Text>
+                <Text style={styles.agreementText}>{t("agree.privacy")}</Text>
                 
                 <TouchableOpacity onPress={() => handleViewTerms('privacy')} style={{ marginLeft: 'auto' }}>
-                    <Text style={styles.viewText}>보기</Text>
+                    <Text style={styles.viewText}>{t("agree.view")}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -129,7 +132,7 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
                 isVisible={isModalVisible}
                 onClose={closeModal}
                 modalY={modalY}
-                title="약관 내용"
+                title={t("agree.termsTitle")}
                 content={modalContent}
             />
         </View>
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
     },
 
     agreementText: {
-        fontSize: 13,
+        fontSize: 15,
         color: '#ffffff',
         marginLeft: 10,
     },
@@ -165,7 +168,7 @@ const styles = StyleSheet.create({
     viewText: {
         marginLeft: 'auto',
         color: '#3D69A5',
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: 'bold',
     },
 });

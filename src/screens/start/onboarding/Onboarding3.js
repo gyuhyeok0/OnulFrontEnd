@@ -3,6 +3,7 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput, Dime
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBar from '../../common/ProgressBar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useTranslation } from 'react-i18next';
 
 
 const Onboarding3 = ({ navigation, route }) => {
@@ -11,6 +12,7 @@ const Onboarding3 = ({ navigation, route }) => {
     const [weightUnit, setWeightUnit] = useState('kg');
     const [height, setHeight] = useState({ feet: '', inches: '', cm: '' });
     const [weight, setWeight] = useState({ kg: '', lbs: '' });
+    const { t } = useTranslation();
 
     useEffect(() => {
         const loadUnits = async () => {
@@ -90,8 +92,8 @@ const Onboarding3 = ({ navigation, route }) => {
                     enableOnAndroid={true} // Android에서도 작동하도록 설정
                 >
                     <View style={styles.container}>
-                        <Text style={styles.title}>현재 키와 몸무게가 몇인가요?</Text>
-                        <Text style={styles.subTitle}>언제든지 변경 가능합니다.</Text>
+                        <Text style={styles.title}>{t("onboarding3.title")}</Text>
+                        <Text style={styles.subTitle}>{t("onboarding3.subtitle")}</Text>
 
                         <View style={styles.inputContainer}>
                             {heightUnit === 'feet' ? (
@@ -149,7 +151,7 @@ const Onboarding3 = ({ navigation, route }) => {
                             onPress={handleNextStep}
                             disabled={isNextButtonDisabled}
                         >
-                            <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>다음</Text>
+                            <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>{t("onboarding3.next")}</Text>
                         </TouchableOpacity>
                     </View>
                 </KeyboardAwareScrollView>

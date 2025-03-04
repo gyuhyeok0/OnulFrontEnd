@@ -9,8 +9,11 @@ import { selectBodyDataByDate } from '../../src/modules/BodySlice';
 import Foodmodal from '../../src/screens/modal/foodModal/Foodmodal';
 import { fetchTotalFoodSuccess, selectTodayFoodData } from '../../src/modules/TotalFoodSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const Food = () => {
+    const { t } = useTranslation();
+
     const dispatch = useDispatch();
 
     const { isDateChanged } = useCurrentWeekAndDay();
@@ -74,7 +77,6 @@ const Food = () => {
 
     // todayFoodData와 unit 변경 시 mealData 업데이트
     useEffect(() => {
-        console.log("실행")
         if (todayFoodData && unit) {
             setMealData((prevData) => {
                 const updatedData = { ...prevData };
@@ -143,106 +145,99 @@ const Food = () => {
         setModalVisible(false);
         setMealType(''); // 초기화
     };
-
     return (
         <>
-        <View style={styles.container}>
-            <View style={styles.body}>
-                <Text style={styles.titleText}>식단</Text>
-
-                <Text style={styles.subtitle}>오늘의 식단을 추가해주세요</Text>
-
-                <View style={[styles.rowCommon, styles.row1]}>    
-
-                    {['breakfast', 'lunch', 'dinner', 'snack'].map((meal, index) => {
-                        const mealData = todayFoodData.find((data) => data.mealType === meal);
-
-                        return (
-                            <TouchableOpacity
-                                key={meal}
-                                style={styles.recordContainer}
-                                onPress={() => openFindPasswordModal(meal)}
-                            >
-                                <Text style={styles.subTitle}>
-                                    {meal === 'breakfast' ? '아침' : meal === 'lunch' ? '점심' : meal === 'dinner' ? '저녁' : '간식'}
-                                </Text>
-
-                                <View style={styles.rowCenter}>
-
-                                    <View style={styles.recordBox}>
-                                        <View style={styles.rowFlexStart}>
-                                            <Text style={styles.valueText}>
-                                                {mealData?.totalNutrition.kcal || 0}
-                                            </Text>
-                                            <Text style={styles.unitText}>kcal</Text>
+            <View style={styles.container}>
+                <View style={styles.body}>
+                    <Text style={styles.titleText}>{t('food.title')}</Text>
+    
+                    <Text style={styles.subtitle}>{t('food.description')}</Text>
+    
+                    <View style={[styles.rowCommon, styles.row1]}>
+                        {['breakfast', 'lunch', 'dinner', 'snack'].map((meal, index) => {
+                            const mealData = todayFoodData.find((data) => data.mealType === meal);
+    
+                            return (
+                                <TouchableOpacity
+                                    key={meal}
+                                    style={styles.recordContainer}
+                                    onPress={() => openFindPasswordModal(meal)}
+                                >
+                                    <Text style={styles.subTitle}>
+                                        {t(`food.${meal}`)}
+                                    </Text>
+    
+                                    <View style={styles.rowCenter}>
+                                        <View style={styles.recordBox}>
+                                            <View style={styles.rowFlexStart}>
+                                                <Text style={styles.valueText}>
+                                                    {mealData?.totalNutrition.kcal || 0}
+                                                </Text>
+                                                <Text style={styles.unitText}>kcal</Text>
+                                            </View>
+                                            <View style={styles.divider} />
+                                            <View style={styles.rowFlexStart}>
+                                                <Text style={styles.valueText}>
+                                                    {convertValue(mealData?.totalNutrition.grams || 0, unit)}
+                                                </Text>
+                                                <Text style={styles.unitText}>{unit}</Text>
+                                            </View>
                                         </View>
-                                        <View style={styles.divider} />
-                                        <View style={styles.rowFlexStart}>
-                                            <Text style={styles.valueText}>
-                                                {convertValue(mealData?.totalNutrition.grams || 0, unit)}
-                                            </Text>
-                                            <Text style={styles.unitText}>{unit}</Text>
+    
+                                        <View style={styles.marginLeft8}>
+                                            <View style={styles.recordStatusContainer}>
+                                                {mealData?.recipeNames && mealData.recipeNames.length > 0 ? (
+                                                    <Text style={styles.recordStatusText}>
+                                                        {mealData.recipeNames.join(", ")}
+                                                    </Text>
+                                                ) : (
+                                                    <Text style={styles.recordStatusText}>
+                                                        {t('food.noRecords')}
+                                                    </Text>
+                                                )}
+                                            </View>
+    
+                                            <View style={styles.macroContainer}>
+                                                <View style={styles.macroItem}>
+                                                    <Text style={styles.macroLabel}>{t('food.carbs')}</Text>
+                                                    <Text style={styles.macroValue}>
+                                                        {convertValue(mealData?.totalNutrition.carbs || 0, unit)} {unit}
+                                                    </Text>
+                                                </View>
+    
+                                                <View style={styles.divider2} />
+    
+                                                <View style={styles.macroItem}>
+                                                    <Text style={styles.macroLabel}>{t('food.protein')}</Text>
+                                                    <Text style={styles.macroValue}>
+                                                        {convertValue(mealData?.totalNutrition.protein || 0, unit)} {unit}
+                                                    </Text>
+                                                </View>
+    
+                                                <View style={styles.divider2} />
+    
+                                                <View style={styles.macroItem}>
+                                                    <Text style={styles.macroLabel}>{t('food.fat')}</Text>
+                                                    <Text style={styles.macroValue}>
+                                                        {convertValue(mealData?.totalNutrition.fat || 0, unit)} {unit}
+                                                    </Text>
+                                                </View>
+                                            </View>
                                         </View>
                                     </View>
-
-                                    <View style={styles.marginLeft8}>
-                                        
-                                        <View style={styles.recordStatusContainer}>
-                                            {mealData?.recipeNames && mealData.recipeNames.length > 0 ? (
-                                                <Text style={styles.recordStatusText}>
-                                                    {mealData.recipeNames.join(", ")}
-                                                </Text> // 레시피 이름 표시
-                                            ) : (
-                                                <Text style={styles.recordStatusText}>아직 기록이 없습니다</Text>
-                                            )}
-                                        </View>
-
-                                        <View style={styles.macroContainer}>
-                                            <View style={styles.macroItem}>
-                                                <Text style={styles.macroLabel}>탄수화물</Text>
-                                                <Text style={styles.macroValue}>
-                                                    {convertValue(mealData?.totalNutrition.carbs || 0, unit)} {unit}
-                                                </Text>
-                                            </View>
-
-                                            <View style={styles.divider2} />
-
-                                            <View style={styles.macroItem}>
-                                                <Text style={styles.macroLabel}>단백질</Text>
-                                                <Text style={styles.macroValue}>
-                                                    {convertValue(mealData?.totalNutrition.protein || 0, unit)} {unit}
-                                                </Text>
-                                            </View>
-
-                                            <View style={styles.divider2} />
-
-                                            <View style={styles.macroItem}>
-                                                <Text style={styles.macroLabel}>지방</Text>
-                                                <Text style={styles.macroValue}>
-                                                    {convertValue(mealData?.totalNutrition.fat || 0, unit)} {unit}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        );
-                    })}
-
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
                 </View>
             </View>
-        </View>
-
-
-                
-
-            {/* isModalVisible이 true일 때만 Foodmodal 렌더링 */}
+    
             {isModalVisible && (
                 <Foodmodal isVisible={isModalVisible} onClose={closeModal} mealType={mealType} />
-            )}                            
+            )}
         </>
     );
-};
+};    
 
 const styles = StyleSheet.create({
     container: {

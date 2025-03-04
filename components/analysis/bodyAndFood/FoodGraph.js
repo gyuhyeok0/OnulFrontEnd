@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const colors = ["#FFA726", "#66BB6A", "#29B6F6"];
 
 const FoodGraph = ({ foodData = {} }) => {
+    const { t } = useTranslation();
+
     const [selectedPeriod, setSelectedPeriod] = useState('calories');
     const [chartData, setChartData] = useState({ labels: [], datasets: [] });
     const [unit, setUnit] = useState('g'); // 기본 단위는 'g'
@@ -51,11 +54,11 @@ const FoodGraph = ({ foodData = {} }) => {
 
         const getChartData = () => {
             const currentMonth = new Date().getMonth() + 1;
-            const labels = Array.from({ length: 10 }, (_, i) => ((currentMonth - i + 11) % 12) + 1 + "월").reverse();
+            const labels = Array.from({ length: 10 }, (_, i) => ((currentMonth - i + 11) % 12) + 1 + t('foodGraph.month')).reverse();
             
             const processData = (key) => {
                 let data = labels.map(month => {
-                    const dateKey = Object.keys(foodData).find(date => date.includes(month.replace("월", "").padStart(2, '0')));
+                    const dateKey = Object.keys(foodData).find(date => date.includes(month.replace(t('foodGraph.month'), "").padStart(2, '0')));
 
                     return foodData[dateKey]?.[key] ?? 0; // null을 0으로 변환
 
@@ -112,7 +115,7 @@ const FoodGraph = ({ foodData = {} }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.graphTitle}>월별 평균 영양소 통계</Text>
+            <Text style={styles.graphTitle}>{t('foodGraph.monthlyAvgNutrientStats')}</Text>
             
             {chartData.datasets.length > 0 ? (
                 <>
@@ -132,15 +135,16 @@ const FoodGraph = ({ foodData = {} }) => {
 
                     <View style={styles.toggleContainer}>
                         <TouchableOpacity onPress={() => setSelectedPeriod('calories')} style={[styles.toggleButton, selectedPeriod === 'calories' && styles.activeButton]}>
-                            <Text style={styles.toggleText}>칼로리</Text>
+                            <Text style={styles.toggleText}>{t('foodGraph.calories')}</Text>
+
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedPeriod('nutrient')} style={[styles.toggleButton, selectedPeriod === 'nutrient' && styles.activeButton]}>
-                            <Text style={styles.toggleText}>탄수화물 & 단백질</Text>
+                            <Text style={styles.toggleText}>{t('foodGraph.carbsAndProtein')}</Text>
                         </TouchableOpacity>
                     </View>
                 </>
             ) : (
-                <Text style={styles.noDataText}>기론된 데이터가 없습니다.</Text>
+                <Text style={styles.noDataText}>{t('foodGraph.noData')}</Text>
             )}
 
 
@@ -148,7 +152,7 @@ const FoodGraph = ({ foodData = {} }) => {
                 {chartData.datasets.map(({ color, label, volumeChange }, index) => (
                     <View key={`${label}-${index}`} style={styles.legendItem}>
                         <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
-                        <Text style={styles.legendText}>{label}</Text>
+                        <Text style={styles.legendText}>{t(`foodGraph.${label}`)}</Text>
                         <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>  
                             {volumeChange !== null && volumeChange !== 0 ? (volumeChange > 0 ? "+" : "") + formatVolumeChange(volumeChange) + (selectedPeriod === 'calories' ? "kcal" : unit === 'g' ? "g" : "oz") : ""}
                         </Text>

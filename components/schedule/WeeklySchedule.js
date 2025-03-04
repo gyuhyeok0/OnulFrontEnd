@@ -6,8 +6,10 @@ import { useBoxAnimations } from '../../src/hooks/useBoxAnimations';
 import ScheduleSelection from './ScheduleSelection';
 import { callFetchScheduleAPI } from '../../src/apis/ScheduleAPI';
 import { useDispatch, useSelector } from 'react-redux';  // Redux 사용
+import { useTranslation } from 'react-i18next';
 
 const WeeklySchedule = () => {
+    const { t } = useTranslation();
     const { isSwapped, todayIndex } = useCurrentWeekAndDay();
     const { oneWeekAnimations, twoWeekAnimations, startAnimating, stopAnimating } = useBoxAnimations();
     const [selectedBox, setSelectedBox] = useState({ oneWeek: null, twoWeek: null });
@@ -125,7 +127,7 @@ const WeeklySchedule = () => {
                                     style={{ backgroundColor: '#CBD9FD', width: '85%', marginTop: 2, borderRadius: 11, padding: 3, justifyContent: 'center' }}
                                 >
                                     <Text style={{ color: '#1A1C22', textAlign: 'center', fontSize: 12, fontWeight: 'bold' }}>
-                                        {part}
+                                        {t(`bodyParts.${part}`)}
                                     </Text>
                                 </View>
                             ))}
@@ -151,17 +153,17 @@ const WeeklySchedule = () => {
                 <View style={styles.legend}>
                     <View style={styles.legendItem}>
                         <View style={[styles.legendBox, { backgroundColor: '#5FA5EB' }]} />
-                        <Text style={styles.legendText}>이번주</Text>
+                        <Text style={styles.legendText}>{t('weeklySchedule.thisWeek')}</Text>
                     </View>
                     <View style={styles.legendItem}>
                         <View style={[styles.legendBox, { backgroundColor: '#1D4772' }]} />
-                        <Text style={styles.legendText}>다음주</Text>
+                        <Text style={styles.legendText}>{t('weeklySchedule.nextWeek')}</Text>
                     </View>
                 </View>
 
                 {!isDaySelected ? (
                     <View style={styles.registration}>
-                        <Text style={styles.registrationText}>원하는 요일을 터치해 주세요</Text>
+                        <Text style={styles.registrationText}>{t('weeklySchedule.touchDay')}</Text>
                     </View>
                 ) : (
                     <ScheduleSelection

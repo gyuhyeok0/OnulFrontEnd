@@ -6,9 +6,11 @@ import styles from './Onboarding4.module';
 import { registrationOnboarding } from '../../../hooks/HendleOnboarding';
 import { useSelector } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useTranslation } from 'react-i18next';
 
 
 const Onboarding4 = ({ navigation, route }) => {
+    const { t } = useTranslation();
     const { gender, height, weight } = route.params;
 
     const userId = useSelector((state) => state.member.userInfo.memberId);
@@ -121,8 +123,8 @@ const Onboarding4 = ({ navigation, route }) => {
                 >
 
                     <View style={styles.container}>
-                        <Text style={styles.title}>한 번에 들 수 있는 최대 무게를 입력해주세요</Text>
-                        <Text style={styles.subTitle}>회원님만을 위한 운동 프로그램</Text>
+                        <Text style={styles.title}>{t("onboarding4.title")}</Text>
+                        <Text style={styles.subTitle}>{t("onboarding4.subtitle")}</Text>
 
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 30 }}>
                             <Text style={[styles.unitText, basicUnit === 'lbs' && styles.activeUnit]}>lbs</Text>
@@ -139,8 +141,8 @@ const Onboarding4 = ({ navigation, route }) => {
 
                         {/* Bench Press */}
                         <View style={styles.inputRow}>
-                            <Text style={styles.label}>벤치프레스</Text>
-                            <View style={styles.inputContainer}>
+                        <Text style={styles.label}>{t("onboarding4.benchPress")}</Text>
+                        <View style={styles.inputContainer}>
                                 <TextInput
                                     style={styles.input}
                                     placeholder="0"
@@ -154,14 +156,14 @@ const Onboarding4 = ({ navigation, route }) => {
                                     style={[styles.unknownButton, unknownValues.benchPress && styles.selectedUnknownButton]}
                                     onPress={() => handleUnknownToggle('benchPress')}
                                 >
-                                    <Text style={styles.unknownButtonText}>몰라요</Text>
+                                    <Text style={styles.unknownButtonText}>{t("onboarding4.unknown")}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
 
                         {/* Deadlift */}
                         <View style={styles.inputRow}>
-                            <Text style={styles.label}>데드리프트</Text>
+                            <Text style={styles.label}>{t("onboarding4.deadlift")}</Text>
                             <View style={styles.inputContainer}>
                                 <TextInput
                                     style={styles.input}
@@ -176,14 +178,14 @@ const Onboarding4 = ({ navigation, route }) => {
                                     style={[styles.unknownButton, unknownValues.deadlift && styles.selectedUnknownButton]}
                                     onPress={() => handleUnknownToggle('deadlift')}
                                 >
-                                    <Text style={styles.unknownButtonText}>몰라요</Text>
+                                    <Text style={styles.unknownButtonText}>{t("onboarding4.unknown")}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
 
                         {/* Squat */}
                         <View style={styles.inputRow}>
-                            <Text style={styles.label}>스쿼트</Text>
+                            <Text style={styles.label}>{t("onboarding4.squat")}</Text>
                             <View style={styles.inputContainer}>
                                 <TextInput
                                     style={styles.input}
@@ -198,7 +200,7 @@ const Onboarding4 = ({ navigation, route }) => {
                                     style={[styles.unknownButton, unknownValues.squat && styles.selectedUnknownButton]}
                                     onPress={() => handleUnknownToggle('squat')}
                                 >
-                                    <Text style={styles.unknownButtonText}>몰라요</Text>
+                                    <Text style={styles.unknownButtonText}>{t("onboarding4.unknown")}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -209,7 +211,9 @@ const Onboarding4 = ({ navigation, route }) => {
                             onPress={handleNextStep}
                             disabled={isNextButtonDisabled}
                         >
-                            <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>다음</Text>
+                            <Text style={[styles.nextButtonText, isNextButtonDisabled && styles.disabledButtonText]}>                                
+                                {t("onboarding4.next")}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </KeyboardAwareScrollView>

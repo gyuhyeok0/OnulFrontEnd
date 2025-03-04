@@ -6,6 +6,7 @@ import { analysisExerciseVolume } from '../../../src/apis/AnalysisApi';
 import { useDispatch, useSelector } from 'react-redux';
 import WeeklyVolumeGraph from './WeeklyVolumeGraph';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
+import { useTranslation } from 'react-i18next';
 
 const mainMuscleGroups = {
     "등": ["광배근", "승모근", "하부 등"],
@@ -19,6 +20,7 @@ const mainMuscleGroups = {
 const colors = ["#55CBF7", "#FA4638", "#39D76A", "#FFDD33", "#B452FF", "#FF8C00"];
 
 const getLast7Days = () => {
+
     const today = new Date();
     today.setDate(today.getDate() - 1); // 어제로 설정
 
@@ -30,6 +32,8 @@ const getLast7Days = () => {
 };
 
 const ExerciseVolumeGraph = ({ navigation }) => {
+    const { t } = useTranslation();
+
     const dispatch = useDispatch();
     const [sampleData, setSampleData] = useState([]);
     const [selectedMain, setSelectedMain] = useState("등");
@@ -126,10 +130,10 @@ const ExerciseVolumeGraph = ({ navigation }) => {
 
     return (
         <>
-            <DefaultHeader title="운동량 그래프" navigation={navigation} />
+            <DefaultHeader title={t('exerciseVolumeGraph.title')} navigation={navigation} />
             <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.graphContainer}>
-                    <Text style={styles.graphTitle}>최근 운동량 변화</Text>
+                    <Text style={styles.graphTitle}>{t('exerciseVolumeGraph.recentVolumeChange')}</Text>
                     <LineChart
                         data={{ labels: last7Days, datasets: datasets.length ? datasets : [{ data: Array(7).fill(0) }] }}
                         width={Dimensions.get('window').width - 30}
@@ -146,7 +150,8 @@ const ExerciseVolumeGraph = ({ navigation }) => {
                         .map(({ color, detail, volumeChange }) => (
                             <View key={detail} style={styles.legendItem}>
                                 <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
-                                <Text style={styles.legendText}>{detail}</Text>
+                                <Text style={styles.legendText}>{t(`muscleGroups.${detail}`)}</Text>
+
                                 <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>
                                     {volumeChange !== 0 ? 
                                         (volumeChange > 0 ? "+" : "") + 
@@ -166,7 +171,7 @@ const ExerciseVolumeGraph = ({ navigation }) => {
                     <View style={styles.buttonContainer}>
                         {Object.keys(mainMuscleGroups).map(group => (
                             <TouchableOpacity key={group} onPress={() => setSelectedMain(group)} style={[styles.muscleButton, selectedMain === group && styles.selectedButton]}>
-                                <Text style={styles.buttonText}>{group}</Text>
+                                <Text style={styles.buttonText}>{t(`exerciseVolumeGraph.${group}`)}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>

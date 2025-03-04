@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Dimensions, StyleSheet, Text, Alert,
 import DefaultHeader from '../common/DefaultHeader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { API_URL } from '@env';
+import { useTranslation } from 'react-i18next';
 
 
 const Inquiry = ({ navigation }) => {
@@ -10,6 +11,8 @@ const Inquiry = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const { t } = useTranslation();
+
 
     useEffect(() => {
         console.log("=====================문의 페이지 ========================");
@@ -19,24 +22,25 @@ const Inquiry = ({ navigation }) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
         if (!email || !title || !content) {
-            Alert.alert('오류', '모든 필수 필드를 입력해 주세요.');
+            Alert.alert(t('inquiry.error'), t('inquiry.error_fill_required_fields'));
             return;
         }
     
         if (!emailRegex.test(email)) {
-            Alert.alert('오류', '올바른 이메일 형식을 입력해 주세요.');
+            Alert.alert(t('inquiry.error'), t('inquiry.error_invalid_email'));
             return;
         }
     
         if (title.length > 50) {
-            Alert.alert('오류', '제목은 50자 이하로 입력해 주세요.');
+            Alert.alert(t('inquiry.error'), t('inquiry.error_title_limit'));
             return;
         }
     
         if (content.length > 500) {
-            Alert.alert('오류', '문의 내용은 500자 이하로 입력해 주세요.');
+            Alert.alert(t('inquiry.error'), t('inquiry.error_content_limit'));
             return;
         }
+    
     
         // 서버로 데이터를 전송하는 로직
         try {
@@ -56,20 +60,19 @@ const Inquiry = ({ navigation }) => {
             const result = await response.json();
     
             if (response.ok) {
-                // 상태 처리
                 if (result.state === "SUCCESS") {
-                    Alert.alert('성공', '문의가 성공적으로 제출되었습니다.');
+                    Alert.alert(t('inquiry.success'), t('inquiry.inquiry_success'));
                 } else if (result.state === "INVALID_EMAIL") {
-                    Alert.alert('오류', '유효하지 않은 이메일 형식입니다.');
+                    Alert.alert(t('inquiry.error'), t('inquiry.error_invalid_email'));
                 } else if (result.state === "INVALID_INPUT") {
-                    Alert.alert('오류', '필수 항목을 모두 입력해 주세요.');
+                    Alert.alert(t('inquiry.error'), t('inquiry.error_fill_required_fields'));
                 }
             } else {
-                Alert.alert('오류', '문의 제출에 실패했습니다.');
+                Alert.alert(t('inquiry.error'), t('inquiry.error_inquiry_failed'));
             }
         } catch (error) {
-            console.error('문의 제출 에러:', error);
-            Alert.alert('오류', '문의 제출 중 문제가 발생했습니다.');
+            console.error(t('inquiry.error_inquiry_submission'), error);
+            Alert.alert(t('inquiry.error'), t('inquiry.error_inquiry_submission'));
         }
     };
     
@@ -78,66 +81,56 @@ const Inquiry = ({ navigation }) => {
     
     return (
         <>
-            <DefaultHeader title="문의하기" navigation={navigation} />
-
+            <DefaultHeader title={t('inquiry.title_page')} navigation={navigation} />
             <View style={styles.container}>
-            <KeyboardAwareScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                extraScrollHeight={20} // 키보드 위 여백
-                enableOnAndroid={true} // Android에서도 작동하도록 설정
-            >
-
+                <KeyboardAwareScrollView
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    extraScrollHeight={20}
+                    enableOnAndroid={true}
+                >
                     <View style={styles.form}>
-                        {/* 아이디 */}
-                        <Text style={styles.label}>아이디</Text>
+                        <Text style={styles.label}>{t('inquiry.id')}</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="아이디 입력"
-                            placeholderTextColor="#666666"  // placeholder 색상 변경
+                            placeholder={t('inquiry.placeholder_id')}
+                            placeholderTextColor="#666666"
                             value={memberId}
                             onChangeText={setMemberId}
                         />
 
-                        {/* 이메일 (필수) */}
-                        <Text style={styles.label}>이메일 *</Text>
-                        <Text style={{marginBottom: 8, color:'#999999'}}>답변을 이메일로 보내드립니다</Text>
-
+                        <Text style={styles.label}>{t('inquiry.email')} *</Text>
+                        <Text style={{color:'#999999', marginBottom: 5}}>{t('inquiry.email_description')}</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="이메일 입력"
-                            placeholderTextColor="#666666"  // placeholder 색상 변경
+                            placeholder={t('inquiry.placeholder_email')}
+                            placeholderTextColor="#666666"
                             keyboardType="email-address"
                             value={email}
                             onChangeText={setEmail}
-                            required
-                        />
-                        {/* 제목 (필수) */}
-                        <Text style={styles.label}>제목 *</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="제목 입력"
-                            placeholderTextColor="#666666"  // placeholder 색상 변경
-                            value={title}
-                            onChangeText={setTitle}
-                            required
                         />
 
-                        {/* 문의내용 (필수) */}
-                        <Text style={styles.label}>문의내용 *</Text>
+                        <Text style={styles.label}>{t('inquiry.title')} *</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={t('inquiry.placeholder_title')}
+                            placeholderTextColor="#666666"
+                            value={title}
+                            onChangeText={setTitle}
+                        />
+
+                        <Text style={styles.label}>{t('inquiry.content')} *</Text>
                         <TextInput
                             style={[styles.input, styles.textArea]}
-                            placeholder="문의내용 입력"
-                            placeholderTextColor="#666666"  // placeholder 색상 변경
+                            placeholder={t('inquiry.placeholder_content')}
+                            placeholderTextColor="#666666"
                             value={content}
                             onChangeText={setContent}
                             multiline
                             numberOfLines={4}
-                            required
                         />
 
-                        {/* 제출 버튼 */}
                         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                            <Text style={styles.submitButtonText}>제출</Text>
+                            <Text style={styles.submitButtonText}>{t('inquiry.submit')}</Text>
                         </TouchableOpacity>
                     </View>
                 </KeyboardAwareScrollView>
