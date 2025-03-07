@@ -31,18 +31,18 @@ const resources = {
     es: { // 스페인어 추가
         translation: translationES
     },
-    de: { // 독일어 추가
-        translation: translationDE
-    },
-    fr: { // 프랑스어 추가
-        translation: translationFR
-    },
-    it: { // 이탈리아어 추가
-        translation: translationIT
-    },
-    nl: { // 네덜란드어 추가
-        translation: translationNL
-    }
+    // de: { // 독일어 추가
+    //     translation: translationDE
+    // },
+    // fr: { // 프랑스어 추가
+    //     translation: translationFR
+    // },
+    // it: { // 이탈리아어 추가
+    //     translation: translationIT
+    // },
+    // nl: { // 네덜란드어 추가
+    //     translation: translationNL
+    // }
 };
 
 
@@ -64,6 +64,7 @@ const initializeI18n = async () => {
     console.log(locales); // 기기 언어
     console.log(storedLanguage); // 저장된 언어
 
+    // i18n 초기화
     await i18n
         .use(initReactI18next)
         .init({
@@ -77,5 +78,7 @@ const initializeI18n = async () => {
 
     console.log("================= i18n 초기화 완료 ==================");
 };
+
+
 
 export default initializeI18n;

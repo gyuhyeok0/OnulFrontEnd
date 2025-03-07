@@ -48,12 +48,12 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
                 ]}
             >   
             
-            <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+            <View style={{flexDirection: 'row', justifyContent:'space-between',alignItems:'center'}}>
 
-                <View style={{ width: '20%', height: 30, marginTop: -5, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ width: '10%', height: 20, marginTop: 3, justifyContent: 'center', alignItems: 'center'}}>
                     {Array.from({ length: 3 }).map((_, rowIndex) => (
                             <View key={rowIndex} style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 3.5,  marginLeft: -5 }}>
-                                {Array.from({ length: 4 }).map((_, colIndex) => (
+                                {Array.from({ length: 3 }).map((_, colIndex) => (
                                     <View
                                         key={colIndex}
                                         style={{
@@ -69,16 +69,18 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
                     ))}
                 </View>
                 
+                <View style={{width: '79%'}}>
+                    <Text style={styles.exerciseButtonText}>
+                        {t(`exerciseNames.${item.exerciseName}.name`, item.exerciseName)}
+                    </Text>
 
-                <Text style={styles.exerciseButtonText}>
-                    {t(`exerciseNames.${item.exerciseName}.name`, item.exerciseName)}
-                </Text>
-
+                </View>
+    
                 
-                <View style={{ width: '20%', height: 30, marginTop: -5, justifyContent: 'center', alignItems: 'center', marginRight: -5 }}>
+                <View style={{ width: '10%', height: 20, marginTop: 3, justifyContent: 'center', alignItems: 'center', marginRight: -5 }}>
                     {Array.from({ length: 3 }).map((_, rowIndex) => (
                             <View key={rowIndex} style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 3.5 }}>
-                                {Array.from({ length: 4 }).map((_, colIndex) => (
+                                {Array.from({ length: 3 }).map((_, colIndex) => (
                                     <View
                                         key={colIndex}
                                         style={{

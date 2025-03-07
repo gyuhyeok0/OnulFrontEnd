@@ -186,7 +186,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
             <View style={styles.overlay}>
                 <View style={styles.modalContainer}>
                     <View style={styles.header}>
-                        <Text style={styles.title}>레시피 등록</Text>
+                        <Text style={styles.title}>{t('recipeEditModalTitle')}</Text>
                         <TouchableOpacity onPress={onClose}>
                             <Ionicons name="close" size={24} color="#999" style={styles.closeIcon} />
                         </TouchableOpacity>

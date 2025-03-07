@@ -282,7 +282,7 @@ const RegistChest = () => {
                                 <Icon name="slash" size={35} color="#787A7F" style={{opacity:0.5}} />
                             </View>                            
                             <View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                                      <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
 
 
@@ -300,7 +300,7 @@ const RegistChest = () => {
                             >
                                 <Ionicons 
                                     name={likedExercises[exercise.id] ? "heart" : "heart-outline"} 
-                                    size={28} 
+                                    size={25} 
                                     color={likedExercises[exercise.id] ? "red" : "gray"} 
                                 />
                             </TouchableOpacity>

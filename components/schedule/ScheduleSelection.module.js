@@ -131,9 +131,10 @@ export const styles = StyleSheet.create({
 
     exerciseButton: {
         backgroundColor: '#394452', // 어두운 배경색
-        height: 30,
-        padding: 5,
+        minHeight: 30,
         marginBottom: 4,
+        paddingLeft: 5,
+        paddingRight: 5,
         borderRadius: 10, // 모서리 둥글게
         borderWidth: 2,
         borderColor: '#4a90e2', // 파란색 테두리
@@ -144,6 +145,7 @@ export const styles = StyleSheet.create({
         color: '#ffffff', // 흰색 텍스트
         fontSize: 13, // 텍스트 크기
         fontWeight: 'bold',
+        textAlign:'center'
     },
 
     noExerciseText: {

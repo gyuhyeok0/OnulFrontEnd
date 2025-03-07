@@ -243,7 +243,7 @@ const Analysis = ({ navigation }) => {
                         <Text style={styles.navButtonText}>{t('analysis.checkExercise')}</Text>
 
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>
+                    <Text style={{color:'white', fontSize: 9, position: 'absolute', bottom:2}}>
                     {t('analysis.imageNote')}
                     </Text>
 
@@ -265,7 +265,7 @@ const Analysis = ({ navigation }) => {
                     <Pressable style={styles.navButton} onPress={() => handlePress('WeightAndDietGraph')}>
                         <Text style={styles.navButtonText}>{t('analysis.checkDiet')}</Text>
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>
+                    <Text style={{color:'white', fontSize: 9, position: 'absolute', bottom:2}}>
                     {t('analysis.imageNote')}
                     </Text>
 
@@ -287,7 +287,7 @@ const Analysis = ({ navigation }) => {
                     <Pressable style={styles.navButton} onPress={() => handlePress('MuscleFatigue')}>
                         <Text style={styles.navButtonText}>{t('analysis.checkFatigue')}</Text>
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 10, position: 'absolute', bottom:8}}>
+                    <Text style={{color:'white', fontSize: 9, position: 'absolute', bottom:2}}>
                     {t('analysis.imageNote')}
                     </Text>
 

@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center'
     },
-
     exerciseText: {
         fontSize: 14,
         color: '#fff',
@@ -70,7 +69,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 10,
     },
-
     buttonContainer: {
         marginTop: 'auto',
         justifyContent: 'space-between',
@@ -93,6 +91,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         fontWeight: 'bold',
+        textAlign:'center'
     },
 
     exerciseRecord: {
@@ -159,6 +158,8 @@ const styles = StyleSheet.create({
     },
     settingButtonsContainer: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
+
     },
     settingButton: {
         marginTop: 5,
