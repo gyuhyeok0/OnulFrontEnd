@@ -34,7 +34,9 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
                 try {
                     console.log('i18n 초기화 시작');
                     await initializeI18n();
-                    console.log('i18n 초기화 완료');
+                    console.log('i18n 초기화 완료')
+
+                    
                 } catch (error) {
                     console.error('i18n 초기화 오류:', error);
                 }

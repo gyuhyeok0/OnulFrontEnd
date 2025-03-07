@@ -46,7 +46,9 @@ const DraggableItem = ({ item, index, activeIndex, translateY, onDragStart, onDr
                         ))}
                     </View>
 
-                    <Text style={styles.draggableItemText}>{t(`exerciseNames.${item.exerciseName}.name`, item.exerciseName)}</Text>
+                    <View style={{width: '70%'}}>
+                        <Text style={styles.draggableItemText}>{t(`exerciseNames.${item.exerciseName}.name`, item.exerciseName)}</Text>
+                    </View>
 
                     <View style={[styles.decorativeBox, styles.rightBox]}>
                         {Array.from({ length: 3 }).map((_, rowIndex) => (
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
     draggableItem: {
         padding: 3,
         backgroundColor: '#394452',
-        height:32,
+        minHeight:32,
         marginVertical: 5,
         borderRadius: 8,
     },
@@ -83,7 +85,6 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         color: '#fff',
         textAlign: 'center',
-        flex: 1,
     },
     decorativeBoxContainer: {
         flexDirection: 'row',

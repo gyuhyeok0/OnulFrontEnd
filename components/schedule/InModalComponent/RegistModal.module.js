@@ -157,6 +157,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 5,
         height: 70,
+        // flexWrap: 'wrap'
         
     },
 
@@ -174,7 +175,9 @@ export const styles = StyleSheet.create({
 
     exerciseName:{
         color: 'white',
-        fontSize: 16,
+        maxWidth: 170,
+        // backgroundColor:'red',
+        fontSize: 14,
         fontWeight: '500',
     },
 
@@ -189,15 +192,15 @@ export const styles = StyleSheet.create({
         borderWidth: 1,          
         borderColor: '#3F96EE',  
 
-        paddingTop: 4,
-        paddingBottom: 4,
-        paddingLeft: 7,
-        paddingRight: 7,
+        paddingTop: 3,
+        paddingBottom: 3,
+        paddingLeft: 5,
+        paddingRight: 5,
 
 
 
         borderRadius: 10,     
-        fontSize: 10,     
+        fontSize: 7,     
         marginLeft: 5,
     },
 
@@ -241,11 +244,12 @@ export const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#4A7BF6', // 외곽선 색상
         marginVertical: 5, // 목록 간 간격
+        flexWrap: 'wrap',
     },
     exerciseNameOnly: {
         flex: 1,
         color: 'white',
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: 'bold',
     },
 

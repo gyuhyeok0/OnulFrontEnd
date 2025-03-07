@@ -108,7 +108,7 @@ const Menu = ({ navigation }) => {
                     <>
                         <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.freeTrialActive')}</Text>
                         <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.autoAdaptAfterSubscription')}</Text>
-                        <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginTop: 5 }}>
+                        <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginTop: 5, flexWrap: 'wrap' }}>
                             <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.freeTrialEnds')}: {fourWeeksLater}</Text>
 
                             <Pressable 

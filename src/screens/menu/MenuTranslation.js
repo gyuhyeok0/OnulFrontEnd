@@ -59,7 +59,7 @@ const MenuTranslation = ({ navigation }) => {
                     <Text style={styles.buttonText}>Español</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity 
+                {/* <TouchableOpacity 
                     style={[styles.button, styles.germanButton]} 
                     onPress={() => changeLanguage('de')}
                     activeOpacity={0.7}
@@ -89,7 +89,7 @@ const MenuTranslation = ({ navigation }) => {
                     activeOpacity={0.7}
                 >
                     <Text style={styles.buttonText}>Nederlands</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         </>
     );

@@ -422,6 +422,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
         marginTop: 13,
+        textAlign:'center'
     },
 
     weightDisplay: {

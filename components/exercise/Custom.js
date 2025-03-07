@@ -203,17 +203,33 @@ const Custom = () => {
         }
     }, [freeExercises, minHeight, animationHeight]);
 
+    const [itemHeights, setItemHeights] = useState({});
 
-    const toggleVisibility = () => {
-        setIsVisible(prevState => !prevState);
+    // 개별 아이템 높이를 저장하는 함수
+    const handleItemLayout = (index, height) => {
+        setItemHeights(prevHeights => ({
+            ...prevHeights,
+            [index]: height,
+        }));
+    };
+
+    // 모든 아이템의 높이 합산하여 animationHeight 설정
+    useEffect(() => {
+        const totalHeight = Object.values(itemHeights).reduce((sum, h) => sum + h, 0) + 32;
+
         Animated.timing(animationHeight, {
-
-            // 에니메이터 높이
-            toValue: isVisible ? 0 : minHeight+ 33,
+            toValue: isVisible ? totalHeight : 0,
             duration: 300,
             useNativeDriver: false,
         }).start();
+    }, [itemHeights, isVisible]);
+
+    // 버튼 클릭 시 `isVisible` 상태만 변경 (애니메이션은 useEffect에서 실행)
+    const toggleVisibility = () => {
+        setIsVisible(prev => !prev);
     };
+
+
 
     // =================
         if (!isReadyWeight || !isReadyKm) {
@@ -244,17 +260,21 @@ const Custom = () => {
                                 <Text style={{color:'white', fontWeight:'bold', fontSize: 12, marginBottom: 5, zIndex:10}}>{t('customWorkout.changeOrder')}</Text>
 
                                 {reorderedExercises.map((item, index) => (
-                                    <DraggableItem
-                                        key={item.id || index}
-                                        item={item}
-                                        index={index}
-                                        activeIndex={activeIndex}
-                                        translateY={translateYs[index]}
-                                        onDragStart={handleDragStart}
-                                        onDragEnd={handleDragEnd}
-                                        styles={styles} // styles 전달
-                                    />
-                                ))}
+    <View 
+        key={item.id || index} 
+        onLayout={(event) => handleItemLayout(index, event.nativeEvent.layout.height)} 
+    >
+        <DraggableItem
+            item={item}
+            index={index}
+            activeIndex={activeIndex}
+            translateY={translateYs[index]}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            styles={styles}
+        />
+    </View>
+))}
 
                             </View>
                         )}

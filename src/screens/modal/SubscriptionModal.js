@@ -110,7 +110,7 @@ const SubscriptionModal = ({ visible, onClose }) => {
                         <View style={{flexDirection:'row', alignItems:'center', marginBottom: 5}}>
                             <Text style={styles.priceHighlight}>{t('subscription.launchOffer')}</Text>
 
-                            <Text style={styles.priceText}>{t('subscription.currentPrice')}</Text>
+                            {/* <Text style={styles.priceText}>{t('subscription.currentPrice')}</Text> */}
                         </View>
                     </View>
 
