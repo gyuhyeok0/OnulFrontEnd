@@ -72,7 +72,15 @@
     "passwordMismatch": "비밀번호가 일치하지 않습니다.",
     "passwordInvalid": "영문자와 숫자를 조합하여 6~20자로 입력해주세요.",
     "passwordResetSuccess": "비밀번호가 성공적으로 변경되었습니다.",
-    "messageNote": "메시지를 수신하기 위해 국외발신 차단 설정을 해제해 주시기 바랍니다"
+    "messageNote": "메시지를 수신하기 위해 국외발신 차단 설정을 해제해 주시기 바랍니다",
+
+    "idError": "오류",
+    "idNotFound": "아이디를 찾을수 없습니다.",
+    "passwordResetError": "새로운 비밀번호를 입력해주세요",
+
+    "phoneNotRegistered": "등록된 번호와 일치하지 않습니다."
+    
+
   },
 
 

@@ -8,8 +8,9 @@ import Agree from '../../../components/signup/Agree';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { callLoginAPI } from '../../apis/MemberAPICalls';
 import { useDispatch } from 'react-redux';
-import { API_URL } from '@env';
+import { API_URL_JP, API_URL_US } from '@env';
 import { useTranslation } from 'react-i18next';
+import * as RNLocalize from 'react-native-localize';
 
 
 
@@ -30,6 +31,14 @@ function SignupStep1({ navigation, route }) {
     const { memberId, memberPassword } = route.params || {};
 
     const { t } = useTranslation();
+
+    const locales = RNLocalize.getLocales();
+    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
+
+    // 🇯🇵 일본이거나 🇰🇷 한국이면 일본 서버 사용, 그 외에는 미국 서버 사용
+    const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
+    const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+
 
     useEffect(() => {
         const locales = Localize.getLocales();
@@ -186,10 +195,10 @@ function SignupStep1({ navigation, route }) {
                     navigation.navigate('Onboarding');
                 } else if (result && result.errorMessage) {
                     Alert.alert(t("signupStep1.loginError"), result.errorMessage || t("signupStep1.loginFailed"));
-                    console.error(result.errorMessage);
+                    // console.error(result.errorMessage);
                 } else {
                     Alert.alert(t("signupStep1.loginError"), t("signupStep1.loginFailed"));
-                    console.error(t("signupStep1.loginFailed"));
+                    // console.error(t("signupStep1.loginFailed"));
                 }
                 
             } else {
@@ -199,7 +208,7 @@ function SignupStep1({ navigation, route }) {
 
         } catch (error) {
             Alert.alert(t("signupStep1.error"), t("signupStep1.connectionError"));
-            console.error('Error:', error);
+            // console.error('Error:', error);
         }
         
     };

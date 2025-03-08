@@ -2,13 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet, Dimensions, Animated, View, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { WebView } from 'react-native-webview';
-import { API_URL } from '@env';
+import * as RNLocalize from 'react-native-localize';
+
+import { API_URL_JP, API_URL_US } from '@env';
 
 const screenHeight = Dimensions.get('window').height;
 
 const CustomModal = ({ isVisible, onClose, modalY, title }) => {
     const [loading, setLoading] = useState(true);
     const [htmlUri, setHtmlUri] = useState(`${API_URL}/privacy-policy.html`);
+
+    const locales = RNLocalize.getLocales();
+    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
+
+    // 🇯🇵 일본이거나 🇰🇷 한국이면 일본 서버 사용, 그 외에는 미국 서버 사용
+    const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
+    const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+
 
     useEffect(() => {
         if (isVisible) {

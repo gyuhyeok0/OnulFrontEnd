@@ -71,7 +71,14 @@
       "passwordMismatch": "パスワードが一致しません。",
       "passwordInvalid": "英数字を組み合わせた6～20文字で入力してください。",
       "passwordResetSuccess": "パスワードが正常に変更されました。",
-      "messageNote": "国際SMSブロックを解除してください。"
+      "messageNote": "国際SMSブロックを解除してください。",
+
+      "idError": "エラー",
+      "idNotFound": "IDが見つかりません",
+      "passwordResetError": "新しいパスワードを入力してください",
+
+      "phoneNotRegistered": "登録された番号と一致しません。"
+
     },
   
     "signup": {

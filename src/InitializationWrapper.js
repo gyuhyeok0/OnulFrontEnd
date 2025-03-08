@@ -210,55 +210,18 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
                 console.error('Food 데이터 삭제 오류:', error);
             }
 
-            // 분석 요청
-            // 분석 요청
-            if (memberId !== null && memberId !== undefined) {
-                analysisUpdateAPI(memberId);
-            } 
+            const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
 
+            // 스토리지에 API_URL이 없으면 실행하지 않음
+            if (storedAPI !== null && storedAPI !== undefined) {
+                // 분석 요청
+                if (memberId !== null && memberId !== undefined) {
+                    analysisUpdateAPI(memberId);
+                }
+            } else {
+                console.log("No API_URL found in AsyncStorage. Skipping analysis update.");
+            }
 
-            // // AI 요청 실행 여부 확인
-            // if (typeof memberId === "string" && memberId.trim() !== "") {
-            //     try {
-            //         console.log('ai 요청');
-
-            //         const checkDate = true;
-            //         const initialization = true;
-
-            //         // ✅ aiRequest가 완료될 때까지 대기
-            //         const result = await aiRequset(memberId, checkDate, initialization);
-
-            //         console.log("📌 AI 요청 결과:", result);
-
-                    
-            //     } catch (error) {
-            //         console.error("❌ AI 요청 실패:", error);
-            //     }
-            // } else {
-            //     console.warn("❌ memberId가 유효하지 않으므로 AI 요청을 수행하지 않습니다.");
-            // }
-
-
-            // // 날짜 스토리지에 저장 (로컬 시간 기준)
-            // try {
-            //     const todayDate = new Date().toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 (로컬 시간 기준)
-
-            //     // 기존 "현재 접속일" 가져오기
-            //     const previousAccessDate = await AsyncStorage.getItem('currentAccessDate');
-
-            //     // ✅ 기존 "현재 접속일"이 오늘과 다를 때만 "마지막 접속일"을 업데이트
-            //     if (previousAccessDate && previousAccessDate !== todayDate) {
-            //         await AsyncStorage.setItem('lastAccessDate', previousAccessDate);
-            //         console.log(`📌 마지막 접속일 업데이트: ${previousAccessDate}`);
-            //     }
-
-            //     // ✅ 새로운 "현재 접속일" 저장 (무조건 저장)
-            //     await AsyncStorage.setItem('currentAccessDate', todayDate);
-            //     console.log(`✅ 현재 접속일 저장 완료: ${todayDate}`);
-
-            // } catch (error) {
-            //     console.error('❌ 날짜 저장 실패:', error);
-            // }
     
             console.log('초기화 완료');
             setIsInitialized(true);

@@ -39,6 +39,7 @@ const Exercise = ({ navigation }) => {
 
     const [fourWeeksLater, setFourWeeksLater] = useState(null);
 
+
     useEffect(() => {
         if (memberSignupDate) {
             const signupDateObj = new Date(memberSignupDate); // 문자열을 Date 객체로 변환
