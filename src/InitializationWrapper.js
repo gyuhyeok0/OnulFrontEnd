@@ -11,6 +11,8 @@ import { analysisUpdateAPI } from './apis/AnalysisApi';
 import { inspection } from './apis/Inspection';
 import { Alert, BackHandler, Platform, Linking } from 'react-native';
 import { aiRequset } from './apis/AutoAdapt';
+import { checkAppVersion } from './CheckAppVersion';
+import i18n from 'i18next';
 
 
 const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTimerRunning }) => {
@@ -40,7 +42,8 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
                 } catch (error) {
                     console.error('i18n 초기화 오류:', error);
                 }
-    
+
+
             // 서버로 점검 중인지 확인
             try {
                 const result = await inspection();  // ✅ 단 한 번만 호출
@@ -72,21 +75,20 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
 
                     setTimeout(() => {
                         Alert.alert(
-                            "점검 중",
-                            `현재 서버 점검 중입니다.\n종료 시간: ${formattedEndTime}\n \n불편을 드려 죄송합니다.` +
-                            (Platform.OS === "ios" ? "\n앱을 종료해주세요." : ""),  // ✅ iOS일 때 추가 메시지 표시
+                            i18n.t('maintenance.title'),
+                            `${i18n.t('maintenance.message')}\n${i18n.t('maintenance.end_time')} ${formattedEndTime}\n\n${i18n.t('maintenance.apology')}` +
+                            (Platform.OS === "ios" ? `\n${i18n.t('maintenance.ios_notice')}` : ""),  // ✅ iOS일 때 추가 메시지 표시
                             [{ 
-                                text: "확인", 
+                                text: i18n.t('maintenance.confirm'), 
                                 onPress: () => {
                                     if (Platform.OS === "android") {
                                         BackHandler.exitApp();  // ✅ 안드로이드에서는 앱 종료
-                                    } else if (Platform.OS === "ios") {
-                                        // console.log("iOS에서는 사용자가 직접 앱을 종료해야 합니다.");
                                     }
                                 }
                             }]
                         );
                     }, 0);
+                    
                     
 
                     return null;
@@ -94,20 +96,19 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
 
                 if (result === "networkError") {
                     
-                        Alert.alert(
-                            "점검 중",
-                            `현재 서버에 문제가 있습니다. \n 잠시후에 다시 이용해주세요 \n\n 앱을 종료해주세요`,
-                            [{ 
-                                text: "확인", 
-                                onPress: () => {
-                                    if (Platform.OS === "android") {
-                                        BackHandler.exitApp();  // ✅ 안드로이드에서는 앱 종료
-                                    } else if (Platform.OS === "ios") {
-                                        // console.log("iOS에서는 사용자가 직접 앱을 종료해야 합니다.");
-                                    }
+                    Alert.alert(
+                        i18n.t('server_error.title'),
+                        `${i18n.t('server_error.message')}\n\n${i18n.t('server_error.close_app')}`,
+                        [{ 
+                            text: i18n.t('server_error.confirm'), 
+                            onPress: () => {
+                                if (Platform.OS === "android") {
+                                    BackHandler.exitApp();  // ✅ 안드로이드에서는 앱 종료
                                 }
-                            }]
-                        );
+                            }
+                        }]
+                    );
+                    
 
                     return null;
                 }
@@ -117,6 +118,18 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
             }
 
 
+            try {
+                console.log("버전 확인 API 호출");
+                const isVersionValid = await checkAppVersion(); // 🔹 결과를 변수에 저장
+                
+                if (!isVersionValid) {
+                    console.log("🚨 버전이 유효하지 않음, 초기화 중단");
+                    return null; // ❌ 버전 체크 실패 시 즉시 종료
+                }
+            } catch (error) {
+                console.error("버전 체크 중 오류 발생:", error);
+                return null; // ❌ 오류 발생 시도 초기화 중단
+            }
 
 
             // 2. AsyncStorage에서 토큰 불러오기

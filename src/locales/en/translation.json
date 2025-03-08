@@ -603,6 +603,33 @@
     "subscribeNow": "Subscribe Now"
   },
   "notFound": "Exercise information not found.",
+
+
+    "maintenance": {
+        "title": "Under Maintenance",
+        "message": "The server is currently under maintenance.",
+        "end_time": "End time:",
+        "apology": "We apologize for the inconvenience.",
+        "ios_notice": "Please close the app.",
+        "confirm": "OK"
+    },
+
+    "server_error": {
+        "title": "Server Issue",
+        "message": "There is currently a problem with the server.\nPlease try again later.",
+        "close_app": "Please close the app.",
+        "confirm": "OK"
+    },
+
+    "update_required": {
+        "title": "Update Required",
+        "message": "Please upgrade the app before using it.",
+        "close_app": "Please close the app.",
+        "confirm": "OK",
+        "ios_notice": "iOS users need to close the app manually."
+    },
+    
+
   
   "exerciseNames": {
         "로잉머신": {
