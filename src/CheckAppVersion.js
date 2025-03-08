@@ -1,7 +1,23 @@
 import { Alert, BackHandler, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import { API_URL } from '@env';
 import i18n from 'i18next';
+
+import * as RNLocalize from 'react-native-localize';
+
+import { API_URL_JP, API_URL_US } from '@env';
+
+
+const locales = RNLocalize.getLocales();
+const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
+
+// 🇯🇵 일본이거나 🇰🇷 한국이면 일본 서버 사용, 그 외에는 미국 서버 사용
+const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
+const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+
+
+
+
+
 
 // 버전 문자열을 숫자로 변환하여 비교하는 함수
 const versionToNumber = (version) => {

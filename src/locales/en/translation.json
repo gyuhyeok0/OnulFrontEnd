@@ -67,7 +67,14 @@
     "passwordMismatch": "Passwords do not match.",
     "passwordInvalid": "Please enter 6-20 characters combining letters and numbers.",
     "passwordResetSuccess": "Password has been successfully changed.",
-    "messageNote": "Please disable international message blocking to receive messages."
+    "messageNote": "Please disable international message blocking to receive messages.",
+
+    "idError": "Error",
+    "idNotFound": "ID not found",
+    "passwordResetError": "Please enter a new password",
+
+    "phoneNotRegistered": "The number does not match the registered one."
+
   },
   "signup": {
     "title": "Sign Up",

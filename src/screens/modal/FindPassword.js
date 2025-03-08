@@ -8,13 +8,22 @@ import styles from './FindPassword.module';
 import { handleVerification, fetchUserPhoneNumber } from '../../hooks/HandlePhone';
 import { Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { API_URL } from '@env';
 import { useTranslation } from 'react-i18next';
 
+import * as RNLocalize from 'react-native-localize';
+
+import { API_URL_JP, API_URL_US } from '@env';
 
 const screenHeight = Dimensions.get('window').height;
 
 const FindPassword = ({ isVisible, onClose }) => {
+    const locales = RNLocalize.getLocales();
+    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
+
+    // 🇯🇵 일본이거나 🇰🇷 한국이면 일본 서버 사용, 그 외에는 미국 서버 사용
+    const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
+    const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+
     const [modalY] = useState(new Animated.Value(screenHeight));
     const [overlayOpacity] = useState(new Animated.Value(0));
     const [userId, setUserId] = useState('');

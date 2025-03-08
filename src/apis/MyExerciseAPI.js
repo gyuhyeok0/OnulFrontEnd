@@ -1,7 +1,7 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { API_URL } from '@env';
+import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 가져오기
 
 import {
     fetchMyChestExercisesSuccess,
@@ -25,9 +25,27 @@ import {
 
 } from '../modules/MyExerciseSclice';
 
+// 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
+const getStoredAPIURL = async () => {
+    const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
+    console.log("Stored API URL:", storedAPI);
+
+    // 'API_URL_JP' 또는 'API_URL_US' 문자열에 맞는 실제 API URL을 반환
+    if (storedAPI === 'API_URL_JP') {
+        return API_URL_JP;
+    } else if (storedAPI === 'API_URL_US') {
+        return API_URL_US;
+    } else {
+        return API_URL_US; // 기본값으로 미국 서버를 사용
+    }
+};
+
+
 export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
 
     try {
+        const API_URL = await getStoredAPIURL(); // 동적으로 API URL을 가져옵니다.
+
         const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
 
         const response = await axios.get(`${API_URL}/myExercises/${memberId}/${muscleGroup}`, {
@@ -147,6 +165,9 @@ export const fetchMyExercises = (memberId, muscleGroup) => async (dispatch) => {
 // 서버로 운동 등록 데이터를 전송하는 함수
 export const sendExerciseToServer = async (newExercises, muscleGroup, memberId) => {
     try {
+
+        const API_URL = await getStoredAPIURL(); // 동적으로 API URL을 가져옵니다.
+
         const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
 
         const response = await fetch(`${API_URL}/myExercises/RegistMyExercise`, {
@@ -185,6 +206,9 @@ export const sendExerciseToServer = async (newExercises, muscleGroup, memberId) 
 // 내 운동 삭제
 export const deleteExerciseFromServer = async (exerciseId, muscleGroup, memberId) => {
     try {
+
+        const API_URL = await getStoredAPIURL(); // 동적으로 API URL을 가져옵니다.
+
         const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
         
         const response = await axios.delete(`${API_URL}/myExercises/DeleteMyExercise/${exerciseId}`, {

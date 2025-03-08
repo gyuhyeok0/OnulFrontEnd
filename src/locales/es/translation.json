@@ -67,7 +67,14 @@
       "passwordMismatch": "Las contraseñas no coinciden.",
       "passwordInvalid": "Por favor, ingrese 6-20 caracteres que combinen letras y números.",
       "passwordResetSuccess": "La contraseña se ha cambiado exitosamente.",
-      "messageNote": "Por favor, deshabilite el bloqueo de mensajes internacionales para recibir mensajes."
+      "messageNote": "Por favor, deshabilite el bloqueo de mensajes internacionales para recibir mensajes.",
+
+      "idError": "Error",
+      "idNotFound": "No se encuentra el ID",
+      "passwordResetError": "Por favor ingrese una nueva contraseña",
+
+      "phoneNotRegistered": "El número no coincide con el registrado."
+
     },
     "signup": {
       "title": "Registrarse",
