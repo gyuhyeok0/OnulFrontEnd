@@ -680,6 +680,30 @@
 
   "recipeEditModalTitle": "레시피 등록",
 
+  "maintenance": {
+        "title": "점검 중",
+        "message": "현재 서버 점검 중입니다.",
+        "end_time": "종료 시간:",
+        "apology": "불편을 드려 죄송합니다.",
+        "ios_notice": "앱을 종료해주세요.",
+        "confirm": "확인"
+  },
+
+  "server_error": {
+    "title": "점검 중",
+    "message": "현재 서버에 문제가 있습니다.\n잠시 후에 다시 이용해주세요.",
+    "close_app": "앱을 종료해주세요.",
+    "confirm": "확인"
+  },
+
+  "update_required": {
+        "title": "업데이트 필요",
+        "message": "앱을 업그레이드 한 후에 이용해주세요.",
+        "close_app": "앱을 종료해주세요.",
+        "confirm": "확인",
+        "ios_notice": "iOS에서는 사용자가 직접 앱을 종료해야 합니다."
+    },
+    
   "exerciseNames": {
     "로잉머신": {
       "name": "로잉머신",

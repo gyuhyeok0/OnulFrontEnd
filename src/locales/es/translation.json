@@ -603,6 +603,31 @@
     "subscribeNow": "Suscríbete ahora"
   },
   "notFound": "Información del ejercicio no encontrada.",
+
+  "maintenance": {
+    "title": "En mantenimiento",
+    "message": "El servidor está actualmente en mantenimiento.",
+    "end_time": "Hora de finalización:",
+    "apology": "Pedimos disculpas por las molestias.",
+    "ios_notice": "Por favor, cierra la aplicación.",
+    "confirm": "OK"
+},
+
+"server_error": {
+    "title": "Problema del servidor",
+    "message": "Actualmente hay un problema con el servidor.\nPor favor, inténtalo de nuevo más tarde.",
+    "close_app": "Por favor, cierra la aplicación.",
+    "confirm": "OK"
+},
+
+"update_required": {
+    "title": "Actualización requerida",
+    "message": "Por favor, actualiza la aplicación antes de usarla.",
+    "close_app": "Por favor, cierra la aplicación.",
+    "confirm": "OK",
+    "ios_notice": "En iOS, los usuarios deben cerrar la aplicación manualmente."
+}
+,
   "exerciseNames": {
     
     "로잉머신": {

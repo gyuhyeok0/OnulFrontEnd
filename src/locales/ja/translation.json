@@ -661,6 +661,30 @@
 
         "notFound": "運動情報が見つかりません.",
 
+        "maintenance": {
+            "title": "メンテナンス中",
+            "message": "現在、サーバーはメンテナンス中です。",
+            "end_time": "終了時間:",
+            "apology": "ご不便をおかけして申し訳ございません。",
+            "ios_notice": "アプリを終了してください。",
+            "confirm": "OK"
+        },
+    
+        "server_error": {
+            "title": "サーバーの問題",
+            "message": "現在、サーバーに問題が発生しています。\nしばらくしてから再度お試しください。",
+            "close_app": "アプリを終了してください。",
+            "confirm": "OK"
+        },
+    
+        "update_required": {
+            "title": "アップデートが必要です",
+            "message": "アプリをアップグレードしてからご利用ください。",
+            "close_app": "アプリを終了してください。",
+            "confirm": "OK",
+            "ios_notice": "iOSではアプリを手動で終了してください。"
+        },
+
         "exerciseNames": {
         "로잉머신": {
             "name": "ローイングマシン",
