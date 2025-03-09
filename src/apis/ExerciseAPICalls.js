@@ -7,7 +7,6 @@ import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 
 // 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
 const getStoredAPIURL = async () => {
     const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
-    console.log("Stored API URL:", storedAPI);
 
     // 'API_URL_JP' 또는 'API_URL_US' 문자열에 맞는 실제 API URL을 반환
     if (storedAPI === 'API_URL_JP') {
@@ -30,9 +29,6 @@ export const callFetchExercisesAPI = () => {
             const requestURL = `${API_URL}/exercises/selectList`;
             const accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
 
-            console.log('Access Token:', accessToken); // 액세스 토큰 확인
-            console.log('Request URL:', requestURL);   // API URL 확인
-
             const response = await fetch(requestURL, {
                 method: 'GET',
                 headers: {
@@ -41,11 +37,9 @@ export const callFetchExercisesAPI = () => {
                 },
             });
 
-            console.log('Response status:', response.status); // 응답 상태 확인
             if (response.ok) {
                 const result = await response.json();
 
-                console.log('[ExerciseAPICalls] callFetchExercisesAPI RESULT : ', result);
 
                 // 성공 시 데이터를 리듀서에 전달
                 dispatch(fetchExercisesSuccess(result));

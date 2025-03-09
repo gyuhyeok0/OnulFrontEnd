@@ -94,7 +94,7 @@ const OnSchedule = () => {
             );
     
             if (addedExercises.length > 0) {
-                console.log("추가된 운동:", addedExercises.map((exercise) => exercise.id));
+                // console.log("추가된 운동:", addedExercises.map((exercise) => exercise.id));
             }
         }
     
@@ -105,28 +105,10 @@ const OnSchedule = () => {
         prevExercises.current = reorderedExercises;
     }, [reorderedExercises]);
 
-    // useEffect(() => {
-    //     if (mostRecordExercise && mostRecordExercise.length > 0) {
-    //         console.log("전송용 아이디" + mostRecordExercise);
 
-    //         const exerciseServiceNumber = 1;
-
-    //         const payload = {
-    //             memberId,
-    //             exerciseServiceNumber,
-    //             exerciseIds: mostRecordExercise, // 배열 형태로 묶어서 전송
-    //         };
-
-    //         dispatch(callVolumeExerciseRecord(payload));            
-    //     }
-    // }, [mostRecordExercise]);
-    
-
-    
     useEffect(() => {
         // 날짜가 변경되었을 때만 실행
         if (isDateChanged) {
-            console.log("날짜가 실제로 변경되었습니다!");
             dispatch(resetState());
         }
       }, [isDateChanged]); // isDateChanged가 true일 때만 실행
@@ -258,11 +240,9 @@ const OnSchedule = () => {
     const loadReorderedExercises = useCallback(async (retryCount = 0) => {
         try {
             const savedData = await AsyncStorage.getItem('reorderedExercises');
-            console.log("로드된 데이터:", savedData);
     
             // 저장된 데이터가 없거나 배열이 비어 있으면 재시도
             if ((!savedData || JSON.parse(savedData).exercises.length === 0) && retryCount < 3) {
-                console.log("데이터가 없거나 비어 있음. 재시도 중:", retryCount + 1);
                 setTimeout(() => loadReorderedExercises(retryCount + 1), 500);
                 return;
             }
@@ -271,18 +251,14 @@ const OnSchedule = () => {
                 const parsedData = JSON.parse(savedData);
                 const { exercises, weekType, day } = parsedData;
     
-                // console.log("조건 비교:", weekType, selectedWeekType, day, selectedDay);
     
                 // 조건이 일치하면 운동 목록 업데이트
                 if (weekType === selectedWeekType && day === selectedDay) {
-                    // console.log("조건 일치. 운동 목록 업데이트.");
                     setReorderedExercises(exercises);
                 } else {
-                    // console.log("조건 불일치. 목록 업데이트 없음.");
                 }
 
             } else {
-                console.log("저장된 데이터가 없습니다.");
                 setReorderedExercises([]);
             }
         } catch (error) {
@@ -317,7 +293,6 @@ const OnSchedule = () => {
             }
     
             await AsyncStorage.setItem('reorderedExercises', JSON.stringify(dataToSave));
-            console.log('운동 목록 저장 완료');
         } catch (error) {
             console.error('운동 목록 저장 중 오류 발생:', error);
         }
@@ -356,25 +331,21 @@ const OnSchedule = () => {
 
             try {
                 if (kmUnit) {
-                    console.log("kmUnit 변경됨= " + kmUnit);
     
                     // kmUnit에 따라 heightUnit 값 설정
                     const heightUnit = kmUnit === 'km' ? 'cm' : 'feet';
     
                     // AsyncStorage에 저장
                     await AsyncStorage.setItem('heightUnit', heightUnit);
-                    // console.log("heightUnit 저장됨: " + heightUnit);
                 }
     
                 if (weightUnit) {
-                    console.log("weightUnit 변경됨= " + weightUnit);
     
                     // weightUnit 값 설정
                     const unitToSave = weightUnit === 'kg' ? 'kg' : 'lbs';
     
                     // AsyncStorage에 저장
                     await AsyncStorage.setItem('weightUnit', unitToSave);
-                    // console.log("weightUnit 저장됨: " + unitToSave);
                 }
             } catch (error) {
                 console.error('Error updating AsyncStorage:', error);

@@ -6,9 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DefaultHeader from '../common/DefaultHeader';
 
 const MenuTranslation = ({ navigation }) => {
-    useEffect(() => {
-        console.log("===================== 번역 페이지 ========================");
-    }, []);
+
 
     const { t, i18n } = useTranslation();
 

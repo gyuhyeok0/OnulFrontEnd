@@ -1,27 +1,16 @@
-import firebase from '@react-native-firebase/app';
-import analytics from '@react-native-firebase/analytics';
-
 import React, { useEffect, useState } from 'react';
 import { Alert, Animated, Text, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SplashScreen from 'react-native-splash-screen';
-import initializeI18n from './locales/i18n'; // i18n 초기화 함수 가져오기
-import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 추가
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store'; 
-
-import { RootState } from "./store"; // store.ts에서 가져오기
-
-
-import { setToken, setIsLoggedIn } from './modules/AuthSlice';  // Redux 액션 가져오기
-import Timer from '../components/header/Timer';  // Timer 컴포넌트 가져오기
+import { RootState } from "./store"; 
+import Timer from '../components/header/Timer';  
 import Header from './screens/common/Header';
-import InitializationWrapper from './InitializationWrapper';  // 초기화 컴포넌트 가져오기
+import InitializationWrapper from './InitializationWrapper';  
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-//Screens
 // Common
 import { DefaultHeaderStyles } from './screens/common/DefaultHeaderStyles.module';
 
@@ -52,32 +41,23 @@ import Onboarding4 from './screens/start/onboarding/Onboarding4';
 //실험페이지
 import Page from './screens/menu/Page';
 
-
 // 운동등록 
-
 import RegistChest from '../components/schedule/InModalComponent/RegistChest';
 
-
-import LoadingOverlay from '../components/LoadingOverlay'; // 추가
+import LoadingOverlay from '../components/LoadingOverlay'; 
 import NetInfo from '@react-native-community/netinfo';
-
 import ExerciseVolumeGraph from '../components/analysis/volume/ExerciseVolumeGraph';
 import WeightAndDietGraph from '../components/analysis/bodyAndFood/WeightAndDietGraph';
 import MuscleFatigue from '../components/analysis/faigue/MuscleFaigue';
 
 import {
   RewardedAd,
-  RewardedAdEventType, // ★ RewardedAdEventType 임포트
+  RewardedAdEventType, 
   TestIds,
   AdEventType,
-  InterstitialAd, // ★ 전면 광고 추가
+  InterstitialAd, 
 } from 'react-native-google-mobile-ads';
 
-import { NativeModules } from 'react-native';
-
-console.log('NativeModules:', NativeModules);
-
-import { AppState } from 'react-native';
 import useLifecycleTracking from './TrackAppLifecycle';
 
 import { Platform } from "react-native";
@@ -85,10 +65,9 @@ import Purchases from "react-native-purchases";
 import { fetchSubscriptionStatus } from './modules/SubscriptionSlice';
 
 
-// (1) 전역 또는 상단에 RewardedAd 인스턴스 생성
+// RewardedAd 인스턴스 생성
 const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
-
-const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL); // ★ 전면 광고 추가
+const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL); 
 
 // QueryClient 생성
 const queryClient = new QueryClient();
@@ -98,26 +77,19 @@ const REVENUECAT_PUBLIC_API_KEY = Platform.OS === "ios"
 ? "appl_uSTTOKJNVKqRDdHQicAQPIzbfam"  // iOS 키
 : "goog_some_google_api_key"; // Android 키 (Google Play는 다름)
 
-  
-
 const Stack = createNativeStackNavigator();
 
 function MainApp() {
-  const dispatch = useDispatch();
-
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-
-  const [timerTime, setTimerTime] = useState(0); // 타이머 시간 상태
-  const [isTimerRunning, setIsTimerRunning] = useState(false); // 타이머 실행 상태
+  const [timerTime, setTimerTime] = useState(0); 
+  const [isTimerRunning, setIsTimerRunning] = useState(false); 
   const [initializationComplete, setInitializationComplete] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState(null);
-
   const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
   const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
 
   useEffect(() => {
-    // ✅ RevenueCat 초기화 및 구독 상태 업데이트
+    // RevenueCat 초기화 및 구독 상태 업데이트
     const setupRevenueCat = async () => {
       try {
         Purchases.configure({ apiKey: REVENUECAT_PUBLIC_API_KEY });
@@ -130,11 +102,10 @@ function MainApp() {
   }, []);
 
   useEffect(() => {
-    // ✅ Redux Persist가 복원된 후 `fetchSubscriptionStatus()` 실행
     const unsubscribe = persistor.subscribe(() => {
         if (persistor.getState().bootstrapped) {
-            store.dispatch(fetchSubscriptionStatus()); // ✅ Redux Store에서 직접 실행
-            unsubscribe(); // ✅ 한 번만 실행되도록 구독 해제
+            store.dispatch(fetchSubscriptionStatus());
+            unsubscribe(); 
         }
     });
 
@@ -144,11 +115,8 @@ function MainApp() {
   }, []);
 
   useEffect(() => {
-    console.log("🚀 App 시작 - RevenueCat 구독 상태 감지 시작");
   
-    // 리스너 함수를 변수에 저장
     const listener = () => {
-      console.log("🛒 구독 상태 변경 감지됨 - 최신 상태 가져오기!");
       store.dispatch(fetchSubscriptionStatus());
     };
   
@@ -156,16 +124,10 @@ function MainApp() {
     Purchases.addCustomerInfoUpdateListener(listener);
   
     return () => {
-      console.log("🛑 RevenueCat 구독 리스너 해제");
       // 등록한 리스너를 전달해서 제거
       Purchases.removeCustomerInfoUpdateListener(listener);
     };
   }, []);
-  
-
-
-
-
   
   //firebase 애널리틱스
   useLifecycleTracking(); 
@@ -174,22 +136,21 @@ function MainApp() {
   useEffect(() => {
     if (!rewardedAd) return;
   
-    // (2) 앱 실행 시 광고 로드
+    // 앱 실행 시 광고 로드
     rewardedAd.load();
   
-    // (3) 이벤트 리스너 등록
+    // 이벤트 리스너 등록
     const unsubscribeLoaded = rewardedAd.addAdEventListener(
       RewardedAdEventType.LOADED,
       () => {
-        console.log('📢 RewardedAd Loaded in App.js');
-        console.log('✅ 로드 준비 완료');
+        // console.log('📢 RewardedAd Loaded in App.js');
       }
     );
   
     const unsubscribeClosed = rewardedAd.addAdEventListener(
       AdEventType.CLOSED,
       () => {
-        if (!rewardedAd.loaded) {  // `loaded` 프로퍼티로 체크
+        if (!rewardedAd.loaded) {  
           rewardedAd.load();
         }
       }
@@ -211,7 +172,7 @@ function MainApp() {
 
     const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(
       AdEventType.LOADED,
-      () => console.log('✅ 전면 광고 로드 완료')
+      () => {}
     );
 
     const unsubscribeInterstitialClosed = interstitialAd.addAdEventListener(
@@ -233,17 +194,17 @@ function MainApp() {
 
   const handleRetry = () => {
     setErrorMessage(null);
-    queryClient.refetchQueries(); // 모든 쿼리를 다시 요청
+    queryClient.refetchQueries(); 
   };
   
   // 네트워크 상태 변경을 감지
   useEffect(() => {
 
     const unsubscribe = NetInfo.addEventListener((state) => {
-      setIsConnected(state.isConnected ?? false); // null 값은 false로 처리
+      setIsConnected(state.isConnected ?? false); 
     });
 
-    return () => unsubscribe(); // 리스너 해제
+    return () => unsubscribe(); 
   }, []);
 
   // 네트워크 연결이 끊겼을 때만 경고 메시지 애니메이션 실행
@@ -253,18 +214,18 @@ function MainApp() {
         Animated.sequence([
           Animated.timing(fadeAnim, {
             toValue: 1,
-            duration: 1200, // 천천히 페이드 인
+            duration: 1200, 
             useNativeDriver: true,
           }),
           Animated.timing(fadeAnim, {
             toValue: 0,
-            duration: 1200, // 천천히 페이드 아웃
+            duration: 1200, 
             useNativeDriver: true,
           }),
         ])
       ).start();
     } else {
-      fadeAnim.setValue(0); // 네트워크가 연결되면 애니메이션 초기화
+      fadeAnim.setValue(0);
     }
   }, [isConnected, fadeAnim]);
 
@@ -358,7 +319,7 @@ function MainApp() {
         <Stack.Screen
           name="Onboarding"
           component={Onboarding}
-          options={{ headerShown: false, animation: 'none' }}
+          options={{ headerShown: false }}
         />
 
         {/* 온보딩 페이지 */}
@@ -386,28 +347,28 @@ function MainApp() {
         <Stack.Screen
           name="Schedule"
           component={Schedule}
-          options={{ headerShown: false, animation: 'none' }}
+          options={{ headerShown: false}}
         />
 
         {/* 관리, 분석 페이지 */}
         <Stack.Screen
           name="Management"
           component={Management}
-          options={{ headerShown: false, animation: 'none' }}
+          options={{ headerShown: false }}
         />
 
         {/* 기록 페이지 */}
         <Stack.Screen
           name="Record"
           component={Record}
-          options={{ headerShown: false, animation: 'none' }}
+          options={{ headerShown: false }}
         />
 
         {/* 분석 페이지 */}
         <Stack.Screen
           name="Analysis"
           component={Analysis}
-          options={{ headerShown: false, animation: 'none' }}
+          options={{ headerShown: false }}
         />
 
         {/* 메뉴 페이지 */}
@@ -416,8 +377,8 @@ function MainApp() {
           component={Menu}
           options={{
             title: 'Menu',
-            headerShown: false, // 헤더 보이기 설정
-            ...DefaultHeaderStyles, // 스타일 적용
+            headerShown: false, 
+            ...DefaultHeaderStyles, 
           }}
         />
 
@@ -427,8 +388,8 @@ function MainApp() {
           component={MenuTranslation}
           options={{
             title: 'MenuTranslation',
-            headerShown: false, // 헤더 보이기 설정
-            ...DefaultHeaderStyles, // 스타일 적용
+            headerShown: false, 
+            ...DefaultHeaderStyles, 
           }}
         />
 
@@ -438,30 +399,28 @@ function MainApp() {
           component={AcountInfo}
           options={{
             title: 'AcountInfo',
-            headerShown: false, // 헤더 보이기 설정
-            ...DefaultHeaderStyles, // 스타일 적용
+            headerShown: false, 
+            ...DefaultHeaderStyles, 
           }}
         />
 
-        {/* 메뉴 스토리지 페이지 */}
         <Stack.Screen
           name="AsyncStorage2"
           component={AsyncStorage2}
           options={{
             title: 'AsyncStorage2',
-            headerShown: false, // 헤더 보이기 설정
-            ...DefaultHeaderStyles, // 스타일 적용
+            headerShown: false, 
+            ...DefaultHeaderStyles, 
           }}
         />
 
-         {/* 메뉴 실험 페이지 */}
          <Stack.Screen
           name="Page"
           component={Page}
           options={{
             title: 'Page',
-            headerShown: false, // 헤더 보이기 설정
-            ...DefaultHeaderStyles, // 스타일 적용
+            headerShown: false, 
+            ...DefaultHeaderStyles, 
           }}
         />
 
@@ -469,42 +428,30 @@ function MainApp() {
         <Stack.Screen
           name="RegistChest"
           component={RegistChest}
-          // options={{ headerShown: "ture" }} // 헤더 숨김 옵션
         />
-
-
 
         <Stack.Screen
           name="ExerciseVolumeGraph"
           component={ExerciseVolumeGraph}
-          options={{ headerShown: false, animation: 'none'}}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="WeightAndDietGraph"
           component={WeightAndDietGraph}
-          options={{ headerShown: false, animation: 'none'}}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="MuscleFatigue"
           component={MuscleFatigue}
-          options={{ headerShown: false, animation: 'none'}}
+          options={{ headerShown: false }}
         />
-
-        
-
-
-
-
-
-
-
 
       </Stack.Navigator>
     </NavigationContainer>
       <LoadingOverlay
-          visible={false} // 기본값 false
+          visible={false} 
         />
     </> 
   );
@@ -535,8 +482,8 @@ const styles = StyleSheet.create({
     height: 35,
     borderRadius: 30,
     transform: [
-      { translateX: -115 }, // width의 절반
-      { translateY: -20 }, // height의 절반
+      { translateX: -115 }, 
+      { translateY: -20 }, 
     ],
   },
   warningText: {

@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import Footer from '../common/Footer'; 
 import Header from '../common/Header';
 import { Calendar } from 'react-native-calendars';
 import { isMonthDataExist } from '../../apis/RecordApi';
-import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
+import { useDispatch, useSelector } from 'react-redux'; 
 import { useFocusEffect } from '@react-navigation/native';
-import Exercise from '../exercise/Exercise';
 import ExerciseRecord from './ExerciseRocord';
 import FoodRecord from './FoodRecord';
 import BodyRecord from './BodyRecord';
@@ -94,8 +93,6 @@ const Record = ({ navigation }) => {
         });
 
         setMarkedDates(newMarkedDates);
-        // console.log('Selected date:', day.dateString);
-
         setSelectDates(day.dateString);
 
         // 선택한 날짜에 대한 운동기록, 식단기록, 신체기록의 존재 여부 확인
@@ -111,9 +108,6 @@ const Record = ({ navigation }) => {
             bodyExists,
         });
 
-        // console.log('운동기록 존재:', exerciseExists);
-        // console.log('식단기록 존재:', foodExists);
-        // console.log('신체기록 존재:', bodyExists);
     };
 
     const handleMonthChange = (month) => {
@@ -150,13 +144,21 @@ const Record = ({ navigation }) => {
                 />
 
                 <View style={styles.explanation}>
-                    <View style={{ marginLeft: 15, flexDirection: 'row', alignItems: 'center' }}>
-                        <View style={{ width: 8, height: 8, backgroundColor: '#00adf5', borderRadius: 10 }}></View>
-                        <Text style={styles.explanationText}>{t('record.exercise')}</Text>
-                        <View style={{ width: 8, height: 8, backgroundColor: '#FAF335', borderRadius: 10 }}></View>
-                        <Text style={styles.explanationText}>{t('record.food')}</Text>
-                        <View style={{ width: 8, height: 8, backgroundColor: '#FF76CF', borderRadius: 10 }}></View>
-                        <Text style={styles.explanationText}>{t('record.body')}</Text>
+                    <View style={{ marginLeft: 15, flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <View style={{flexDirection:'row', alignItems:'center'}}>
+                            <View style={{ width: 8, height: 8, backgroundColor: '#00adf5', borderRadius: 10 }}></View>
+                            <Text style={styles.explanationText}>{t('record.exercise')}</Text>
+                        </View>
+                        
+                        <View style={{flexDirection:'row', alignItems:'center'}}>
+                            <View style={{ width: 8, height: 8, backgroundColor: '#FAF335', borderRadius: 10 }}></View>
+                            <Text style={styles.explanationText}>{t('record.food')}</Text>
+                        </View>
+
+                        <View style={{flexDirection:'row', alignItems:'center'}}>
+                            <View style={{ width: 8, height: 8, backgroundColor: '#FF76CF', borderRadius: 10 }}></View>
+                            <Text style={styles.explanationText}>{t('record.body')}</Text>
+                        </View>
                     </View>
                 </View>
 
@@ -193,10 +195,10 @@ const styles = StyleSheet.create({
 
     explanation: {
         backgroundColor: '#222732',
-        height: 30,
         marginTop: 5,
         borderRadius: 13,
         justifyContent: 'center',
+        padding: 5
     },
 
     explanationText: {

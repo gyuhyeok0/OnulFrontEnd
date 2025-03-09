@@ -6,7 +6,6 @@ import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 
 // 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
 const getStoredAPIURL = async () => {
     const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
-    console.log("Stored API URL:", storedAPI);
 
     // 'API_URL_JP' 또는 'API_URL_US' 문자열에 맞는 실제 API URL을 반환
     if (storedAPI === 'API_URL_JP') {
@@ -61,7 +60,6 @@ export const previousRecordDate = async (memberId, exerciseId, exerciseService) 
         // 서버로부터 반환된 데이터를 JSON으로 파싱
         const data = await response.json();
 
-        console.log(data);
         return data; // 반환된 데이터를 호출자에게 전달
 
     } catch (error) {

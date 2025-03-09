@@ -25,7 +25,7 @@ const FooterStyles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText1: {
-        fontSize: 10,
+        fontSize: 11,
         marginTop: 8,  
     },
 
@@ -34,7 +34,7 @@ const FooterStyles = StyleSheet.create({
     },
 
     buttonText2: {
-        fontSize: 10,
+        fontSize: 11,
         marginTop: 10,  
     },
 
@@ -43,7 +43,7 @@ const FooterStyles = StyleSheet.create({
     },
 
     buttonText3: {
-        fontSize: 10,
+        fontSize: 11,
         marginTop: 9,  
     },
 
@@ -52,7 +52,7 @@ const FooterStyles = StyleSheet.create({
     },
 
     buttonText4: {
-        fontSize: 10,
+        fontSize: 11,
         marginTop: 5,  
     },
 
@@ -61,7 +61,7 @@ const FooterStyles = StyleSheet.create({
     },
 
     analysisText5: {
-        fontSize: 10,
+        fontSize: 11,
         marginTop: 6,  
     },
 });

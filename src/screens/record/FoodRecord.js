@@ -30,12 +30,10 @@ const FoodRecord = ({ selectDates, memberId }) => {
 
         if (isToday(selectDates)) {
             if (!todayFoodData || Object.keys(todayFoodData).length !== 4) {
-                console.log("오늘의 식단 기록이 4개가 아니어서 디스패치 실행");
                 dispatch(loadFoodRecordsForDate(memberId, selectDates));
             }
         } else {
             if (!todayFoodData || Object.keys(todayFoodData).length === 0) {
-                console.log("오늘이 아닌 날짜의 식단 기록이 없어서 디스패치 실행");
                 dispatch(loadFoodRecordsForDate(memberId, selectDates));
             }
         }
@@ -46,8 +44,6 @@ const FoodRecord = ({ selectDates, memberId }) => {
             const fetchUnit = async () => {
                 try {
                     let storedUnit = await AsyncStorage.getItem('gOrOzUnit');
-
-                    console.log('Stored Unit:', storedUnit);
 
                     if (!storedUnit) {
                         const weightUnit = await AsyncStorage.getItem('weightUnit');
@@ -65,9 +61,6 @@ const FoodRecord = ({ selectDates, memberId }) => {
         }, []) // 빈 배열이므로 종속성 변화 없이 매번 실행
     );
 
-    useEffect(() => {
-        console.log("업데이트된 오늘의 식단 기록:", todayFoodData);
-    }, [todayFoodData]);
 
     const convertValue = (value, unit) => {
         if (unit === 'oz') {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Dimensions } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import DefaultHeader from '../common/DefaultHeader';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './Signin.module';
@@ -10,7 +10,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useTranslation } from 'react-i18next';
 
 
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 function Signin({ navigation }) {
     const dispatch = useDispatch();

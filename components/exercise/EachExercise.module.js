@@ -57,17 +57,17 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     weightChangeText: {
-        fontSize: 10,
+        fontSize: 12,
         color: '#55F787',
         marginRight: 3,
     },
     weightChangeValue: {
         color: 'white',
-        fontSize: 10,
+        fontSize: 12,
     },
     weightChangeUnit: {
         color: 'white',
-        fontSize: 10,
+        fontSize: 12,
     },
     buttonContainer: {
         marginTop: 'auto',
@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         fontWeight: 'bold',
-        textAlign:'center'
+        textAlign:'center',
+        padding: 0.5
     },
 
     exerciseRecord: {
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     recordTitle: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 10,
+        fontSize: 12,
         marginBottom: 8,
     },
 
@@ -152,9 +153,9 @@ const styles = StyleSheet.create({
     },
     settingTitle: {
         color: 'white',
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: 'bold',
-        marginTop: 10,
+        marginTop: 12,
     },
     settingButtonsContainer: {
         flexDirection: 'row',

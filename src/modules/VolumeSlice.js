@@ -9,7 +9,6 @@ const exerciseVolumeSlice = createSlice({
         // 운동 볼륨 업데이트 (있으면 덮어쓰고, 없으면 생성)
         updateExerciseVolume(state, action) {
 
-            console.log("저장중")
             const { exerciseId, date, preVolume } = action.payload;
 
             // 운동 ID에 대한 초기화
@@ -23,7 +22,6 @@ const exerciseVolumeSlice = createSlice({
 
         // 전체 운동 볼륨 데이터 초기화 (삭제)
         resetExerciseVolumeData(state) {
-            console.log("삭제되었습니다.")
             return {}; // 전체 초기화
         },
     },

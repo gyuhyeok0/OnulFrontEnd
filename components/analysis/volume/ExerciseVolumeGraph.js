@@ -56,7 +56,6 @@ const ExerciseVolumeGraph = ({ navigation }) => {
         fetchUnits();
     }, []);
 
-    console.log(weightUnit);
     
     useEffect(() => {
         const fetchData = async () => {

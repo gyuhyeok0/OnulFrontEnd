@@ -22,8 +22,6 @@ const myFreeSlice = createSlice({
         reorderMyFreeExercises: (state, action) => {
             const { sourceIndex, destinationIndex } = action.payload;
         
-            // 전달된 페이로드 출력
-            // console.log("페이로드 값:", action.payload);
         
             if (sourceIndex !== destinationIndex) {
                 const updatedExercises = [...state.myExercises]; // 배열 복사
@@ -34,8 +32,6 @@ const myFreeSlice = createSlice({
                 state.myExercises = updatedExercises;
             }
         
-            // 상태 변경 후 로그
-            // console.log("변경 후 상태:", state.myExercises);
         },
         
         

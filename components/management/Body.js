@@ -53,7 +53,6 @@ const Body = ({ weightUnit, setWeightUnit }) => {
     useEffect(() => {
         if (bodyData) {
             setTempState(bodyData);
-            console.log("tempState updated with bodyData:", bodyData);
         }
     }, [bodyData]);
     
@@ -118,7 +117,6 @@ const Body = ({ weightUnit, setWeightUnit }) => {
                 bodyFatPercentage: 0,
             }));
     
-            console.log("tempState reset due to date change");
         }
     }, [isDateChanged]);
     

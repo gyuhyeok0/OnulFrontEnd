@@ -6,7 +6,6 @@ import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 
 // 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
 const getStoredAPIURL = async () => {
     const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
-    console.log("Stored API URL:", storedAPI);
 
     // 'API_URL_JP' 또는 'API_URL_US' 문자열에 맞는 실제 API URL을 반환
     if (storedAPI === 'API_URL_JP') {
@@ -42,7 +41,6 @@ export const saveFoodData = async (memberId, id, recipeName, foodItems, accessTo
         });
 
         if (response.status === 200) {
-            console.log("성공");
             return true; // 요청 성공
         } else if (response.status === 401) {
             console.warn('토큰 만료: 새로운 토큰을 요청 중...');
@@ -84,7 +82,6 @@ export const deleteFoodData = async (memberId, id, accessToken = null) => {
         });
 
         if (response.status === 200) {
-            console.log("성공");
             return true; // 요청 성공
         } else if (response.status === 401) {
             console.warn('토큰 만료: 새로운 토큰을 요청 중...');
@@ -139,7 +136,6 @@ export const getAllFoodData = async (memberId, accessToken = null) => {
                 throw new Error('Unable to refresh token');
             }
         } else if (response.status === 404) {
-            console.log('서버 오류: 데이터가 존재하지 않음.');
             return []; // 빈 배열을 반환하여 데이터를 없다고 표시
         } else {
             const errorMessage = `Unexpected error occurred: ${response.statusText}`;
@@ -179,14 +175,12 @@ export const saveTotalFoodData = async (memberId, mealType, formattedDate, total
 
         if (response.status === 200) {
             const responseData = await response.json();
-            console.log("성공:", responseData);
 
             const { date: rawDate, mealType, totalNutrition, recipeNames } = responseData;
 
             // 날짜를 "0000-00-00" 형식으로 변환
             const date = `${rawDate[0]}-${String(rawDate[1]).padStart(2, '0')}-${String(rawDate[2]).padStart(2, '0')}`;
 
-            console.log(recipeNames);
 
             dispatch(fetchTotalFoodSuccess({
                 date, 

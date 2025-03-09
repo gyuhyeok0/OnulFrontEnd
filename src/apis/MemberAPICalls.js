@@ -72,7 +72,6 @@ export const callLoginAPI = ({ form }) => {
 
 export const deleteAccount = async (memberId, accessToken = null) => {
     
-    console.log("안녕"+ memberId)
     try {
         if (!accessToken) {
             accessToken = await AsyncStorage.getItem('accessToken');
@@ -88,7 +87,6 @@ export const deleteAccount = async (memberId, accessToken = null) => {
         
 
         if (response.status === 200) {
-            console.log("성공");
             return true; // 요청 성공
         } else if (response.status === 401) {
             console.warn('토큰 만료: 새로운 토큰을 요청 중...');

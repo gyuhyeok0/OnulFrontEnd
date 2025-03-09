@@ -18,14 +18,10 @@ const BodyRecord = ({ selectDates, memberId }) => {
 
     useEffect(() => {
         if (!todayBodyData || Object.keys(todayBodyData).length === 0) {
-            console.log("신체 기록이 없어서 디스패치 실행");
             dispatch(loadBodyRecordsForDate(memberId, selectDates));
         }
     }, [selectDates, memberId]);
 
-    useEffect(() => {
-        console.log("업데이트된 오늘의 신체 기록:", todayBodyData);
-    }, [todayBodyData]);
 
     useEffect(() => {
         const fetchUnits = async () => {

@@ -53,7 +53,7 @@ const AutoAdapt = () => {
         setIsLoading(true);
         aiRequset(memberId, checkDate, initialization)
             .then((result) => {
-                console.log("📌 AI 요청 결과:", result);
+                // console.log("📌 AI 요청 결과:", result);
             })
             .catch((error) => {
                 console.error("❌ AI 요청 실패:", error);

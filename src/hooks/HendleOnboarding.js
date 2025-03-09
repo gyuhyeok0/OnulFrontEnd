@@ -8,7 +8,6 @@ import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 
 // 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
 const getStoredAPIURL = async () => {
     const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
-    console.log("Stored API URL:", storedAPI);
 
     // 'API_URL_JP' 또는 'API_URL_US' 문자열에 맞는 실제 API URL을 반환
     if (storedAPI === 'API_URL_JP') {
@@ -42,14 +41,13 @@ export const checkOnboardingStatus = async (userId, accessToken, navigation) => 
         if (response.status === 200) {
             const needsOnboarding = response.data;
 
-            console.log(needsOnboarding)
 
             if (needsOnboarding) {
                 // 온보딩 페이지로 이동
                 navigation.navigate('Onboarding');
             } else {
 
-                console.log("온보딩이 필요하지 않습니다.");
+                // console.log("온보딩이 필요하지 않습니다.");
             }
         }
 
@@ -64,7 +62,7 @@ export const checkOnboardingStatus = async (userId, accessToken, navigation) => 
             if (newAccessToken) {
                 await checkOnboardingStatus(userId, newAccessToken, navigation);
             } else {
-                // console.error("새로운 토큰을 가져오지 못했습니다.");
+                console.error("새로운 토큰을 가져오지 못했습니다.");
             }
 
         } else {
@@ -137,7 +135,6 @@ export const registrationOnboarding = async (onboardingData, navigation) => {
                 Authorization: `Bearer ${accessToken}`, // 토큰 추가
             },
         });
-        // console.log("온보딩 등록 응답:", response.data);
 
         navigation.navigate('Exercise');
 

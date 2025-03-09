@@ -10,15 +10,13 @@ const bodySlice = createSlice({
     },
     reducers: {
         setBodyData: (state, action) => {
-            console.log("Redux에 몸 데이터를 저장합니다.");
 
             const { dateKey, bodyData } = action.payload;
 
             if (dateKey) {
                 if (state.bodyData[dateKey]) {
-                    console.log(`기존 데이터가 존재합니다. ${dateKey} 데이터를 업데이트합니다.`);
                 } else {
-                    console.log(`${dateKey} 데이터가 새로 추가됩니다.`);
+                    // console.log(`${dateKey} 데이터가 새로 추가됩니다.`);
                 }
 
                 state.bodyData[dateKey] = bodyData;
@@ -43,11 +41,9 @@ const bodySlice = createSlice({
                 dates.forEach((date) => {
                     if (state.bodyData[date]) {
                         delete state.bodyData[date];
-                        console.log(`삭제된 데이터: ${date}`);
                     }
                 });
         
-                console.log(`Redux bodyData 상태 업데이트 후:`, JSON.stringify(state.bodyData, null, 2));
             } else {
                 console.error("삭제할 날짜가 배열 형태가 아닙니다.");
             }

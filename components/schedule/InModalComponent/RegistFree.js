@@ -115,11 +115,9 @@ const RegistFree = () => {
             const newExercises = selectedExercises.filter(exerciseId => !scheduleExercises.includes(exerciseId));
             const muscleGroup = "자유";
     
-            console.log("보내는 운동 데이터:", { newExercises, muscleGroup, memberId });
     
             await sendExerciseToServer(newExercises, muscleGroup, memberId);
     
-            console.log("운동 데이터 전송 성공!");
     
             setScheduleExercises((prevSchedule) => [...prevSchedule, ...newExercises]);
             setSelectedExercises([]);

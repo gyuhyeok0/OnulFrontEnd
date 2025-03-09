@@ -6,7 +6,6 @@ import { API_URL } from '@env';
 export const sendIntensityToServer = (userId, intensity, accessToken = null) => {
     return async (dispatch) => {
 
-        console.log(intensity);
         try {
             if (!accessToken) {
                 accessToken = await AsyncStorage.getItem('accessToken');
@@ -26,7 +25,6 @@ export const sendIntensityToServer = (userId, intensity, accessToken = null) => 
 
             if (response.status === 200) {
                 const data = await response.json();
-                console.log('서버 응답:', data);
 
                 dispatch(fetchIntensitySuccess(data));
                 return data;

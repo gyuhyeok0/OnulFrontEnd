@@ -75,51 +75,42 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
             const fetchFoodData = async () => {
                 try {
                     const unit = await AsyncStorage.getItem('gOrOzUnit') || 'g'; // 단위 가져오기, 기본값은 'g'
-                    // console.log('Selected Unit:', unit); // 단위 확인 로그
     
                     const data = await getAllFoodData(memberId);
-                    // console.log('Fetched Food Data:', data); // 가져온 데이터 로그
     
                     
                     const mappedRecipes = data.map((recipe) => {
                         const totalGrams = recipe.foodItems.reduce((sum, item) => {
                             const quantity = parseFloat(item.quantity || 0);
-                            // console.log(`Item Quantity: ${item.quantity}, Parsed Quantity: ${quantity}`);
                             return sum + quantity;
                         }, 0);
                     
                         const totalKcal = recipe.foodItems.reduce((sum, item) => {
                             const calories = parseFloat(item.calories || 0);
-                            // console.log(`Item Calories: ${item.calories}, Parsed Calories: ${calories}`);
                             return sum + calories;
                         }, 0);
                     
                         const totalCarbs = recipe.foodItems.reduce((sum, item) => {
                             const carbs = parseFloat(item.carbs || 0);
-                            // console.log(`Item Carbs: ${item.carbs}, Parsed Carbs: ${carbs}`);
                             return sum + carbs;
                         }, 0);
                     
                         const totalProtein = recipe.foodItems.reduce((sum, item) => {
                             const protein = parseFloat(item.protein || 0);
-                            // console.log(`Item Protein: ${item.protein}, Parsed Protein: ${protein}`);
                             return sum + protein;
                         }, 0);
                     
                         const totalFat = recipe.foodItems.reduce((sum, item) => {
                             const fat = parseFloat(item.fat || 0);
-                            // console.log(`Item Fat: ${item.fat}, Parsed Fat: ${fat}`);
                             return sum + fat;
                         }, 0);
                     
                         // 변환 계수
                         const conversionFactor = unit === 'oz' ? 0.03527396 : 1;
-                        // console.log('Conversion Factor:', conversionFactor);
                     
                         // 변환 함수
                         const formatValue = (value) => {
                             const convertedValue = value * conversionFactor;
-                            // console.log('Original Value:', value, 'Converted Value:', convertedValue);
                             return convertedValue % 1 === 0
                                 ? parseInt(convertedValue, 10)
                                 : parseFloat(convertedValue.toFixed(1));
@@ -139,7 +130,6 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
                     });
                     
     
-                    // console.log('Mapped Recipes:', mappedRecipes); // 매핑된 데이터 로그
                     setRecipes(mappedRecipes); // 상태에 저장
                 } catch (error) {
                     console.error('Failed to fetch food data:', error); // 오류 로그
@@ -220,9 +210,7 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
         return Math.round(convertedValue * 10) / 10; // 소수점 첫째자리로 반올림
     };
 
-    useEffect(() => {
-        console.log(totalNutrition); // totalNutrition 값이 변경될 때마다 출력
-    }, [totalNutrition]); // totalNutrition이 변경될 때마다 실행
+
     
     // 스타일 적용
     const getRecipeStyle = (id) => {
@@ -312,7 +300,6 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
     
         try {
             await deleteFoodData(memberId, id);
-            console.log('데이터 삭제 성공!');
             // onClose(); // 성공 시 모달 닫기
         } catch (error) {
             console.error('데이터 삭제 실패:', error);
@@ -331,11 +318,8 @@ const Foodmodal = ({ isVisible, onClose, mealType }) => {
             
             const formattedDate = getCurrentDate();
     
-            // console.log(selectedRecipeNames);
             const recipeNames = selectedRecipeNames;
-            // console.log(recipeNames);
 
-            // console.log(memberId,mealType,formattedDate,totalNutrition,recipeNames);
             try {
                 await saveTotalFoodData(memberId, mealType, formattedDate, totalNutrition, recipeNames, null, dispatch);
                 // 데이터 저장 성공 시 모달 닫기
@@ -558,6 +542,7 @@ const modalstyles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
+        maxWidth: 200,
     },
     editButton: {
         color: '#497CF4',

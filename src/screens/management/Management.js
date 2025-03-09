@@ -9,10 +9,6 @@ import Food from '../../../components/management/Food';
 const Management = ({ navigation }) => {
     const [weightUnit, setWeightUnit] = useState(null);
 
-    useEffect(() => {
-        console.log("=====================관리 페이지 ========================");
-    }, []);
-
     // 단위 로드
     useEffect(() => {
         const fetchUnits = async () => {
@@ -34,7 +30,6 @@ const Management = ({ navigation }) => {
             try {
 
                 if (weightUnit) {
-                    // console.log("weightUnit 변경됨= " + weightUnit);
                     const unitToSave = weightUnit === 'kg' ? 'kg' : 'lbs';
                     await AsyncStorage.setItem('weightUnit', unitToSave);
                 }
