@@ -10,7 +10,6 @@ import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 
 // 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
 const getStoredAPIURL = async () => {
     const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
-    console.log("Stored API URL:", storedAPI);
 
     // 'API_URL_JP' 또는 'API_URL_US' 문자열에 맞는 실제 API URL을 반환
     if (storedAPI === 'API_URL_JP') {
@@ -41,24 +40,18 @@ export const submitExerciseRecord = async (memberId, exerciseService, setNumber,
         };
         
         const date = getCurrentDate();
-        console.log (date)
 
         if (set.time) {
-            // console.log("time 값이 존재합니다:", set.time);
         
             // 00:00 또는 00:00:00 형태면 아무 작업도 하지 않음
             const timeRegex = /^(?:\d{2}:\d{2}|\d{2}:\d{2}:\d{2})$/;
             if (timeRegex.test(set.time)) {
-                console.log("이미 올바른 형식의 time 값입니다:", set.time);
                 // 아무것도 하지 않음
-                console.log(volume);
 
             } else {
                 // 잘못된 형태의 time 값을 올바른 형식으로 변환
                 const formattedTime = formatTime(set.time);
 
-                console.log(volume);
-                // console.log("변환된 time 값:", formattedTime);
         
                 // 변환된 time 값을 기존 set 객체에 업데이트
                 set.time = formattedTime;
@@ -128,7 +121,6 @@ export const deleteExerciseRecord = async (memberId, setNumber, exercise, exerci
         };
         
         const date = getCurrentDate();
-        console.log (date)
 
 
         const response = await fetch(`${API_URL}/submitExercises/delete?date=${date}`, {

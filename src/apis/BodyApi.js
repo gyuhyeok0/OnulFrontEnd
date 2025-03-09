@@ -6,7 +6,6 @@ import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 
 // 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
 const getStoredAPIURL = async () => {
     const storedAPI = await AsyncStorage.getItem('API_URL'); // 'API_URL' 문자열을 가져옴
-    console.log("Stored API URL:", storedAPI);
 
     // 'API_URL_JP' 또는 'API_URL_US' 문자열에 맞는 실제 API URL을 반환
     if (storedAPI === 'API_URL_JP') {
@@ -42,7 +41,6 @@ export const saveBodyData = (memberId, bodyData, accessToken = null) => {
 
             if (response.status === 200) {
                 const data = await response.json();
-                console.log("성공");
             
                 // date 필드를 "YYYY-MM-DD" 형식으로 변환
                 const formattedData = {
@@ -54,9 +52,6 @@ export const saveBodyData = (memberId, bodyData, accessToken = null) => {
                 const { date, ...restOfData } = data;
 
                 const bodyData = restOfData;
-
-                console.log(dateKey);
-                console.log(bodyData);
 
             
                 dispatch(setBodyData({

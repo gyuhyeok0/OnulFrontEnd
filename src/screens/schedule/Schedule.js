@@ -8,10 +8,6 @@ import WorkoutRegistration from '../../../components/schedule/WorkoutRegistratio
 
 const Schedule = ({ navigation }) => {
 
-    useEffect(() => {
-        console.log("===================== 스케쥴 페이지 ========================")
-    }, []);
-
     return (
         <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: '#1A1C22' }}>
             {/* 커스텀 헤더 컴포넌트 사용 */}

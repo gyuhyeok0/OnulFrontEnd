@@ -10,7 +10,6 @@ const schedulExerciseState = createSlice({
     reducers: {
         initializeExerciseSets(state, action) {
 
-            console.log("리듀서로 등록")
             const reorderedExercises = action.payload;
             reorderedExercises.forEach((exercise) => {
                 if (!state.exerciseSets[exercise.id]) {
@@ -25,14 +24,12 @@ const schedulExerciseState = createSlice({
 
         updateExerciseSet(state, action) {
 
-            console.log("리듀서로 업데이트")
             const { exerciseId, updatedSets } = action.payload;
             state.exerciseSets[exerciseId] = updatedSets;
         },
 
         resetExerciseSets(state, action) {
 
-            console.log("리듀서 리셋")
 
             const reorderedExercises = action.payload;
             reorderedExercises.forEach((exercise) => {

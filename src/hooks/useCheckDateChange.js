@@ -15,11 +15,8 @@ const useCheckDateChange = () => {
                 // ✅ "오늘 resetState()가 실행되었는지 확인"
                 const resetDoneDate = await AsyncStorage.getItem('resetDoneDate'); 
 
-                console.log(`📌 마지막 리셋 날짜: ${resetDoneDate}`);
-
                 // ✅ 오늘 resetState()가 실행되지 않았으면 실행
                 if (resetDoneDate !== todayDate) {
-                    console.log(`✅ 하루 1회 실행! (${resetDoneDate} → ${todayDate})`);
 
                     // ✅ Redux 상태 초기화
                     dispatch(resetState());

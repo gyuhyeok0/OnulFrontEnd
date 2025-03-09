@@ -127,18 +127,6 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     const bodyParts = ['가슴', '등', '하체', '어깨', '복근', '팔', '기타', '커스텀'];
 
 
-    // useEffect(() => {
-    //     if (reorderedExercises && reorderedExercises.length > 0) {
-    //         console.log('Dispatching updateReorderedExercises with:', reorderedExercises);
-    //         dispatch(updateReorderedExercises({
-    //             exercises: reorderedExercises,
-    //             weekType: selectedWeekType,
-    //             day: selectedDay
-    //         }));
-    //     }
-    // }, [reorderedExercises, dispatch, selectedWeekType, selectedDay]);
-    
-    
     // 운동 제거시 reorderedExercises
     useEffect(() => {
         const activeParts = Object.keys(selectedParts).filter((part) => selectedParts[part]);
@@ -235,7 +223,6 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     //스토리지 저장
     const saveReorderedExercises = useCallback(async () => {
 
-        console.log("새로 스토리지 저장할게요 ")
         try {
             const uniqueExercises = reorderedExercises.filter(
                 (exercise, index, self) =>
@@ -272,7 +259,6 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     const loadReorderedExercises = useCallback(async (retryCount = 0) => {
         try {
             const savedData = await AsyncStorage.getItem('reorderedExercises');
-            console.log('저장된 데이터 확인:', savedData);
     
             // 저장된 데이터가 없거나 운동 배열이 비어있을 경우
             if ((!savedData || JSON.parse(savedData).exercises.length === 0) && retryCount < 3) {
@@ -297,7 +283,6 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
                     setReorderedExercises(exercises);
                 }
             } else {
-                console.log('저장된 데이터가 없습니다.');
                 setReorderedExercises([]); // 기본값 설정
             }
         } catch (error) {

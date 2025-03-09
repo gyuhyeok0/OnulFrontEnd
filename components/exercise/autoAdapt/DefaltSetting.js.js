@@ -111,9 +111,7 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
             await updateAutoAdaptSetting(updateData);
             
 
-            console.log("실행함ㅎㅁ마")
             setUpdateCount(prevCount => prevCount + 1); // ✅ 실행될 때마다 카운트 증가
-            console.log('자동적응 설정이 서버에 업데이트됨:', updateData);
         } catch (error) {
             console.error('자동적응 설정 업데이트 실패:', error);
         }
@@ -138,7 +136,6 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
             return; // '자동'만 남아있을 경우 클릭 방지
         }
     
-        console.log("✅ 부위 우선 선택 업데이트:", part);
     
         setPriorityParts((prev) => {
             const maxSelectableParts = {
@@ -212,7 +209,6 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
         const currentState = { difficulty, exerciseTime, exerciseStyle, excludedParts, includeCardio };
     
         if (prevState === null) {
-            console.log("🔹 초기 상태 저장 중... 비교하지 않음");
             prevStateRef.current = currentState;
             return;
         }
@@ -241,7 +237,6 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                 try {
                     await updateAutoAdaptSetting(updateData);
                     setUpdateCount(prevCount => prevCount + 1);
-                    console.log('자동적응 설정이 서버에 업데이트됨:', updateData);
                 } catch (error) {
                     console.error('자동적응 설정 업데이트 실패:', error);
                 }

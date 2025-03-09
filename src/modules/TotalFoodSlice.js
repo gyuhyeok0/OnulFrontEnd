@@ -51,11 +51,9 @@ const exerciseRecordSlice = createSlice({
                 dates.forEach((date) => {
                     if (state.foodRecords[date]) {
                         delete state.foodRecords[date]; // 해당 날짜 데이터를 삭제
-                        console.log(`삭제된 데이터: ${date}`);
                     }
                 });
         
-                console.log(`Redux foodRecords 상태 업데이트 후:`, JSON.stringify(state.foodRecords, null, 2));
             }
         
             state.status = 'succeeded'; // 상태를 'succeeded'로 업데이트

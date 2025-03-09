@@ -4,9 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 function LoginScreen({ navigation }) {
 
-  useEffect(() => {
-    console.log("=====================시작 페이지 ========================")
-  }, []);
 
   const { t } = useTranslation();
 

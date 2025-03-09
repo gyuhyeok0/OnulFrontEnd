@@ -102,7 +102,6 @@ const KgInput = ({ set, index, sets, setSets, style, weightUnit, setWeightUnit, 
     }, [weightUnit]); // 단위가 변경될 때 실행
     
     const handleUnitChange = (unit) => {
-        // console.log(`[handleUnitChange] 단위 변경 요청됨: ${unit}`);
         setWeightUnit(unit); // 단위 상태 업데이트
     }; 
 

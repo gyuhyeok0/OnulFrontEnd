@@ -82,28 +82,15 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const today = new Date();
     const signupDate = new Date(memberSignupDate);
     const diffTime = today.getTime() - signupDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    const resetDailyAdCount = async () => {
-        const today = new Date().toISOString().split('T')[0]; // 오늘 날짜 (YYYY-MM-DD)
-        const lastResetDate = await AsyncStorage.getItem('lastAdResetDate');
-    
-        if (lastResetDate !== today) {
-            await AsyncStorage.setItem('adCount', '0'); // 광고 카운트 초기화
-            await AsyncStorage.setItem('lastAdResetDate', today);
-        }
-    };
 
     // 광고 표시 함수 (하루 5번 제한)
     const showAd = async () => {
-        await resetDailyAdCount(); // 하루 제한 체크
 
         let adCount = await AsyncStorage.getItem('adCount');
         adCount = adCount ? parseInt(adCount) : 0;
 
         // 하루 5번 카운트
-        if (adCount >= MAX_ADS_PER_DAY || diffDays < 5) {
-            console.log("오늘 광고 제한 초과 (5번)");
+        if (adCount >= MAX_ADS_PER_DAY ) {
             return; // 광고 실행 안 함
         }
 
@@ -122,7 +109,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                 const adCloseTime = new Date().getTime();
                 const adDuration = (adCloseTime - adStartTime) / 1000; // 광고 시청 시간 (초)
 
-                console.log(`📢 전면 광고 닫힘 (광고 본 시간: ${adDuration}초)`);
 
                 // 유저 이탈 여부 체크 (비동기 처리)
                 const userRetention = await checkUserRetention();
@@ -139,7 +125,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     
             // 광고 클릭 이벤트 리스너 (CTR 분석)
             interstitialAd.addAdEventListener(AdEventType.CLICKED, async () => {
-                console.log("📢 전면 광고 클릭됨");
 
                 await analytics().logEvent("ad_interstitial_clicked", {
                     ad_type: "interstitial",
@@ -404,10 +389,10 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             if (!lastSet.completed) {
                 updateSets(sets.slice(0, -1));
             } else {
-                console.log("완료 상태인 세트는 삭제할 수 없습니다.");
+                // console.log("완료 상태인 세트는 삭제할 수 없습니다.");
             }
         } else {
-            console.log("더 이상 세트를 삭제할 수 없습니다.");
+            // console.log("더 이상 세트를 삭제할 수 없습니다.");
         }
     };
 
@@ -481,7 +466,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                 // 완료된 세트만 넘기기
                 submitExerciseFilter(newSets[index], index + 1); // index + 1을 세트 번호로 전달
             } else {
-                console.log(`SET ${index + 1}을 완료하기 위해서는 이전 세트를 완료해야 합니다.`);
+                // console.log(`SET ${index + 1}을 완료하기 위해서는 이전 세트를 완료해야 합니다.`);
             }
         }
     };
@@ -531,7 +516,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         count = count ? parseInt(count) + 1 : 1; // 기존 값이 있으면 +1, 없으면 1부터 시작
         await AsyncStorage.setItem('exerciseSubmitCount', count.toString());
     
-        console.log(count);
         // 15회마다 광고 표시
         if (count >= 15) {
             if(!isPremium){
@@ -551,7 +535,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                     );
                     updateSets(updatedSets);
     
-                    console.log(`세트 ${index} 상태가 해제되었습니다.`);
                 } else {
                     // console.log('Data successfully submitted:', data);
                 }
@@ -578,14 +561,12 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         queryKey: ['DeleteExercise'],
         queryFn: async () => {
 
-            console.log("삭제 쿼리 호출합니다.")
 
 
             // console.log(currentSet, currentSetNumber);
 
             if (currentSet && currentSetNumber !== null) {
 
-                console.log("api 호출준비")
                 const result = await deleteExerciseRecord(
                     memberId, currentSetNumber, exercise, exerciseService, null, dispatch,
                 );
@@ -608,7 +589,6 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
             try {
                 const { data } = await refetchDelete();
                 if (data && data.success === false) {
-                    console.log("실패한거 아냐?")
                 } else {
                     // console.log('Data successfully submitted:', data);
                 }

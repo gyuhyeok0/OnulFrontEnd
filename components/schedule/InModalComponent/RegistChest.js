@@ -85,7 +85,6 @@ const RegistChest = () => {
     //여기
     useEffect(() => {
         if (searchQuery.trim() !== '') {
-            console.log("검색어:", searchQuery);
     
             const foundExercise = exercises.find(
                 (exercise) => {
@@ -93,19 +92,16 @@ const RegistChest = () => {
                     const match = exercise.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         translatedName?.toLowerCase().includes(searchQuery.toLowerCase()); // 번역본 검색 추가
                     
-                    console.log("현재 운동:", exercise.exerciseName, "번역본:", translatedName, "검색 매칭:", match);
                     return match;
                 }
             );
     
     
             if (!foundExercise) {
-                console.log("검색 결과 없음");
                  setSearchMessage(t('registModal.noResults'));
                 return;
             }
     
-            console.log("검색된 운동:", foundExercise);
     
             if (foundExercise.mainMuscleGroup !== "가슴") {
                 setSearchMessage(
@@ -120,7 +116,6 @@ const RegistChest = () => {
                 setSearchMessage(''); // 메시지 초기화
             }
         } else {
-            console.log("검색어 없음, 메시지 초기화");
             setSearchMessage(''); // 검색어가 없을 때 메시지 초기화
         }
     }, [searchQuery, exercises, dispatch, memberId]);

@@ -1,10 +1,9 @@
 import 'intl-pluralrules';
-import React, { useEffect } from 'react';
 import { View, Text, Alert, Pressable } from 'react-native';
 import { handlerLogOut } from '../../hooks/HandleLogout';
 import DefaultHeader from '../common/DefaultHeader';
 import { deleteAccount } from '../../apis/MemberAPICalls';
-import { useDispatch, useSelector } from 'react-redux'; // useDispatch 가져오기
+import { useSelector } from 'react-redux'; // useDispatch 가져오기
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
@@ -12,10 +11,6 @@ import { useTranslation } from 'react-i18next';
 const MenuAccountInfo = ({ navigation }) => {
     const { t } = useTranslation();
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
-
-    useEffect(() => {
-        console.log("=====================계정 정보 ========================");
-    }, []);
 
     const handlerAccountDeletion = () => {
         Alert.alert(

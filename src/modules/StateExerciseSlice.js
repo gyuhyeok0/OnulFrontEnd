@@ -45,16 +45,14 @@ const stateExerciseSlice = createSlice({
                     sets: updatedSets.map((set) => ({ ...set })),
                 };
             } else {
-                console.log("해당 uniqueKey에 대한 기존 상태가 없습니다.");
+                // console.log("해당 uniqueKey에 대한 기존 상태가 없습니다.");
             }
         },
 
         resetState: (state) => {
-            console.log('Resetting all exerciseSets');
         
             for (let uniqueKey in state.exerciseSets) {
                 if (state.exerciseSets.hasOwnProperty(uniqueKey)) {
-                    console.log(`Resetting exerciseSets for uniqueKey: ${uniqueKey}`);
                     const { id, exerciseServiceNumber } = state.exerciseSets[uniqueKey];
                     state.exerciseSets[uniqueKey] = {
                         id,
@@ -65,7 +63,6 @@ const stateExerciseSlice = createSlice({
                             { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
                         ],
                     };
-                    console.log('After reset:', state.exerciseSets[uniqueKey]);
                 }
             }
         },

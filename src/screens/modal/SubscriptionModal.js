@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Modal, Text, StyleSheet, Pressable, Image, Platform, Animated, Dimensions } from 'react-native';
-import Purchases from "react-native-purchases"; // 🚀 추가
+import Purchases from "react-native-purchases"; 
 import CustomModal from './ServiceAgree';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchSubscriptionStatus, setPremiumStatus } from '../../modules/SubscriptionSlice';
+import { useDispatch } from 'react-redux';
+import { setPremiumStatus } from '../../modules/SubscriptionSlice';
 import { useTranslation } from 'react-i18next';
 
 
@@ -17,7 +17,7 @@ const SubscriptionModal = ({ visible, onClose }) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalY] = useState(new Animated.Value(screenHeight)); 
     const [modalContent, setModalContent] = useState('');  
-    const [offerings, setOfferings] = useState(null);  // ✅ 상품 목록 상태 추가
+    const [offerings, setOfferings] = useState(null);  
 
     useEffect(() => {
         const fetchOfferings = async () => {
@@ -37,7 +37,6 @@ const SubscriptionModal = ({ visible, onClose }) => {
 
     const handlePurchase = async () => {
         if (!offerings || !offerings.availablePackages.length) {
-            console.log("No offerings available.");
             return;
         }
     
@@ -46,20 +45,14 @@ const SubscriptionModal = ({ visible, onClose }) => {
             const purchaseMade = await Purchases.purchasePackage(packageToBuy);
             const customerInfo = await Purchases.getCustomerInfo();
     
-            console.log("🛒 구매 정보:", customerInfo);
             if (customerInfo.entitlements.active["Pro"]) {
-                console.log("✅ 구매 성공! 프리미엄 활성화됨.");
                 dispatch(setPremiumStatus(true)); // ✅ Redux 상태 업데이트
                 onClose(); // 모달창 닫기
-            } else {
-                console.log("구매는 성공했지만, 프리미엄 활성화 안됨.");
-            }
+            } 
         } catch (error) {
             if (!error.userCancelled) {
                 console.error("구매 실패:", error);
-            } else {
-                console.log("사용자가 구매 취소함.");
-            }
+            } 
         }
     };
 

@@ -59,7 +59,6 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                     }));
                     setRows(mappedRows); // 변환된 값 설정
                 } else {
-                    console.log("없어")
                 }
     
                 setRecipeName(initialRecipeName); // 레시피 이름 설정
@@ -172,7 +171,6 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
     
         try {
             await saveFoodData(memberId, id, recipeName, foodItems);
-            console.log('데이터 저장 성공!');
             onClose(); // 성공 시 모달 닫기
         } catch (error) {
             console.error('데이터 저장 실패:', error);

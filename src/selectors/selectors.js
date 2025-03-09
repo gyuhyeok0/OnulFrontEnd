@@ -4,7 +4,7 @@ const EMPTY_ARRAY = [];
 
 const createExerciseSelector = (key) => createSelector(
     (state) => state[key]?.myExercises || EMPTY_ARRAY,
-    (myExercises) => myExercises.length ? myExercises : EMPTY_ARRAY // ✅ 빈 배열을 재사용
+    (myExercises) => myExercises.length ? myExercises : EMPTY_ARRAY 
 );
 
 // 운동 부위별 선택자

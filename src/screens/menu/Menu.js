@@ -29,10 +29,6 @@ const Menu = ({ navigation }) => {
     }
     }, [memberSignupDate]);
 
-    useEffect(() => {
-        console.log("=====================메뉴 페이지 ========================");
-    }, []);
-
     const handleTranslation = () => {
         navigation.navigate('MenuTranslation');
     };

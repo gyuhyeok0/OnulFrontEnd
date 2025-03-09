@@ -26,13 +26,9 @@ const DATE_KEY = 'lastAdDate';
 const Analysis = ({ navigation }) => {
     const { t } = useTranslation();
     const isPremium = useSelector(state => state.subscription.isPremium);
-    const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate);
-    console.log('memberSignupDate: ', memberSignupDate);
-
     const [showAd, setShowAd] = useState(false);
     const [adCount, setAdCount] = useState(0);
     const [isAdLoaded, setIsAdLoaded] = useState(false);
-    const [days, setDays] = useState(0);
 
     const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false); // 결제 모달 상태
 
@@ -45,20 +41,11 @@ const Analysis = ({ navigation }) => {
     }, []);
 
     useEffect(() => {
-        if (!memberSignupDate) return;
-
-        const today = new Date();
-        const signupDate = new Date(memberSignupDate);
-        const diffTime = today.getTime() - signupDate.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        setDays(diffDays)
-        console.log('가입 후 경과 일수:', diffDays);
 
 
-        if (diffDays >= 5) {
             setShowAd(true);
             const checkAdLimit = async () => {
+                const today = new Date(); 
                 const todayStr = today.toISOString().split('T')[0];
                 const lastAdDate = await AsyncStorage.getItem(DATE_KEY);
                 let count = 0;
@@ -73,44 +60,35 @@ const Analysis = ({ navigation }) => {
                 setAdCount(count);
             };
             checkAdLimit();
-        }
-    }, [memberSignupDate]);
+    }, []);
 
 
     useFocusEffect(
         useCallback(() => {
-            console.log('🔄 useFocusEffect 실행됨');
-            console.log(`현재 광고 카운트: ${adCount}, showAd 상태: ${showAd}`);
-    
+
             if (!showAd || adCount >= MAX_ADS_PER_DAY) {
-                console.log('⛔ 광고를 표시할 조건을 충족하지 않음 → 리턴');
                 return;
             }
     
-            console.log('📢 Analysis 페이지 포커스 → 광고 로드 시작');
             
             if (!rewardedAd) {
-                console.log('⚠️ rewardedAd 객체가 생성되지 않음. 새로 생성 시도.');
                 rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
             } else {
-                console.log('✅ rewardedAd 객체가 이미 생성됨.');
+                // console.log('✅ rewardedAd 객체가 이미 생성됨.');
             }
     
-            console.log('📡 광고 리스너 등록 시작');
     
             const unsubscribeLoaded = rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
-                console.log('✅ 광고가 로드되었습니다.');
                 setIsAdLoaded(true);
             });
     
             const unsubscribeClosed = rewardedAd.addAdEventListener(AdEventType.CLOSED, async () => {
-                console.log('📢 광고가 닫혔습니다. 새로운 광고 로드.');
     
                 // 광고가 닫히면 다시 로드하기 전에 isLoaded 체크
                 if (!rewardedAd.isLoaded) {
                     rewardedAd.load();
                 } else {
-                    console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
+                    // console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
                 }
     
                 await analytics().logEvent('ad_skipped', {
@@ -119,7 +97,6 @@ const Analysis = ({ navigation }) => {
             });
     
             const unsubscribeRewarded = rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, async (reward) => {
-                console.log(`✅ 광고 끝까지 시청 → 보상 지급 (${reward.amount} ${reward.type})`);
                 
                 await analytics().logEvent('ad_rewarded', {
                     ad_type: 'rewarded',
@@ -129,7 +106,6 @@ const Analysis = ({ navigation }) => {
             });
     
             const unsubscribeError = rewardedAd.addAdEventListener(AdEventType.ERROR, async (error) => {
-                console.log(`❌ 광고 로딩 실패: ${error.code} - ${error.message}`);
             
                 await analytics().logEvent('ad_load_failed', {
                     ad_type: 'rewarded',
@@ -137,34 +113,29 @@ const Analysis = ({ navigation }) => {
                     error_message: error.message,
                 });
             
-                console.log('🔄 광고 로딩 실패 → 3초 후 재시도');
                 setTimeout(() => {
                     if (!rewardedAd.isLoaded) {
-                        console.log('📡 재시도: 광고 로드 실행');
                         rewardedAd.load();
                     } else {
-                        console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
+                        // console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
                     }
                 }, 3000);
             });
     
             // ✅ 이미 광고가 로드되었으면 다시 로드하지 않도록 방지
             if (!rewardedAd.isLoaded) {
-                console.log('📡 광고 로드 요청 실행');
                 rewardedAd.load();
             } else {
-                console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
+                // console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
             }
     
-            console.log('⏳ 5초 후에도 LOADED 이벤트가 발생하지 않으면 강제 디버깅 로그 출력');
             setTimeout(() => {
                 if (!isAdLoaded) {
-                    console.log('⚠️ 5초가 지났지만 광고 LOADED 이벤트 발생 안함 → 광고 상태 확인 필요');
+                    // console.log('⚠️ 5초가 지났지만 광고 LOADED 이벤트 발생 안함 → 광고 상태 확인 필요');
                 }
             }, 5000);
     
             return () => {
-                console.log('🔄 useFocusEffect cleanup: 이벤트 리스너 해제');
                 unsubscribeLoaded();
                 unsubscribeClosed();
                 unsubscribeRewarded();
@@ -175,8 +146,6 @@ const Analysis = ({ navigation }) => {
     
 
     const showRewardedAd = async () => {
-        console.log("adCount: " + adCount);
-        console.log("isAdLoaded: " + isAdLoaded);
 
         if (isAdLoaded && adCount < MAX_ADS_PER_DAY) {
             await rewardedAd.show();
@@ -185,13 +154,13 @@ const Analysis = ({ navigation }) => {
             await AsyncStorage.setItem(STORAGE_KEY, newCount.toString());
             setIsAdLoaded(false); // 광고가 재로드될 수 있도록 상태 초기화
         } else {
-            console.log('⚠️ 하루 광고 한도를 초과했거나 광고가 아직 로드되지 않았습니다.');
+            // console.log('⚠️ 하루 광고 한도를 초과했거나 광고가 아직 로드되지 않았습니다.');
         }
     };
 
     const handlePress = async (targetScreen) => {
 
-        if (days <= 5 || isPremium) {
+        if (isPremium) {
             navigation.navigate(targetScreen);
             return;
         }
@@ -212,7 +181,6 @@ const Analysis = ({ navigation }) => {
                 {
                     text: t('analysis.subscribe'),
                     onPress: async () => {
-                        console.log("🚀 User chose subscription.");
                         setIsPaymentModalVisible(true);
                     },
                 },
@@ -243,7 +211,7 @@ const Analysis = ({ navigation }) => {
                         <Text style={styles.navButtonText}>{t('analysis.checkExercise')}</Text>
 
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 9, position: 'absolute', bottom:2}}>
+                    <Text style={{color:'white', fontSize: 12, position: 'absolute', bottom:5, textAlign:'center'}}>
                     {t('analysis.imageNote')}
                     </Text>
 
@@ -265,7 +233,7 @@ const Analysis = ({ navigation }) => {
                     <Pressable style={styles.navButton} onPress={() => handlePress('WeightAndDietGraph')}>
                         <Text style={styles.navButtonText}>{t('analysis.checkDiet')}</Text>
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 9, position: 'absolute', bottom:2}}>
+                    <Text style={{color:'white', fontSize: 12, position: 'absolute', bottom:5, textAlign:'center'}}>
                     {t('analysis.imageNote')}
                     </Text>
 
@@ -287,7 +255,7 @@ const Analysis = ({ navigation }) => {
                     <Pressable style={styles.navButton} onPress={() => handlePress('MuscleFatigue')}>
                         <Text style={styles.navButtonText}>{t('analysis.checkFatigue')}</Text>
                     </Pressable>
-                    <Text style={{color:'white', fontSize: 9, position: 'absolute', bottom:2}}>
+                    <Text style={{color:'white', fontSize: 12, position: 'absolute', bottom:5, textAlign:'center'}}>
                     {t('analysis.imageNote')}
                     </Text>
 
@@ -321,7 +289,7 @@ const styles = StyleSheet.create({
         width: 250,
         borderRadius: 10,
         position: 'absolute',
-        bottom: 25,
+        bottom: 40,
     },
     navButtonText: {
         color: 'white',

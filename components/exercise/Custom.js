@@ -73,7 +73,6 @@ const Custom = () => {
             const [removedItem] = updatedExercises.splice(draggedIndex, 1);
             updatedExercises.splice(newIndex, 0, removedItem);
     
-            console.log(updatedExercises);
     
             dispatch(
                 reorderMyFreeExercises({
@@ -102,7 +101,6 @@ const Custom = () => {
         useEffect(() => {
             // 날짜가 변경되었을 때만 실행
             if (isDateChanged) {
-                console.log("날짜가 실제로 변경되었습니다!");
                 dispatch(resetState());
             }
           }, [isDateChanged]); // isDateChanged가 true일 때만 실행

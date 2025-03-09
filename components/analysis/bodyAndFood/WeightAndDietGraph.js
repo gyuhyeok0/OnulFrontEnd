@@ -62,9 +62,6 @@ const WeightAndDietGraph = ({ navigation }) => {
                 setBodyData(body);
                 setFoodData(food);
 
-                console.log("Body Data:", body);
-                console.log("Food Data:", food);
-
             } catch (error) {
                 console.error("Error fetching exercise data:", error);
             }

@@ -1,17 +1,13 @@
-import React, { useState, useEffect, useMemo, useRef} from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, ScrollView, Image, Text, StyleSheet, Pressable } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Footer from '../common/Footer';
 import { checkOnboardingStatus } from '../../hooks/HendleOnboarding';
 import { handlerLogOut } from '../../hooks/HandleLogout';
 import AutoAdapt from '../../../components/exercise/autoAdapt/AutoAdapt';
 import OnSchedule from '../../../components/exercise/OnSchedule';
 import Custom from '../../../components/exercise/Custom';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addDefaultSetsToRedux } from '../../modules/StateExerciseSlice'; // Redux 액션
 import useCheckDateChange from '../../hooks/useCheckDateChange';
-import Purchases from "react-native-purchases";
-import { getSubscriptionStatus } from '../../hooks/Subscription';
 import Icon from 'react-native-vector-icons/FontAwesome'; // FontAwesome에서 Lock 아이콘 가져오기
 import SubscriptionModal from '../modal/SubscriptionModal';
 import FreeTrialBanner from '../../../components/banner/FreeTrialBanner';
@@ -49,8 +45,6 @@ const Exercise = ({ navigation }) => {
     }, [memberSignupDate]);
 
     useEffect(() => {
-        console.log("==========운동페이지 입니다============");
-        console.log(memberSignupDate);
     
         if (memberSignupDate) {
             const signupDate = new Date(memberSignupDate);

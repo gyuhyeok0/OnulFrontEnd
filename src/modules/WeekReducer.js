@@ -13,7 +13,6 @@ const weekReducer = createSlice({
     reducers: {
         setWeekState: (state, action) => {
 
-            console.log("날짜 디스패치 작동.")
         const { isSwapped, todayIndex } = action.payload;
         state.isSwapped = isSwapped;
         state.todayIndex = todayIndex;

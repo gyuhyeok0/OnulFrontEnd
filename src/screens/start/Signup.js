@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
-import DefaultHeader from '../common/DefaultHeader'; // 커스텀 헤더 컴포트 임포트
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import DefaultHeader from '../common/DefaultHeader'; 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
 
@@ -14,21 +14,15 @@ function Signup({ navigation }) {
     const [isMemberIdValid, setIsMemberIdValid] = useState(null); 
     const [isMemberPasswordValid, setIsMemberPasswordValid] = useState(null); 
     const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(null); 
-    const [isIdAvailable, setIsIdAvailable] = useState(false); // 아이디 사용 가능 여부 상태 추가
-    const [isIdChecked, setIsIdChecked] = useState(false); // 중복확인 버튼이 클릭되었는지 상태
+    const [isIdAvailable, setIsIdAvailable] = useState(false); 
+    const [isIdChecked, setIsIdChecked] = useState(false);
     const { t } = useTranslation();
 
     const locales = RNLocalize.getLocales();
     const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
 
-    // 🇯🇵 일본이거나 🇰🇷 한국이면 일본 서버 사용, 그 외에는 미국 서버 사용
     const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
     const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
-
-
-    useEffect(() => {
-        console.log("===================== 가입 페이지 ========================");
-    }, []);
 
     const handleNextStep = () => {
         // 유효성 검증

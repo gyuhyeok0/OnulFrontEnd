@@ -60,10 +60,6 @@ const initializeI18n = async () => {
 
     const storedLanguage = await getStoredLanguage();
 
-    console.log("================= 언어 초기화 ==================");
-    console.log(locales); // 기기 언어
-    console.log(storedLanguage); // 저장된 언어
-
     // i18n 초기화
     await i18n
         .use(initReactI18next)
@@ -76,7 +72,6 @@ const initializeI18n = async () => {
             },
         });
 
-    console.log("================= i18n 초기화 완료 ==================");
 };
 
 

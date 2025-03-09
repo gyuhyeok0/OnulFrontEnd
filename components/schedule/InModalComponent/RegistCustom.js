@@ -78,11 +78,6 @@ const RegistCustom = () => {
         }
     }, [myCustom]); // 사용자 정의 운동 상태가 변경될 때 업데이트
 
-
-    useEffect(() => {
-        console.log("안녕")
-        console.log(myCustom)
-    }, []); 
     
     
 
@@ -119,11 +114,9 @@ const RegistCustom = () => {
             const newExercises = selectedExercises.filter(exerciseId => !scheduleExercises.includes(exerciseId));
             const muscleGroup = "커스텀";
     
-            console.log("보내는 운동 데이터:", { newExercises, muscleGroup, memberId });
     
             await sendExerciseToServer(newExercises, muscleGroup, memberId);
     
-            console.log("운동 데이터 전송 성공!");
     
             setScheduleExercises((prevSchedule) => [...prevSchedule, ...newExercises]);
             setSelectedExercises([]);
