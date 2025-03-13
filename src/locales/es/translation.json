@@ -635,6 +635,12 @@
     "ios_notice": "En iOS, los usuarios deben cerrar la aplicación manualmente."
 }
 ,
+"exerciseIcon": {
+        "sorry_message": "Lo siento.",
+        "image_preparing": "Actualmente, la imagen está siendo preparada.",
+        "click_to_return": "Haz clic en la pantalla para regresar."
+    },
+    
   "exerciseNames": {
     
     "로잉머신": {
@@ -2275,16 +2281,16 @@
 "Precauciones": ["No dejes que los codos bajen demasiado o se sobreextiendan"]
 }
 },
-"원암 덤벨 숄더 프레스": {
-"name": "One Arm Dumbbell Shoulder Press",
-"details": {
-"Áreas Musculares Principales": ["Deltoides", "Tríceps"],
-"Postura": ["Siéntate o párate con una mancuerna en una mano, la palma mirando hacia adelante"],
-"Movimiento": ["Empuja la mancuerna hacia arriba hasta que el brazo esté extendido, luego bájala lentamente"],
-"Técnica de Respiración": ["Exhala al empujar, inhala al bajar"],
-"Consejos": ["Mantén el core activado para estabilizar el torso"],
-"Precauciones": ["No dejes que el brazo se extienda completamente, mantén una ligera flexión en el codo"]
-}
+"덤벨 숄더 프레스": {
+    "name": "Dumbbell Shoulder Press",
+    "details": {
+        "Áreas Musculares Principales": ["Deltoides", "Tríceps"],
+        "Postura": ["Siéntate o párate con una mancuerna en cada mano, las palmas mirando hacia adelante"],
+        "Movimiento": ["Empuja las mancuernas hacia arriba hasta que los brazos estén extendidos, luego bájalas lentamente"],
+        "Técnica de Respiración": ["Exhala al empujar, inhala al bajar"],
+        "Consejos": ["Mantén el core activado para estabilizar el torso"],
+        "Precauciones": ["No dejes que los brazos se extiendan completamente, mantén una ligera flexión en los codos"]
+    }
 },
 "시티드 덤벨 숄더 프레스": {
 "name": "Seated Dumbbell Shoulder Press",

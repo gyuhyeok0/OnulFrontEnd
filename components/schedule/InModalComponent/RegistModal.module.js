@@ -266,8 +266,6 @@ export const styles = StyleSheet.create({
         color: '#999999',
         marginTop: 20
     }
-
-
     
     
 });

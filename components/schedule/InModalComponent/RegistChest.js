@@ -8,6 +8,9 @@ import { styles } from './RegistModal.module';
 import { deleteExerciseFromServer, sendExerciseToServer, fetchMyExercises as fetchMyExercisesAction } from '../../../src/apis/MyExerciseAPI';
 import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
 import { useTranslation } from 'react-i18next';
+import exerciseSVGs from '../../exercise/settings-components/ExerciseSVGs';
+import ScheduleExerciseIcon from '../../exercise/settings-components/ScheduleExerciseIcon';
+import { Positions } from 'react-native-calendars/src/expandableCalendar';
 
 const RegistChest = () => {
     const { t } = useTranslation();
@@ -31,7 +34,19 @@ const RegistChest = () => {
     const [memberId, setMemberId] = useState(null);
 
     const [searchMessage, setSearchMessage] = useState('');
-    const [showNavigateButton, setShowNavigateButton] = useState(false);
+
+    const [showExerciseIcon, setShowExerciseIcon] = useState(false); // 아이콘 표시 상태
+    const [selectedExerciseId, setSelectedExerciseId] = useState(null); // 현재 선택된 운동 ID 저장
+    
+    const handleToggleExerciseIcon = (exerciseId) => {
+        setSelectedExerciseId(exerciseId); // 선택된 운동 ID 저장
+        toggleExerciseIcon(); // 모달 표시 토글
+    };
+    
+
+    const toggleExerciseIcon = () => {
+        setShowExerciseIcon((prev) => !prev); // 상태 변경
+    };
 
 
 
@@ -221,6 +236,7 @@ const RegistChest = () => {
         }
     };
 
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.searchContainer}>
@@ -263,47 +279,62 @@ const RegistChest = () => {
                 scrollEventThrottle={16}
             >
                 {filteredExercises.length > 0 ? (
-                    filteredExercises.map((exercise) => (
-                        <TouchableOpacity
-                            key={exercise.id}
-                            style={[
-                                styles.exerciseItem,
-                                { backgroundColor: selectedExercises.includes(exercise.id) ? '#2E323C' : '#1A1C22' }
-                            ]}
-                            onPress={() => toggleExerciseSelect(exercise.id)}
-                        >
-                            <View style={styles.exerciseIcon}>
+                    filteredExercises.map((exercise) => {
+                        const exerciseId = exercise.id;
+                        const SvgComponent = exerciseSVGs[exerciseId] || null; // SVG 컴포넌트 정의
 
-                                <Icon name="slash" size={35} color="#787A7F" style={{opacity:0.5}} />
-                            </View>                            
-                            <View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-                                     <Text style={styles.exerciseName}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
-
-
-                                    {exercise.popularityGroup && (
-                                         <Text style={styles.exerciesePopular}>{t('registModal.categoryPopular')}</Text>
-
-                                    )}
-                                </View>
-                                 <Text style={styles.exerciseDetails}>{t(`muscleGroups.${exercise.detailMuscleGroup}`)}</Text>
-                                
-                            </View>
-                            <TouchableOpacity 
-                                style={[styles.likeIcon, { marginLeft: 'auto' }]} 
-                                onPress={() => toggleLike(exercise.id)} 
+                        return (
+                            <TouchableOpacity
+                                key={exercise.id}
+                                style={[
+                                    styles.exerciseItem,
+                                    { backgroundColor: selectedExercises.includes(exerciseId) ? '#2E323C' : '#1A1C22' }
+                                ]}
+                                onPress={() => toggleExerciseSelect(exercise.id)}
                             >
-                                <Ionicons 
-                                    name={likedExercises[exercise.id] ? "heart" : "heart-outline"} 
-                                    size={25} 
-                                    color={likedExercises[exercise.id] ? "red" : "gray"} 
-                                />
-                            </TouchableOpacity>
-                        </TouchableOpacity>
-                    ))
-                ) : (
-                     <Text style={styles.noExerciseText}>{searchMessage || t('registModal.noExerciseData')}</Text>
+                                
+                                <TouchableOpacity
+                                    style={styles.exerciseIcon}
+                                    onPress={() => handleToggleExerciseIcon(exerciseId)} // ✅ 수정된 부분
 
+                                >
+                                    {SvgComponent ? (
+                                        <SvgComponent width={45} height={45} viewBox="280 350 2000 2000" />
+                                    ) : (
+                                        <Icon name="slash" size={35} color="#787A7F" style={{ opacity: 0.5 }} />
+                                    )}
+                                </TouchableOpacity>
+
+                                <View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text style={styles.exerciseName}>
+                                            {t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}
+                                        </Text>
+
+                                        {exercise.popularityGroup && (
+                                            <Text style={styles.exerciesePopular}>{t('registModal.categoryPopular')}</Text>
+                                        )}
+                                    </View>
+                                    <Text style={styles.exerciseDetails}>
+                                        {t(`muscleGroups.${exercise.detailMuscleGroup}`)}
+                                    </Text>
+                                </View>
+
+                                <TouchableOpacity
+                                    style={[styles.likeIcon, { marginLeft: 'auto' }]}
+                                    onPress={() => toggleLike(exercise.id)}
+                                >
+                                    <Ionicons
+                                        name={likedExercises[exercise.id] ? 'heart' : 'heart-outline'}
+                                        size={28}
+                                        color={likedExercises[exercise.id] ? 'red' : 'gray'}
+                                    />
+                                </TouchableOpacity>
+                            </TouchableOpacity>
+                        );
+                    })
+                ) : (
+                    <Text style={styles.noExerciseText}>{searchMessage || t('registModal.noExerciseData')}</Text>
                 )}
                 <View style={{ height: 100 }}></View>
             </ScrollView>
@@ -364,6 +395,15 @@ const RegistChest = () => {
                     </View>
                 </Animated.View>
             </View>
+
+            {/* 검은색 View 모달 */}
+            {showExerciseIcon && selectedExerciseId && (
+                <ScheduleExerciseIcon
+                    exerciseId={selectedExerciseId} // 선택된 exerciseId 전달
+                    toggleVisibility={toggleExerciseIcon} // 토글 함수 전달
+                />
+            )}
+
         </SafeAreaView>
     );
 };

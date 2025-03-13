@@ -8,9 +8,16 @@ import Agree from '../../../components/signup/Agree';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { callLoginAPI } from '../../apis/MemberAPICalls';
 import { useDispatch } from 'react-redux';
-import { API_URL_JP, API_URL_US } from '@env';
 import { useTranslation } from 'react-i18next';
 import * as RNLocalize from 'react-native-localize';
+import { API_URL_JP, API_URL_US } from '@env';
+
+const locales = RNLocalize.getLocales();
+const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
+
+// 🇯🇵 일본이거나 🇰🇷 한국이면 일본 서버 사용, 그 외에는 미국 서버 사용
+const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
+const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
 
 
 
@@ -31,13 +38,6 @@ function SignupStep1({ navigation, route }) {
     const { memberId, memberPassword } = route.params || {};
 
     const { t } = useTranslation();
-
-    const locales = RNLocalize.getLocales();
-    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
-
-    const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
-    const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
-
 
     useEffect(() => {
         const locales = Localize.getLocales();
@@ -180,13 +180,14 @@ function SignupStep1({ navigation, route }) {
             const data = await response.json();
 
             if (data.success === true) {
+                // Alert.alert('가입 완료', '회원가입이 완료되었습니다.');
 
                 const form = {
                     memberId: memberId,
                     memberPassword: memberPassword
                 };
 
-                const result = dispatch(callLoginAPI({ form })); 
+                const result = await dispatch(callLoginAPI({ form })); // API 호출 및 결과 저장
 
                 if (result && result.status === 200) {
                     // 로그인 성공 시 Onboarding 페이지로 이동
