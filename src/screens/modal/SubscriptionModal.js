@@ -16,8 +16,9 @@ const SubscriptionModal = ({ visible, onClose }) => {
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalY] = useState(new Animated.Value(screenHeight)); 
-    const [modalContent, setModalContent] = useState('');  
     const [offerings, setOfferings] = useState(null);  
+    const [modalType, setModalType] = useState('');
+
 
     useEffect(() => {
         const fetchOfferings = async () => {
@@ -59,8 +60,7 @@ const SubscriptionModal = ({ visible, onClose }) => {
 
     // ✅ 이용약관 / 개인정보처리방침 모달 열기
     const handleViewTerms = (type) => {
-        const content = type === 'service' ? '서비스 이용약관 내용' : '개인정보 처리방침 내용';
-        setModalContent(content);  
+        setModalType(type);  // 모달 타입 저장
         setModalVisible(true);
         Animated.timing(modalY, {
             toValue: screenHeight * 0.35,  
@@ -159,7 +159,7 @@ const SubscriptionModal = ({ visible, onClose }) => {
                         onClose={closeModal} 
                         modalY={modalY} 
                         title={t('subscription.termsOfService')} 
-                        content={modalContent} 
+                        type={modalType}  // 수정된 부분
                     />
 
                 </View>

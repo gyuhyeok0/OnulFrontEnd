@@ -635,6 +635,12 @@
         "confirm": "OK",
         "ios_notice": "iOS users need to close the app manually."
     },
+
+    "exerciseIcon": {
+        "sorry_message": "Sorry.",
+        "image_preparing": "Currently, the image is being prepared.",
+        "click_to_return": "Click the screen to return."
+    },
     
 
   
@@ -2276,13 +2282,13 @@
         "Precautions": ["Avoid locking your elbows at the top of the movement"]
     }
 },
-"원암 덤벨 숄더 프레스": {
-    "name": "Single-Arm Dumbbell Shoulder Press",
+"덤벨 숄더 프레스": {
+    "name": "Dumbbell Shoulder Press",
     "details": {
         "Primary Target Areas": ["Shoulders", "Triceps"],
-        "Posture": ["Sit or stand with a dumbbell in one hand, at shoulder height with your palm facing forward"],
-        "Movement": ["Press the dumbbell overhead, then lower it back down to shoulder height"],
-        "Breathing Technique": ["Exhale as you press the dumbbell up, inhale as you lower it"],
+        "Posture": ["Sit or stand with a dumbbell in each hand, at shoulder height with your palms facing forward"],
+        "Movement": ["Press the dumbbells overhead, then lower them back down to shoulder height"],
+        "Breathing Technique": ["Exhale as you press the dumbbells up, inhale as you lower them"],
         "Tips": ["Engage your core to stabilize your body"],
         "Precautions": ["Do not arch your back during the press"]
     }

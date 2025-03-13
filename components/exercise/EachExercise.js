@@ -29,6 +29,7 @@ import { AppState } from 'react-native';
 
 import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
 import { useTranslation } from 'react-i18next';
+import exerciseSVGs from './settings-components/ExerciseSVGs'; 
 
 
 const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
@@ -62,6 +63,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     const [exerciseType, setExerciseType] = useState(1);
 
     const [exerciseService, setExerciseService] = useState();
+
     
 
     // Redux의 dispatch를 가져오기
@@ -73,6 +75,8 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
 
     const exerciseId = useMemo(() => exercise.id, [exercise.id]);
+    const SvgComponent = exerciseSVGs[exerciseId] || null;
+
 
     // ✅ `useSelector`에서 `exerciseId` 사용
     const latestPreVolume = useSelector((state) => selectLatestPreVolume(state, exerciseId));
@@ -659,25 +663,24 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                 {showExerciseIcon ? (
                     // ExerciseIcon만 표시
                     <ExerciseIcon
-                        mainMuscleGroup={exercise.mainMuscleGroup}
-                        detailMuscleGroup={exercise.detailMuscleGroup}
-                        exerciseType={exercise.exerciseType}
-                        isIconVisible={showExerciseIcon} // 상태 전달
-                        toggleVisibility={toggleExerciseIcon} // 토글 함수 전달
+                    exerciseId={exerciseId}
+                    toggleVisibility={toggleExerciseIcon} // 토글 함수 전달
                     />
                 ) : ( 
                     
                     <View style={styles.exerciseInformation}>
 
-
-
                         <TouchableOpacity style={styles.exerciseIcon} onPress={toggleExerciseIcon}>
                             {/* 아이콘 추가 시 사용 */}
-        
 
-                            <Icon name="slash" size={35} color="#787A7F" style={{opacity:0.5}} />
+                            {SvgComponent ? (
+                                                <SvgComponent width={45} height={45} viewBox="280 350 2000 2000" />
+                                            ) : (
+                                                <>
+                                                    <Icon name="slash" size={35} color="#787A7F" style={{opacity:0.5}}/>
+                                                </>
+                                            )}
 
-                            
                         </TouchableOpacity>
 
                         <Text style={styles.exerciseText}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>

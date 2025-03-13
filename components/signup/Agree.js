@@ -1,36 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, StyleSheet, Dimensions, Animated } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';  // @react-native-community/checkbox에서 임포트
-import CustomModal from '../../src/screens/modal/ServiceAgree';  // CustomModal 임포트
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
+import CustomModal from '../../src/screens/modal/ServiceAgree';
 import { useTranslation } from 'react-i18next';
 
 
 const screenHeight = Dimensions.get('window').height;
 
-function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
-    const [isAllAgreed, setLocalAllAgreed] = useState(false); // 로컬 상태
+function Agree({ setIsAllAgreed }) {
+    const [isAllAgreed, setLocalAllAgreed] = useState(false);
     const [isOver14Agreed, setIsOver14Agreed] = useState(false);
     const [isServiceAgreed, setIsServiceAgreed] = useState(false);
     const [isPrivacyAgreed, setIsPrivacyAgreed] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
-    const [modalY] = useState(new Animated.Value(screenHeight)); 
-    const [modalContent, setModalContent] = useState('');  
+    const [modalType, setModalType] = useState(''); 
+    const [modalY] = useState(new Animated.Value(screenHeight));
     const { t } = useTranslation();
 
     useEffect(() => {
         if (isOver14Agreed && isServiceAgreed && isPrivacyAgreed) {
-            setLocalAllAgreed(true);  // 모두 동의 체크
-            setIsAllAgreed(true); // 상위 컴포넌트에 전달
+            setLocalAllAgreed(true);
+            setIsAllAgreed(true);
         } else {
-            setLocalAllAgreed(false);  // 모두 동의 해제
-            setIsAllAgreed(false); // 상위 컴포넌트에 전달
+            setLocalAllAgreed(false);
+            setIsAllAgreed(false);
         }
-    }, [isOver14Agreed, isServiceAgreed, isPrivacyAgreed]);  // 개별 체크박스 상태가 변할 때마다 실행
+    }, [isOver14Agreed, isServiceAgreed, isPrivacyAgreed]);
 
     const handleAllAgree = () => {
         const newValue = !isAllAgreed;
         setLocalAllAgreed(newValue);
-        setIsAllAgreed(newValue); // 상위 컴포넌트에 전달
+        setIsAllAgreed(newValue);
         setIsOver14Agreed(newValue);
         setIsServiceAgreed(newValue);
         setIsPrivacyAgreed(newValue);
@@ -41,67 +41,58 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
     };
 
     const handleViewTerms = (type) => {
-        const content = type === 'service' ? t("agree.serviceContent") : t("agree.privacyContent");
-        setModalContent(content);  
+        setModalType(type); 
         setModalVisible(true);
         Animated.timing(modalY, {
-            toValue: screenHeight * 0.35,  
-            duration: 500,  
+            toValue: screenHeight * 0.35,
+            duration: 500,
             useNativeDriver: true,
         }).start();
     };
 
     const closeModal = () => {
         Animated.timing(modalY, {
-            toValue: screenHeight,  
+            toValue: screenHeight,
             duration: 500,
             useNativeDriver: true,
-        }).start(() => setModalVisible(false));  
+        }).start(() => setModalVisible(false));
     };
 
     return (
         <View style={styles.termBox}>
-            <Text style={{ color: 'white', fontSize: 17, fontWeight: 'bold', marginBottom: 5 }}>{t("agree.title")}</Text>
+            <Text style={{ color: 'white', fontSize: 17, fontWeight: 'bold', marginBottom: 5 }}>
+                {t("agree.title")}
+            </Text>
 
-            {/* 모두 동의 */}
             <View style={styles.agreementBox}>
                 <CheckBox
                     value={isAllAgreed}
                     onValueChange={handleAllAgree}
                     tintColors={{ true: '#5E56C3', false: '#ffffff' }}
-                    style={{ 
-                        transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
-                        marginTop: 7 
-                    }}
+                    style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }], marginTop: 7 }}
                 />
                 <Text style={styles.allAgreeText}>{t("agree.allAgree")}</Text>
             </View>
-            <Text style={{color: '#999999', fontSize: 11, marginLeft: 36}}>{t("agree.allAgreeNote")}</Text>
+            <Text style={{ color: '#999999', fontSize: 11, marginLeft: 36 }}>
+                {t("agree.allAgreeNote")}
+            </Text>
 
-            {/* 만 14세 이상 동의 */}
             <View style={styles.agreementBox}>
                 <CheckBox
                     value={isOver14Agreed}
                     onValueChange={() => handleIndividualAgree(setIsOver14Agreed, isOver14Agreed)}
                     tintColors={{ true: '#5E56C3', false: '#ffffff' }}
-                    style={{ 
-                        transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
-                        marginTop: 7 
-                    }}
+                    style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }], marginTop: 7 }}
                 />
                 <Text style={styles.agreementText}>{t("agree.age")}</Text>
             </View>
 
-            {/* 서비스 이용약관 동의 */}
             <View style={styles.agreementBox}>
                 <CheckBox
                     value={isServiceAgreed}
                     onValueChange={() => handleIndividualAgree(setIsServiceAgreed, isServiceAgreed)}
                     tintColors={{ true: '#5E56C3', false: '#ffffff' }}
-                    style={{ 
-                        transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
-                        marginTop: 7 
-                    }}
+                    style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }], marginTop: 7 }}
                 />
                 <Text style={styles.agreementText}>{t("agree.service")}</Text>
                 <TouchableOpacity onPress={() => handleViewTerms('service')} style={{ marginLeft: 'auto' }}>
@@ -109,31 +100,25 @@ function Agree({ setIsAllAgreed }) {  // setIsAllAgreed를 props로 받음
                 </TouchableOpacity>
             </View>
 
-            {/* 개인정보 처리방침 동의 */}
             <View style={styles.agreementBox}>
                 <CheckBox
                     value={isPrivacyAgreed}
                     onValueChange={() => handleIndividualAgree(setIsPrivacyAgreed, isPrivacyAgreed)}
                     tintColors={{ true: '#5E56C3', false: '#ffffff' }}
-                    style={{ 
-                        transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
-                        marginTop: 7 
-                    }}
+                    style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }], marginTop: 7 }}
                 />
                 <Text style={styles.agreementText}>{t("agree.privacy")}</Text>
-                
                 <TouchableOpacity onPress={() => handleViewTerms('privacy')} style={{ marginLeft: 'auto' }}>
                     <Text style={styles.viewText}>{t("agree.view")}</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* CustomModal 사용 */}
             <CustomModal
                 isVisible={isModalVisible}
                 onClose={closeModal}
                 modalY={modalY}
                 title={t("agree.termsTitle")}
-                content={modalContent}
+                type={modalType}  
             />
         </View>
     );

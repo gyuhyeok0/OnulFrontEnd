@@ -13,13 +13,13 @@ const Menu = ({ navigation }) => {
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalY] = useState(new Animated.Value(screenHeight)); 
-    const [modalContent, setModalContent] = useState('');  
     const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate); // Optional chaining 사용
 
     const [fourWeeksLater, setFourWeeksLater] = useState(null);
     const isPremium = useSelector(state => state.subscription.isPremium);
 
     const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false); // 결제 모달 상태
+    const [modalType, setModalType] = useState('');
 
     useEffect(() => {
     if (memberSignupDate) {
@@ -52,8 +52,7 @@ const Menu = ({ navigation }) => {
 
         // ✅ 이용약관 / 개인정보처리방침 모달 열기
     const handleViewTerms = (type) => {
-        const content = type === 'service' ? t('menu.termsContent') : t('menu.privacyContent');
-        setModalContent(content);  
+        setModalType(type);  // 모달 타입 저장
         setModalVisible(true);
         Animated.timing(modalY, {
             toValue: screenHeight * 0.35,  
@@ -126,7 +125,7 @@ const Menu = ({ navigation }) => {
                 onClose={closeModal}
                 modalY={modalY}
                 title={t('menu.termsTitle')}
-                content={modalContent}
+                type={modalType}  // 수정된 부분
             />
 
             <SubscriptionModal

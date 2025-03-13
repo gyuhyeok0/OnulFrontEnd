@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, TouchableOpacity, StyleSheet, Dimensions, Animated, View, ActivityIndicator } from 'react-native';
+import { Modal, TouchableOpacity, StyleSheet, Dimensions, Animated, View, ActivityIndicator, Text } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { WebView } from 'react-native-webview';
 import * as RNLocalize from 'react-native-localize';
@@ -8,7 +8,7 @@ import { API_URL_JP, API_URL_US } from '@env';
 
 const screenHeight = Dimensions.get('window').height;
 
-const CustomModal = ({ isVisible, onClose, modalY, title }) => {
+const CustomModal = ({ isVisible, onClose, modalY, type }) => {
     const [loading, setLoading] = useState(true);
     const [htmlUri, setHtmlUri] = useState(`${API_URL}/privacy-policy.html`);
 
@@ -18,13 +18,14 @@ const CustomModal = ({ isVisible, onClose, modalY, title }) => {
     const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
     const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
 
-
     useEffect(() => {
         if (isVisible) {
             setLoading(true);
-            setHtmlUri(`${API_URL}/privacy-policy.html`);
+            const urlHtml = type === "service" ? "terms-of-service.html" : "privacy-policy.html";
+            setHtmlUri(`${API_URL}/${urlHtml}`);
         }
-    }, [isVisible]);
+    }, [isVisible, type]);
+
 
     return (
         <Modal
