@@ -2226,6 +2226,17 @@
 "Precauciones": ["No arquees la espalda ni uses demasiada fuerza en la parte inferior del cuerpo"]
 }
 },
+"머신 티바 로우": {
+"name": "Máquina de Remo T-Bar",
+"details": {
+"Áreas Musculares Principales": ["Espalda media", "Trapecios", "Bíceps"],
+"Postura": ["Sujeta la barra con las manos a la altura de los hombros y los pies firmemente en el suelo"],
+"Movimiento": ["Levanta la barra hacia el torso, luego bájala lentamente"],
+"Técnica de Respiración": ["Exhala al levantar, inhala al bajar"],
+"Consejos": ["Mantén la espalda recta y no uses impulso"],
+"Precauciones": ["No arquees la espalda ni uses demasiada fuerza en la parte inferior del cuerpo"]
+}
+},
 "케이블 시티드 로우": {
 "name": "Cable Seated Row",
 "details": {

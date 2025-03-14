@@ -3,7 +3,6 @@ const exerciseSVGs = {
     25: require('../../../src/assets/exerciseSVG/25.svg').default,
     26: require('../../../src/assets/exerciseSVG/26.svg').default,
     27: require('../../../src/assets/exerciseSVG/27.svg').default,
-    28: require('../../../src/assets/exerciseSVG/28.svg').default,
 
     29: require('../../../src/assets/exerciseSVG/29.svg').default,
     33: require('../../../src/assets/exerciseSVG/33.svg').default,
@@ -37,13 +36,13 @@ const exerciseSVGs = {
 
     112: require('../../../src/assets/exerciseSVG/112.svg').default,
     113: require('../../../src/assets/exerciseSVG/113.svg').default,
-    114: require('../../../src/assets/exerciseSVG/114.svg').default,
+    144: require('../../../src/assets/exerciseSVG/144.svg').default,
     143: require('../../../src/assets/exerciseSVG/143.svg').default,
     149: require('../../../src/assets/exerciseSVG/149.svg').default,
 
     164: require('../../../src/assets/exerciseSVG/164.svg').default,
     165: require('../../../src/assets/exerciseSVG/165.svg').default,
-    170: require('../../../src/assets/exerciseSVG/170.svg').default,
+    168: require('../../../src/assets/exerciseSVG/168.svg').default,
     171: require('../../../src/assets/exerciseSVG/171.svg').default,
     176: require('../../../src/assets/exerciseSVG/176.svg').default,
 
@@ -69,7 +68,101 @@ const exerciseSVGs = {
     464: require('../../../src/assets/exerciseSVG/464.svg').default,
     512: require('../../../src/assets/exerciseSVG/512.svg').default,
     612: require('../../../src/assets/exerciseSVG/612.svg').default,
-    
+
+    1: require('../../../src/assets/exerciseSVG/1.svg').default,
+    2: require('../../../src/assets/exerciseSVG/2.svg').default,
+    6: require('../../../src/assets/exerciseSVG/6.svg').default,
+    7: require('../../../src/assets/exerciseSVG/7.svg').default,
+    9: require('../../../src/assets/exerciseSVG/9.svg').default,
+
+    11: require('../../../src/assets/exerciseSVG/11.svg').default,
+    12: require('../../../src/assets/exerciseSVG/12.svg').default,
+    13: require('../../../src/assets/exerciseSVG/13.svg').default,
+    14: require('../../../src/assets/exerciseSVG/14.svg').default,
+    15: require('../../../src/assets/exerciseSVG/15.svg').default,
+
+    16: require('../../../src/assets/exerciseSVG/16.svg').default,
+    17: require('../../../src/assets/exerciseSVG/17.svg').default,
+    28: require('../../../src/assets/exerciseSVG/28.svg').default,
+    30: require('../../../src/assets/exerciseSVG/30.svg').default,
+    34: require('../../../src/assets/exerciseSVG/34.svg').default,
+
+    60: require('../../../src/assets/exerciseSVG/60.svg').default,
+    61: require('../../../src/assets/exerciseSVG/61.svg').default,
+    62: require('../../../src/assets/exerciseSVG/62.svg').default,
+    64: require('../../../src/assets/exerciseSVG/64.svg').default,
+    65: require('../../../src/assets/exerciseSVG/65.svg').default,
+
+    66: require('../../../src/assets/exerciseSVG/66.svg').default,
+    70: require('../../../src/assets/exerciseSVG/70.svg').default,
+    72: require('../../../src/assets/exerciseSVG/72.svg').default,
+    81: require('../../../src/assets/exerciseSVG/81.svg').default,
+    83: require('../../../src/assets/exerciseSVG/83.svg').default,
+
+    92: require('../../../src/assets/exerciseSVG/92.svg').default,
+    99: require('../../../src/assets/exerciseSVG/99.svg').default,
+    116: require('../../../src/assets/exerciseSVG/116.svg').default,
+    118: require('../../../src/assets/exerciseSVG/118.svg').default,
+    119: require('../../../src/assets/exerciseSVG/119.svg').default,
+
+    122: require('../../../src/assets/exerciseSVG/122.svg').default,
+    125: require('../../../src/assets/exerciseSVG/125.svg').default,
+    130: require('../../../src/assets/exerciseSVG/130.svg').default,
+    132: require('../../../src/assets/exerciseSVG/132.svg').default,
+    137: require('../../../src/assets/exerciseSVG/137.svg').default,
+
+    140: require('../../../src/assets/exerciseSVG/140.svg').default,
+    142: require('../../../src/assets/exerciseSVG/142.svg').default,
+    147: require('../../../src/assets/exerciseSVG/147.svg').default,
+    154: require('../../../src/assets/exerciseSVG/154.svg').default,
+    155: require('../../../src/assets/exerciseSVG/155.svg').default,
+
+    156: require('../../../src/assets/exerciseSVG/156.svg').default,
+    160: require('../../../src/assets/exerciseSVG/160.svg').default,
+    161: require('../../../src/assets/exerciseSVG/161.svg').default,
+    162: require('../../../src/assets/exerciseSVG/162.svg').default,
+    166: require('../../../src/assets/exerciseSVG/166.svg').default,
+
+    169: require('../../../src/assets/exerciseSVG/169.svg').default,
+    170: require('../../../src/assets/exerciseSVG/170.svg').default,
+    175: require('../../../src/assets/exerciseSVG/175.svg').default,
+    178: require('../../../src/assets/exerciseSVG/178.svg').default,
+    182: require('../../../src/assets/exerciseSVG/182.svg').default,
+
+    193: require('../../../src/assets/exerciseSVG/193.svg').default,
+    196: require('../../../src/assets/exerciseSVG/196.svg').default,
+    201: require('../../../src/assets/exerciseSVG/201.svg').default,
+    202: require('../../../src/assets/exerciseSVG/202.svg').default,
+    208: require('../../../src/assets/exerciseSVG/208.svg').default,
+
+    210: require('../../../src/assets/exerciseSVG/210.svg').default,
+    214: require('../../../src/assets/exerciseSVG/214.svg').default,
+    215: require('../../../src/assets/exerciseSVG/215.svg').default,
+    218: require('../../../src/assets/exerciseSVG/218.svg').default,
+    224: require('../../../src/assets/exerciseSVG/224.svg').default,
+
+    226: require('../../../src/assets/exerciseSVG/226.svg').default,
+    227: require('../../../src/assets/exerciseSVG/227.svg').default,
+    229: require('../../../src/assets/exerciseSVG/229.svg').default,
+    230: require('../../../src/assets/exerciseSVG/230.svg').default,
+    242: require('../../../src/assets/exerciseSVG/242.svg').default,
+
+    248: require('../../../src/assets/exerciseSVG/248.svg').default,
+    271: require('../../../src/assets/exerciseSVG/271.svg').default,
+    298: require('../../../src/assets/exerciseSVG/298.svg').default,
+    322: require('../../../src/assets/exerciseSVG/322.svg').default,
+    335: require('../../../src/assets/exerciseSVG/335.svg').default,
+
+    339: require('../../../src/assets/exerciseSVG/339.svg').default,
+    348: require('../../../src/assets/exerciseSVG/348.svg').default,
+    356: require('../../../src/assets/exerciseSVG/356.svg').default,
+    360: require('../../../src/assets/exerciseSVG/360.svg').default,
+    362: require('../../../src/assets/exerciseSVG/362.svg').default,
+
+    363: require('../../../src/assets/exerciseSVG/363.svg').default,
+    369: require('../../../src/assets/exerciseSVG/369.svg').default,
+    445: require('../../../src/assets/exerciseSVG/445.svg').default,
+    602: require('../../../src/assets/exerciseSVG/602.svg').default
 };
 
 export default exerciseSVGs;
