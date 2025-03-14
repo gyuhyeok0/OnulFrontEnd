@@ -129,21 +129,21 @@ const WeeklyVolumeGraph = ({ memberId, weightUnit }) => {
                 </TouchableOpacity>
             </View>
             <View style={styles.legendContainer}>
-                {formattedData.datasets.map(({ color, label, volumeChange }, index) => (
-                    <View key={`${label}-${index}`} style={styles.legendItem}>
-                        <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
-                        <Text style={styles.legendText}>{t(`bodyParts.${label}`)}</Text>
-
-                        <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>
-                            {volumeChange !== null && volumeChange !== 0 ? 
-                                (volumeChange > 0 ? "+" : "") + 
-                                (typeof volumeChange === 'number' ? (volumeChange.toFixed(2).replace(/\.00$/, '')) : "") + // .00을 제외
-                                (weightUnit === 'lbs' ? "lbs" : "kg") 
-                            : ""}
-                        </Text>
-
-                    </View>
-                ))}
+                {formattedData.datasets
+                    .filter(({ label }) => label) // label이 존재하는 항목만 필터링
+                    .map(({ color, label, volumeChange }, index) => (
+                        <View key={`${label}-${index}`} style={styles.legendItem}>
+                            <View style={[styles.legendColorBox, { backgroundColor: color() }]} />
+                            <Text style={styles.legendText}>{t(`bodyParts.${label}`)}</Text>
+                            <Text style={[styles.legendText2, { color: volumeChange > 0 ? '#4CAF50' : volumeChange < 0 ? '#F44336' : 'black' }]}>
+                                {volumeChange !== null && volumeChange !== 0 ? 
+                                    (volumeChange > 0 ? "+" : "") + 
+                                    (typeof volumeChange === 'number' ? (volumeChange.toFixed(2).replace(/\.00$/, '')) : "") + 
+                                    (weightUnit === 'lbs' ? "lbs" : "kg") 
+                                : ""}
+                            </Text>
+                        </View>
+                    ))}
             </View>
         </View>
     );

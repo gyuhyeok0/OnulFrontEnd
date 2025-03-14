@@ -489,7 +489,8 @@
       "checkDiet": "Check Weight & Diet",
       "muscleFatigueQuestion": "How fatigued are my muscles?",
       "checkFatigue": "Check Muscle Fatigue",
-      "imageNote": "This image is a design element and not actual data visualization."
+      "imageNote": "This image is a design element and not actual data visualization.",
+      "infoAnalysis": "If you've logged your workout, body stats, and diet today, you can check your analysis data starting tomorrow!"
     },
   "exerciseVolumeGraph": {
       "title": "Exercise Volume Graph",

@@ -532,7 +532,8 @@
           "checkDiet": "体重と食事を確認",
           "muscleFatigueQuestion": "筋肉の疲労度はどのくらいですか？",
           "checkFatigue": "筋疲労を確認",
-          "imageNote": "この画像はデザイン要素であり、実際のデータ可視化ではありません."
+          "imageNote": "この画像はデザイン要素であり、実際のデータ可視化ではありません.",
+          "infoAnalysis": "今日のトレーニング記録、身体記録、食事記録を入力したら、明日から分析データを確認できます！"
         },
 
         "exerciseVolumeGraph": {

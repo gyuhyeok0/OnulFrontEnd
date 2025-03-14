@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     graphContainer: { backgroundColor: '#222732', borderRadius: 15, paddingVertical: 20, marginBottom: 40},
     graphTitle: { color: 'white', textAlign: 'center', fontSize: 14, fontWeight: 'bold', marginBottom:5 },
     chartStyle: { marginVertical: 10, borderRadius: 16 },
-    buttonContainer: { flexDirection: "row", flexWrap: "wrap", gap: 5, paddingLeft: 5, marginTop: 5 },
+    buttonContainer: { flexDirection: "row", flexWrap: "wrap", gap: 5, paddingLeft: 5, marginTop: 5, justifyContent:'center' },
     muscleButton: { paddingVertical: 10, paddingHorizontal: 15, margin: 2, backgroundColor: "#333", borderRadius: 10, borderColor: "#FFA726" },
     selectedButton: { backgroundColor: "#FFA726", borderColor: "#FF8C00", shadowColor: "#FF8C00" },
     buttonText: { color: "#fff", fontSize: 12, fontWeight: "bold" },

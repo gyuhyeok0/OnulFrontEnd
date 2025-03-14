@@ -194,6 +194,9 @@ const Analysis = ({ navigation }) => {
         <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: '#1A1C22' }}>
             <Header title="Analysis" navigation={navigation} />
             <ScrollView style={{ flex: 1, padding: 15 }}>
+                <Text style={{color:'white', textAlign:'center', padding: 30, fontSize:15, fontWeight:'bold'}}>
+                    {t('analysis.infoAnalysis')}
+                </Text>
                 <ImageBackground 
                     style={styles.graph}
                     source={require('../../assets/ExerciseBackground.webp')}  // 생성한 이미지 경로

@@ -487,7 +487,8 @@
     "checkDiet": "Verifica peso y dieta",
     "muscleFatigueQuestion": "¿Qué tan fatigados están mis músculos?",
     "checkFatigue": "Verifica la fatiga muscular",
-    "imageNote": "Esta imagen es un elemento de diseño y no una visualización de datos real."
+    "imageNote": "Esta imagen es un elemento de diseño y no una visualización de datos real.",
+    "infoAnalysis": "Si has registrado tu entrenamiento, datos corporales y dieta hoy, podrás ver tu análisis a partir de mañana."
   },
   "exerciseVolumeGraph": {
     "title": "Gráfico de Volumen de Ejercicio",
