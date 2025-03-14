@@ -13,7 +13,7 @@ const ScheduleExerciseIcon = ({ exerciseId, toggleVisibility }) => {
             <View style={styles.modalContainer}>
 
                 {SvgComponent ? (
-                    <SvgComponent width={300} height={220} viewBox="280 400 2000 2000" />
+                    <SvgComponent width={300} height={220} viewBox="230 300 2000 2100" />
                 ) : (
                     <>
                         <Image 

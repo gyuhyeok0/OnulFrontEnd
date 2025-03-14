@@ -323,6 +323,7 @@
     "noExerciseData": "No exercise data available.",
     "noResults": "No results found. Please enter a different search term."
   },
+
   "categories": {
     "전체": "All",
     "좋아요": "Favorites",
@@ -378,6 +379,7 @@
     "대흉근": "Pectoralis Major"
   },
   "exerciseMessage": "{{exerciseName}} is in the {{muscleGroup}} group.",
+  
   "Body": {
       "title": "Body",
       "description": "Please record today's body data.",
@@ -2194,17 +2196,6 @@
         "Precautions": ["Avoid jerking the bar, focus on smooth and controlled lifts"]
     }
 },
-"티바로우": {
-    "name": "T-Bar Row",
-    "details": {
-        "Primary Target Areas": ["Lats", "Traps", "Biceps"],
-        "Posture": ["Place a barbell in a T-bar row machine or landmine attachment, and grip the handles with both hands"],
-        "Movement": ["Pull the bar towards your chest, squeezing your shoulder blades together, then lower it back down"],
-        "Breathing Technique": ["Exhale as you pull the bar up, inhale as you lower it"],
-        "Tips": ["Keep your back flat and your core engaged"],
-        "Precautions": ["Avoid using momentum to lift the weight"]
-    }
-},
 "머신 시티드 로우": {
     "name": "Machine Seated Row",
     "details": {
@@ -2218,6 +2209,17 @@
 },
 "티바 로우": {
     "name": "T-Bar Row",
+    "details": {
+        "Primary Target Areas": ["Lats", "Traps", "Biceps"],
+        "Posture": ["Place a barbell in a T-bar row machine or landmine attachment, and grip the handles with both hands"],
+        "Movement": ["Pull the bar towards your chest, squeezing your shoulder blades together, then lower it back down"],
+        "Breathing Technique": ["Exhale as you pull the bar up, inhale as you lower it"],
+        "Tips": ["Keep your back flat and your core engaged"],
+        "Precautions": ["Avoid using momentum to lift the weight"]
+    }
+},
+"머신 티바 로우": {
+    "name": "T-Bar Row Machine",
     "details": {
         "Primary Target Areas": ["Lats", "Traps", "Biceps"],
         "Posture": ["Place a barbell in a T-bar row machine or landmine attachment, and grip the handles with both hands"],

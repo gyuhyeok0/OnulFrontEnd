@@ -301,7 +301,7 @@ const RegistLowerBody = () => {
 
                                 >
                                     {SvgComponent ? (
-                                        <SvgComponent width={45} height={45} viewBox="280 350 2000 2000" />
+                                        <SvgComponent width={60} height={45} viewBox="280 300 1800 2100" />
                                     ) : (
                                         <Icon name="slash" size={35} color="#787A7F" style={{ opacity: 0.5 }} />
                                     )}
