@@ -187,15 +187,23 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
 
             const storedAPI = await AsyncStorage.getItem('API_URL'); 
 
-            // 스토리지에 API_URL이 없으면 실행하지 않음
-            if (storedAPI !== null && storedAPI !== undefined) {
-                // 분석 요청
-                if (memberId !== null && memberId !== undefined) {
-                    analysisUpdateAPI(memberId);
+            async function updateAnalysisIfAPIExists() {
+            
+                // 스토리지에 API_URL이 없으면 실행하지 않음
+                if (storedAPI !== null && storedAPI !== undefined) {
+                    // 분석 요청
+                    if (memberId !== null && memberId !== undefined) {
+                        console.log("분석 시작...");
+                        await analysisUpdateAPI(memberId); // ✅ 응답이 올 때까지 기다림
+                        console.log("분석 완료 됐어?");
+                    }
+                } else {
+                    console.log("No API_URL found in AsyncStorage. Skipping analysis update.");
                 }
-            } else {
-                // console.log("No API_URL found in AsyncStorage. Skipping analysis update.");
             }
+            
+            // 실행
+            await updateAnalysisIfAPIExists();
 
     
             setIsInitialized(true);

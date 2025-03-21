@@ -177,7 +177,7 @@
 
   "onboarding3": {
     "title": "현재 키와 몸무게가 몇인가요?",
-    "subtitle": "언제든지 변경 가능합니다.",
+    "subtitle": "AI 초기 세팅을 위한 몸무게와 키 정보를 입력해 주세요.",
     "next": "다음"
   },
 
@@ -228,7 +228,11 @@
     "selectionError": "선택 불가",
     "maxSelectionMessage": "최대 {{max}}개의 부위만 선택할 수 있습니다.",
     "exclusionMessage": "{{part}} 부위는 특정 부위 제외되어 있어 우선 선택할 수 없습니다.",
-    "prioritySelection": "부위 우선 선택"
+    "prioritySelection": "부위 우선 선택",
+    "remainingTime": "재요청 까지 남은 시간: {{minutes}}:{{seconds}}",
+    "requestAi": "AI 설정으로 요청",
+    "firstRequestApplied": "AI 요청은 최초 1회 자동 적용됩니다.",
+    "requestInterval": "이후 설정 변경이 필요할 경우, 최대 1분에 한 번씩 요청 가능합니다."
   },
 
 
@@ -423,7 +427,8 @@
     "회복": "회복",
     "상부 가슴": "상부 가슴",
     "회전근개": "회전근개",
-    "대흉근": "대흉근"
+    "대흉근": "대흉근",
+    "기립근": "기립근"
   },
 
   "exerciseMessage": "{{exerciseName}}은(는) {{muscleGroup}} 그룹에 있습니다.",

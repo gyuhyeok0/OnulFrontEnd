@@ -2,7 +2,7 @@ module.exports = {
   presets: ['module:@react-native/babel-preset'],
   plugins: [
     'react-native-reanimated/plugin', // 기존 플러그인 유지
-    'transform-remove-console', // ✅ console.log 자동 제거
+    // 'transform-remove-console', 
     ['module:react-native-dotenv', {
       moduleName: '@env', // @env로 환경 변수를 가져옴
       path: '.env',       // .env 파일 경로

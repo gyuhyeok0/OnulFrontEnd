@@ -70,13 +70,29 @@ const Exercise = ({ navigation }) => {
         }
     }, [memberSignupDate, isSubscribed]); // isSubscribed 추가
 
-    // 온보딩 체크 여부 확인
+
     useEffect(() => {
-        if (userId && accessToken) {
-            checkOnboardingStatus(userId, accessToken, navigation);
-        } else {
-            handlerLogOut(navigation);
-        }
+        const checkOnboarding = async () => {
+            if (!userId || !accessToken) {
+                handlerLogOut(navigation);
+                return;
+            }
+    
+            try {
+                const onboardingChecked = await AsyncStorage.getItem(`onboarding_checked_${userId}`);
+                
+                if (!onboardingChecked) {
+                    // ✅ 온보딩 상태 체크 실행
+                    await checkOnboardingStatus(userId, accessToken, navigation);
+                    // ✅ 온보딩 체크 완료 상태를 스토리지에 저장
+                    await AsyncStorage.setItem(`onboarding_checked_${userId}`, 'true');
+                }
+            } catch (error) {
+                console.error('Error checking onboarding status:', error);
+            }
+        };
+    
+        checkOnboarding();
     }, [userId, accessToken]);
 
     // 운동 버튼 누를시 말풍선

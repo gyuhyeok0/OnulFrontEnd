@@ -380,6 +380,8 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
     };
 
     const addSet = () => {
+        if (sets.length >= 20) return; // 최대 20개까지만 추가 가능
+
         updateSets([
             ...sets,
             { kg: '', lbs: '', reps: '', km: '', mi: '', time: '', completed: false },
@@ -521,7 +523,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         await AsyncStorage.setItem('exerciseSubmitCount', count.toString());
     
         // 15회마다 광고 표시
-        if (count >= 15) {
+        if (count >= 13) {
             if(!isPremium){
                 await showAd();
             }
@@ -622,6 +624,10 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     // 모든 세트를 완료로 설정하고 submitExerciseFilter 호출
     const completeAllSets = () => {
+
+        // 모든 세트가 이미 완료된 상태라면 실행하지 않음
+        if (sets.every(set => set.completed)) return;
+
         // 모든 세트를 완료 상태로 설정
         const updatedSets = sets.map((set) => ({
             ...set, // 기존 데이터를 복사
@@ -826,7 +832,14 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
                                 {sets.map((set, index) => (
                                     <View key={index} style={styles.setSection}>
                                         <Pressable 
-                                            style={[styles.setButton, { backgroundColor: set.completed ? '#1EAE98' : '#525E77' }]}
+                                            style={[
+                                                styles.setButton, 
+                                                { 
+                                                    backgroundColor: set.completed ? '#252B37' : '#4A566D',
+                                                    borderColor: set.completed ? '#1EAE98' : '#525E77',
+                                                    borderWidth: 2 // 필요하면 추가
+                                                }
+                                            ]}
                                         >
                                             <Text 
                                                 style={{ 
@@ -935,7 +948,8 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
                                         <Pressable 
                                             style={[styles.input, styles.completeButton, { 
-                                                backgroundColor: set.completed ? '#1EAE98' : '#525E77' 
+                                                backgroundColor: set.completed ? '#1EAE98' : '#3A4357' 
+    
                                             }]} 
                                             onPress={() => handleCompletePress(index)}
                                         >

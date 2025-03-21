@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         zIndex: 10, // ✅ 기존 UI보다 위에 배치
     },
     modalContainer: {
-        backgroundColor: '#222732', // ✅ 모달 배경
+        backgroundColor: '#354C62', // ✅ 모달 배경
         padding: 20,
         borderRadius: 10,
         alignItems: 'center',

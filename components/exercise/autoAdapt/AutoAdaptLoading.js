@@ -9,18 +9,27 @@ const AutoAdaptLoading = () => {
     const fadeAnim = useRef(new Animated.Value(1)).current; // 투명도 조절을 위한 애니메이션 값
     const { t } = useTranslation();
 
+    const firstProgress = useRef(new Animated.Value(0)).current;
+const secondProgress = useRef(new Animated.Value(0)).current;
+
+    
     useEffect(() => {
-        Animated.timing(progress, {
+        // 첫 번째 바 (2초 동안 100% 채우기)
+        Animated.timing(firstProgress, {
             toValue: 1,
-            duration: 10000, // 10초 동안 진행
+            duration: 2200,
             useNativeDriver: false,
-        }).start();
+        }).start(() => {
+            // 첫 번째 바가 끝난 후 두 번째 바 시작 (18초 동안 100% 채우기)
+            Animated.timing(secondProgress, {
+                toValue: 1,
+                duration: 17800,
+                useNativeDriver: false,
+            }).start();
+        });
     }, []);
 
-    const widthInterpolated = progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0%', '100%'], // 왼쪽에서 오른쪽으로 채워짐
-    });
+    
 
     const messages = [
         t('autoAdaptLoading.loadingRecentRecords'),
@@ -83,12 +92,29 @@ const AutoAdaptLoading = () => {
         ).start();
     }, []);
 
+    // 첫 번째 진행 바의 너비 (0% → 100%)
+    const firstWidthInterpolated = firstProgress.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0%', '100%'],
+    });
+
+    // 두 번째 진행 바의 너비 (0% → 100%)
+    const secondWidthInterpolated = secondProgress.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0%', '100%'],
+    });
+
     return (
         <View style={styles.container}>
             <Text style={styles.mainText}>{t('autoAdaptLoading.analyzing')}</Text>
+            {/* ✅ 진행 바 컨테이너 */}
             <View style={styles.progressBarContainer}>
-                <Animated.View style={[styles.progressBar, { width: widthInterpolated }]} />
+                {/* 첫 번째 바 (2초) */}
+                <Animated.View style={[styles.progressBarFirst, { width: firstWidthInterpolated }]} />
+                {/* 두 번째 바 (18초) - 첫 번째 바 위에 덮어 씌움 */}
+                <Animated.View style={[styles.progressBarSecond, { width: secondWidthInterpolated }]} />
             </View>
+
             <Text style={{ color: 'white', fontWeight: 'bold' }}>{t('autoAdaptLoading.findingOptimalWorkout')}</Text>
 
             <Animated.View style={[styles.jump, { transform: [{ translateY: jumpAnim }] }]}>
@@ -131,18 +157,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
     },
-    progressBarContainer: {
-        width: '80%',
-        height: 6,
-        backgroundColor: 'rgba(0, 191, 255, 0.3)', // DeepSkyBlue
-        borderRadius: 5,
-        overflow: 'hidden',
-        marginBottom: 10,
-    },
-    progressBar: {
-        height: '100%',
-        backgroundColor: 'white', // 로딩 바 색상
-    },
+
     messageContainer: {
         marginTop: 10,
         padding: 10,
@@ -174,7 +189,27 @@ const styles = StyleSheet.create({
     jump:{
         alignItems:'center',
         marginTop: 30
-    }
+    },
+
+    progressBarContainer: {
+        width: '80%',
+        height: 6,
+        backgroundColor: 'rgba(0, 191, 255, 0.3)', 
+        borderRadius: 5,
+        overflow: 'hidden',
+        marginBottom: 10,
+        position: 'relative',
+    },
+    progressBarFirst: {
+        position: 'absolute',
+        height: '100%',
+        backgroundColor: 'lightgray', 
+    },
+    progressBarSecond: {
+        position: 'absolute',
+        height: '100%',
+        backgroundColor: '#4DA6FF',
+    },
 });
 
 export default AutoAdaptLoading;
