@@ -96,6 +96,18 @@ const styles = StyleSheet.create({
         color: 'gray',
         // textDecorationLine: 'underline',
     },
+
+    loadingContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10, // 가장 위에 표시
+    }
 });
 
 export default styles;

@@ -122,7 +122,7 @@ const KmInput = ({ set, index, sets, setSets, style, kmUnit, setKmUnit, deleteEx
                 style={[
                     style,
                     {
-                        backgroundColor: set.completed ? '#1EAE98' : '#525E77',
+                        backgroundColor: set.completed ? '#1EAE98' : '#3A4357',
                         color: set.completed ? '#55E3C1' : 'white',
                         padding:0,
                     },

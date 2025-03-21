@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Alert, TextInput, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, TextInput, ScrollView, ActivityIndicator } from 'react-native';
 import DefaultHeader from '../common/DefaultHeader'; 
 import PhoneInput from 'react-native-phone-number-input';
 import * as Localize from 'react-native-localize'; 
@@ -36,6 +36,7 @@ function SignupStep1({ navigation, route }) {
     const [timeLeft, setTimeLeft] = useState(300); 
 
     const { memberId, memberPassword } = route.params || {};
+    const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
 
     const { t } = useTranslation();
 
@@ -187,17 +188,26 @@ function SignupStep1({ navigation, route }) {
                     memberPassword: memberPassword
                 };
 
-                const result = await dispatch(callLoginAPI({ form })); // API 호출 및 결과 저장
+                try {
+                    setIsLoading(true); // 로딩 시작
 
-                if (result && result.status === 200) {
-                    // 로그인 성공 시 Onboarding 페이지로 이동
-                    navigation.navigate('Onboarding');
-                } else if (result && result.errorMessage) {
-                    Alert.alert(t("signupStep1.loginError"), result.errorMessage || t("signupStep1.loginFailed"));
-                    console.error(result.errorMessage);
-                } else {
-                    Alert.alert(t("signupStep1.loginError"), t("signupStep1.loginFailed"));
-                    console.error(t("signupStep1.loginFailed"));
+                    const result = await callLoginAPI({ form, dispatch }); 
+            
+                    if (result && result.status === 200) {
+                        // 로그인 성공 시 Onboarding 페이지로 이동
+                        navigation.navigate('Onboarding');
+                    } else if (result && result.errorMessage) {
+                        Alert.alert(t("signupStep1.loginError"), result.errorMessage || t("signupStep1.loginFailed"));
+                        console.error(result.errorMessage);
+                    } else {
+                        Alert.alert(t("signupStep1.loginError"), t("signupStep1.loginFailed"));
+                        console.error(t("signupStep1.loginFailed"));
+                    }
+                } catch (error) {
+                    Alert.alert(t("signupStep1.loginError"), t("signupStep1.serverError"));
+                    console.error("Login API Error:", error);
+                } finally {
+                    setIsLoading(false); // 로딩 종료
                 }
                 
             } else {
@@ -323,6 +333,13 @@ function SignupStep1({ navigation, route }) {
                     </Text>
                 </TouchableOpacity>
             </ScrollView>
+
+                        {/* 로딩 중일 때 화면을 덮는 View */}
+                        {isLoading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                </View>
+            )}
         </>
     );
 }
@@ -332,6 +349,7 @@ const timerStyles = {
         position: 'relative',
         fontSize: 16,
     },
+    
 }
 
 export default SignupStep1;

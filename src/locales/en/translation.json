@@ -163,7 +163,7 @@
   },
   "onboarding3": {
     "title": "What is your current height and weight?",
-    "subtitle": "You can change this anytime.",
+    "subtitle": "Please enter your weight and height information for the initial AI setup.",
     "next": "Next"
   },
   "onboarding4": {
@@ -209,7 +209,11 @@
     "selectionError": "Selection Error",
     "maxSelectionMessage": "You can select up to {{max}} parts.",
     "exclusionMessage": "{{part}} is excluded and cannot be prioritized.",
-    "prioritySelection": "Priority Selection"
+    "prioritySelection": "Priority Selection",
+    "remainingTime": "Time until next request: {{minutes}}:{{seconds}}",
+    "requestAi": "Request AI Setting",
+    "firstRequestApplied": "AI request is automatically applied on the first attempt.",
+    "requestInterval": "You can request a setting change once every 1 minutes."
   },
   "bodyParts": {
     "자동": "Auto",
@@ -376,7 +380,8 @@
     "회복": "Recovery",
     "상부 가슴": "Upper Chest",
     "회전근개": "Rotator Cuff",
-    "대흉근": "Pectoralis Major"
+    "대흉근": "Pectoralis Major",
+    "기립근": "Erector Spinae"
   },
   "exerciseMessage": "{{exerciseName}} is in the {{muscleGroup}} group.",
   

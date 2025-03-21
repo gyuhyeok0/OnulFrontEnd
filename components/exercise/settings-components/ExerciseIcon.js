@@ -39,10 +39,12 @@ const styles = StyleSheet.create({
     eachInformation: {
         minHeight: 60,
         flex: 1,
-        backgroundColor: '#222732',
+        // backgroundColor: '#222732',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor:'white'
+        backgroundColor:'#354C62',
+        borderRadius: 10,
+        padding: 10
     },
     iconImage: {
         width: 80,

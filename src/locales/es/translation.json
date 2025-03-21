@@ -163,7 +163,7 @@
     },
     "onboarding3": {
       "title": "¿Cuál es tu estatura y peso actuales?",
-      "subtitle": "Puedes cambiarlo en cualquier momento.",
+      "subtitle": "Por favor, ingrese su información de peso y altura para la configuración inicial de la IA.",
       "next": "Siguiente"
     },
     "onboarding4": {
@@ -209,7 +209,11 @@
       "selectionError": "Error de selección",
       "maxSelectionMessage": "Puedes seleccionar hasta {{max}} partes.",
       "exclusionMessage": "{{part}} está excluido y no puede ser priorizado.",
-      "prioritySelection": "Selección prioritaria"
+      "prioritySelection": "Selección prioritaria",
+      "remainingTime": "Tiempo hasta la próxima solicitud: {{minutes}}:{{seconds}}",
+      "requestAi": "Solicitar configuración de AI",
+      "firstRequestApplied": "La solicitud de AI se aplica automáticamente en el primer intento.",
+      "requestInterval": "Puedes solicitar un cambio de configuración una vez cada 1 minutos."
     },
     "bodyParts": {
       "자동": "Auto",
@@ -375,7 +379,8 @@
     "회복": "Recuperación",
     "상부 가슴": "Pecho superior",
     "회전근개": "Manguito Rotador",
-    "대흉근": "Pectoral Mayor"
+    "대흉근": "Pectoral Mayor",
+    "기립근": "Músculo erectores espinales"
   },
   "exerciseMessage": "{{exerciseName}} está en el grupo de {{muscleGroup}}.",
   "Body": {

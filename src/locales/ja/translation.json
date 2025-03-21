@@ -173,7 +173,7 @@
   
     "onboarding3": {
       "title": "現在の身長と体重を入力",
-      "subtitle": "後から変更可能です。",
+      "subtitle": "AI初期設定のための体重と身長情報を入力してください。",
       "next": "次へ"
     },
   
@@ -224,7 +224,11 @@
       "selectionError": "選択エラー",
       "maxSelectionMessage": "最大{{max}}部位まで選択可能です。",
       "exclusionMessage": "{{part}}は除外され、優先設定できません。",
-      "prioritySelection": "優先選択"
+      "prioritySelection": "優先選択",
+      "remainingTime": "再リクエストまでの時間: {{minutes}}:{{seconds}}",
+      "requestAi": "AI設定をリクエスト",
+      "firstRequestApplied": "AIリクエストは最初の1回自動適用されます。",
+      "requestInterval": "設定を変更する場合、最大1分に1回リクエスト可能です。"
     },
   
     "bodyParts": {
@@ -407,7 +411,8 @@
           "회복": "回復",
           "상부 가슴": "上部胸筋",
           "회전근개": "ローテーターカフ",
-          "대흉근": "大胸筋"
+          "대흉근": "大胸筋",
+          "기립근": "脊柱起立筋"
         },
 
         "exerciseMessage": "{{exerciseName}}は{{muscleGroup}}グループに属しています。",

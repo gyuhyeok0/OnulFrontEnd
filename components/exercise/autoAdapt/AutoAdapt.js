@@ -16,6 +16,7 @@ import EachExercise from '../EachExercise.js';
 import AutoAdaptLoading from './AutoAdaptLoading.js';
 import { useTranslation } from 'react-i18next';
 
+
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
     const dispatch = useDispatch();
@@ -34,10 +35,16 @@ const AutoAdapt = () => {
     const [isReadyWeight, setIsReadyWeight] = useState(false); // 로딩 상태 추가
     const [isReadyKm, setIsReadyKm] = useState(false); // 로딩 상태 추가
     const { t } = useTranslation();
-
+    const isMounted = useRef(false); // 컴포넌트 마운트 상태 추적
 
     // ✅ 운동 세팅을 바꿨을 때 실행 (단, isDateChanged로 인해 실행된 경우 제외)
     useEffect(() => {
+
+        if (!isMounted.current) {
+            isMounted.current = true; // 첫 번째 마운트 후 실행되지 않도록 설정
+            return;
+        }
+
         // 시작시 동작 아님
         // 날짜 확인해야함
         const checkDate = false;
@@ -51,6 +58,7 @@ const AutoAdapt = () => {
     
         // 요청 시작 -> 로딩 상태로 변경
         setIsLoading(true);
+
         aiRequset(memberId, checkDate, initialization)
             .then((result) => {
                 // console.log("📌 AI 요청 결과:", result);
@@ -84,7 +92,7 @@ const AutoAdapt = () => {
         setIsVisible((prev) => !prev); // 상태 변경
 
         Animated.timing(animationHeight, {
-            toValue: isVisible ? 0 : 360, // 애니메이션 길이 조정 (100은 예제, 필요에 따라 조정)
+            toValue: isVisible ? 0 : 450, // 애니메이션 길이 조정 (100은 예제, 필요에 따라 조정)
             duration: 300, 
             useNativeDriver: false, 
         }).start();
@@ -95,6 +103,16 @@ const AutoAdapt = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const lastRun = await AsyncStorage.getItem('initialLastAiRequestTime');
+                const now = Date.now();
+                
+                if (lastRun && now - parseInt(lastRun, 10) < 30000) {
+                    console.log("⏳ 30초 이내 재실행 방지됨!");
+                    return; 
+                }
+    
+                console.log("ai 요청함")
+
                 const data = await autoAdaptExercises(memberId);
                 // console.log("자동 적응 운동 데이터:", data);
                 setReorderedExercises(data);
@@ -104,12 +122,17 @@ const AutoAdapt = () => {
                     const checkDate = true;
                     const initialization = true;
             
+                    // 초기 로딩 디자인을 위해 2초지연
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
                     // AI 요청 실행
                     await aiRequset(memberId, checkDate, initialization);
             
                     // AI 요청 후 다시 데이터 가져오기
                     const newData = await autoAdaptExercises(memberId);
                     setReorderedExercises(newData);
+                    await AsyncStorage.setItem('initialLastAiRequestTime', now.toString());
+
                 } else {
                     // console.log("✅ 자동 적응 운동 데이터:", data);
                     setReorderedExercises(data);

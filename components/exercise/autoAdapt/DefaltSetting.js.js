@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef} from 'react';
-import { View, StyleSheet, Text, Pressable, Modal, Alert } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Modal, Alert, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AiSettingsModal from './AiSettingsModal'; // 모달 컴포넌트 추가
 import Icon from 'react-native-vector-icons/Ionicons'
 import { getAutoAdaptSetting, updateAutoAdaptSetting } from '../../../src/apis/AutoAdapt';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 운동 메뉴의 자동적응 코드
 const DefaltSetting = ({setUpdateCount, isLoading}) => {
@@ -31,6 +32,66 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
 
     const prevStateRef = useRef(null);
 
+    const [lastRequestTime, setLastRequestTime] = useState(null);
+    const [remainingTime, setRemainingTime] = useState(0);
+    const [isRequesting, setIsRequesting] = useState(false); // 요청 중인지 여부
+
+    
+
+    // 🔥 앱 실행 시 저장된 lastRequestTime 불러오기
+    useEffect(() => {
+        const loadLastRequestTime = async () => {
+            try {
+                const storedTime = await AsyncStorage.getItem('lastAiRequestTime');
+                if (storedTime) {
+                    setLastRequestTime(parseInt(storedTime, 10));
+                }
+            } catch (error) {
+                console.error('AsyncStorage 불러오기 오류:', error);
+            }
+        };
+
+        loadLastRequestTime();
+    }, []);
+
+    // 🔥 1초마다 남은 시간 업데이트
+    useEffect(() => {
+        if (!lastRequestTime) return;
+
+        const interval = setInterval(() => {
+            const now = Date.now();
+            const elapsed = Math.floor((now - lastRequestTime) / 1000); // 경과 시간 (초)
+            const timeLeft = Math.max(60 - elapsed, 0); // 남은 시간 (최소 60)
+            setRemainingTime(timeLeft);
+
+            if (timeLeft === 0) {
+                clearInterval(interval);
+            }
+        }, 1000); // 1초마다 업데이트
+
+        return () => clearInterval(interval);
+    }, [lastRequestTime]);
+
+
+    // 🔥 버튼 클릭 시 AI 요청 + 시간 저장 (완벽한 연타 방지)
+    const handlePress = async () => {
+        if (remainingTime > 0 || isRequesting) return; // 10분 안 지났거나 이미 요청 중이면 클릭 차단
+
+        setIsRequesting(true); // 🔥 "즉시" 상태 변경 (연타 방지)
+
+        try {
+            const currentTime = Date.now();
+            setLastRequestTime(currentTime);
+            await AsyncStorage.setItem('lastAiRequestTime', currentTime.toString()); // ⏳ 저장
+
+            setUpdateCount(prevCount => prevCount + 1);
+        } catch (error) {
+            console.error("AI 설정 요청 실패:", error);
+        } finally {
+            setTimeout(() => setIsRequesting(false), 1000); // 🔥 1초 대기 후 다시 활성화 (안전장치)
+        }
+    };
+    
     useEffect(() => {
         const fetchData = async () => {
 
@@ -111,7 +172,6 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
             await updateAutoAdaptSetting(updateData);
             
 
-            setUpdateCount(prevCount => prevCount + 1); // ✅ 실행될 때마다 카운트 증가
         } catch (error) {
             console.error('자동적응 설정 업데이트 실패:', error);
         }
@@ -236,7 +296,6 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
             const sendUpdate = async () => {
                 try {
                     await updateAutoAdaptSetting(updateData);
-                    setUpdateCount(prevCount => prevCount + 1);
                 } catch (error) {
                     console.error('자동적응 설정 업데이트 실패:', error);
                 }
@@ -267,6 +326,7 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
         const { width } = event.nativeEvent.layout;
         setViewWidth(width + 30); // 현재 부모 뷰의 너비에 30 추가
     };
+
     
     return (
         <View style={styles.todayExerciseObjective}>
@@ -311,8 +371,21 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                 ))}
             </View>
 
-            {/* 부위 우선 선택 */}
-            <Text style={styles.sectionTitle}>{t('defaultSetting.prioritySelection')}</Text>
+            <View style={{flexDirection:'row', alignItems: 'center', marginBottom: 10, justifyContent:'space-between'}}>
+
+                {/* 부위 우선 선택 */}
+                <Text style={styles.sectionTitle}>{t('defaultSetting.prioritySelection')}</Text>
+            
+                {/* 상세 설정 버튼 (작고 심플한 스타일) */}
+                <Pressable onPress={() => openModal()} style={styles.settingsContainer}>
+                    <Icon name="settings-outline" size={16} color="#AAB2C8" />
+
+                    <Text style={styles.detailText}>{t('defaultSetting.advancedSettings')}</Text>            
+                </Pressable>
+
+            </View>
+
+
             <View style={styles.priorityRow}>
                 {['자동', '등', '가슴', '하체', '어깨', '팔'].map((part) => (
                     <Pressable 
@@ -337,13 +410,25 @@ const DefaltSetting = ({setUpdateCount, isLoading}) => {
                 ))}
             </View>
 
-            
-            {/* 상세 설정 버튼 (작고 심플한 스타일) */}
-            <Pressable onPress={() => openModal()} style={styles.settingsContainer}>
-                <Icon name="settings-outline" size={16} color="#AAB2C8" />
 
-                <Text style={styles.detailText}>{t('defaultSetting.advancedSettings')}</Text>            
-            </Pressable>
+
+            <TouchableOpacity onPress={handlePress}
+                disabled={remainingTime > 0 || isRequesting}
+                style={{ height: 40, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+                <Text style={{ fontWeight: 'bold', color: remainingTime > 0 ? '#888' : 'black' }}>
+                    {remainingTime > 0 ? t('defaultSetting.remainingTime', { minutes: Math.floor(remainingTime / 60), seconds: String(remainingTime % 60).padStart(2, '0') }) : t('defaultSetting.requestAi')}
+                </Text>
+            </TouchableOpacity>
+
+            <Text style={{ textAlign: 'center', color: 'white', marginTop: 10, fontWeight: 'bold', marginBottom: 5 }}>
+                {t('defaultSetting.firstRequestApplied')}
+            </Text>
+
+            <Text style={{ textAlign: 'center', color: 'white', fontSize: 13 }}>
+                {t('defaultSetting.requestInterval')}
+            </Text>
+
+
 
             {/* 모달 */}
             <AiSettingsModal 
@@ -383,7 +468,6 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 10,
     },
     buttonRow: {
         flexDirection: 'row',
