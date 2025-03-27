@@ -188,20 +188,30 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
             const storedAPI = await AsyncStorage.getItem('API_URL'); 
 
             async function updateAnalysisIfAPIExists() {
-            
-                // 스토리지에 API_URL이 없으면 실행하지 않음
-                if (storedAPI !== null && storedAPI !== undefined) {
-                    // 분석 요청
-                    if (memberId !== null && memberId !== undefined) {
-                        console.log("분석 시작...");
-                        await analysisUpdateAPI(memberId); // ✅ 응답이 올 때까지 기다림
-                        console.log("분석 완료 됐어?");
+
+                // 스토리지에서 마지막 실행 날짜를 가져옴
+                const lastRunDate = await AsyncStorage.getItem('lastAnalysisRunDate');
+                const currentDate = new Date().toISOString().split('T')[0]; 
+
+                // 마지막 실행 날짜가 없거나, 24시간이 지났으면 실행
+                if (!lastRunDate || lastRunDate !== currentDate) {
+                    // 스토리지에 날짜 저장
+                    await AsyncStorage.setItem('lastAnalysisRunDate', currentDate);
+
+                    // 스토리지에 API_URL이 없으면 실행하지 않음
+                    if (storedAPI !== null && storedAPI !== undefined) {
+                        // 분석 요청
+                        if (memberId !== null && memberId !== undefined) {
+                            await analysisUpdateAPI(memberId); // ✅ 응답이 올 때까지 기다림
+                        }
+                    } else {
+                        console.log("No API_URL found in AsyncStorage. Skipping analysis update.");
                     }
                 } else {
-                    console.log("No API_URL found in AsyncStorage. Skipping analysis update.");
+                    console.log("하루에 한 번만 실행됩니다. 이번에는 실행하지 않습니다.");
                 }
             }
-            
+
             // 실행
             await updateAnalysisIfAPIExists();
 

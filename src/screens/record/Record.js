@@ -151,12 +151,12 @@ const Record = ({ navigation }) => {
                         </View>
                         
                         <View style={{flexDirection:'row', alignItems:'center'}}>
-                            <View style={{ width: 8, height: 8, backgroundColor: '#FAF335', borderRadius: 10 }}></View>
+                            <View style={{ width: 8, height: 8, backgroundColor: '#FF76CF', borderRadius: 10 }}></View>
                             <Text style={styles.explanationText}>{t('record.food')}</Text>
                         </View>
 
                         <View style={{flexDirection:'row', alignItems:'center'}}>
-                            <View style={{ width: 8, height: 8, backgroundColor: '#FF76CF', borderRadius: 10 }}></View>
+                            <View style={{ width: 8, height: 8, backgroundColor: '#FAF335', borderRadius: 10 }}></View>
                             <Text style={styles.explanationText}>{t('record.body')}</Text>
                         </View>
                     </View>

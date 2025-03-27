@@ -12,6 +12,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // FontAwesome에서 L
 import SubscriptionModal from '../modal/SubscriptionModal';
 import FreeTrialBanner from '../../../components/banner/FreeTrialBanner';
 import { useTranslation } from 'react-i18next';
+import { notice } from '../../apis/NoticeAPI';
+import NoticeModal from '../modal/NoticeModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Exercise = ({ navigation }) => {
@@ -35,6 +38,30 @@ const Exercise = ({ navigation }) => {
 
     const [fourWeeksLater, setFourWeeksLater] = useState(null);
 
+    const [noticeData, setNoticeData] = useState(null); // 공지 데이터를 관리
+    const [modalVisible, setModalVisible] = useState(false); // 모달 상태
+
+    useEffect(() => {
+        const fetchNotice = async () => {
+            if (userId && accessToken) {
+                const data = await notice(accessToken); // 공지 데이터 받아오기
+                if (data && data.active) {
+                    setNoticeData(data);  // 공지 데이터를 상태로 저장
+
+                    setModalVisible(true)
+                }
+            } else {
+                handlerLogOut(navigation); // 유저 로그아웃 처리
+            }
+        };
+
+        fetchNotice(); // 컴포넌트가 렌더링되면 즉시 공지 확인
+    }, [userId, accessToken]);
+
+    const closeModal = () => {
+        setModalVisible(false); // 모달 닫기
+    };
+    
 
     useEffect(() => {
         if (memberSignupDate) {
@@ -234,6 +261,10 @@ const Exercise = ({ navigation }) => {
                 visible={isPaymentModalVisible}
                 onClose={() => setIsPaymentModalVisible(false)}
             />
+
+            {modalVisible && <NoticeModal noticeData={noticeData} closeModal={closeModal} />}
+
+
         </View>
     );
 };

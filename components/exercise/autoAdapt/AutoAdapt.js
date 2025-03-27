@@ -37,6 +37,7 @@ const AutoAdapt = () => {
     const { t } = useTranslation();
     const isMounted = useRef(false); // 컴포넌트 마운트 상태 추적
 
+
     // ✅ 운동 세팅을 바꿨을 때 실행 (단, isDateChanged로 인해 실행된 경우 제외)
     useEffect(() => {
 
@@ -112,6 +113,7 @@ const AutoAdapt = () => {
                 }
     
                 console.log("ai 요청함")
+
 
                 const data = await autoAdaptExercises(memberId);
                 // console.log("자동 적응 운동 데이터:", data);
