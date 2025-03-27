@@ -267,8 +267,8 @@
     "complete2": "done",
     "setSettings": "Set Settings",
     "addSet": "Add Set",
-    "removeSet": "Remove Set",
-    "completeAllSets": "Complete All Sets"
+    "removeSet": "Remove",
+    "completeAllSets": "Complete All"
   },
   "keyboard": {
     "reps" : "reps"
