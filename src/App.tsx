@@ -59,23 +59,15 @@ import {
 } from 'react-native-google-mobile-ads';
 
 import useLifecycleTracking from './TrackAppLifecycle';
-
-import { Platform } from "react-native";
-import Purchases from "react-native-purchases";
-import { fetchSubscriptionStatus } from './modules/SubscriptionSlice';
-
-
-// RewardedAd 인스턴스 생성
-const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
-const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL); 
+import rewardedAd from './ads/rewardedAdInstance';
+import interstitialAd from './ads/interstitialAdInstance'; 
+import analytics from '@react-native-firebase/analytics';
+import { AppState } from 'react-native';
 
 // QueryClient 생성
 const queryClient = new QueryClient();
 
-// RevenueCat Public API Key 
-const REVENUECAT_PUBLIC_API_KEY = Platform.OS === "ios"
-? "appl_uSTTOKJNVKqRDdHQicAQPIzbfam"  // iOS 키
-: "goog_some_google_api_key"; // Android 키 (Google Play는 다름)
+
 
 const Stack = createNativeStackNavigator();
 
@@ -88,75 +80,25 @@ function MainApp() {
   const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
   const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
 
-  useEffect(() => {
-    // RevenueCat 초기화 및 구독 상태 업데이트
-    const setupRevenueCat = async () => {
-      try {
-        Purchases.configure({ apiKey: REVENUECAT_PUBLIC_API_KEY });
-      } catch (error) {
-        console.error("RevenueCat 설정 오류:", error);
-      }
-    };
+  console.log("실행은해?")
 
-    setupRevenueCat();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = persistor.subscribe(() => {
-        if (persistor.getState().bootstrapped) {
-            store.dispatch(fetchSubscriptionStatus());
-            unsubscribe(); 
-        }
-    });
-
-      return () => {
-          unsubscribe();
-      };
-  }, []);
-
-  useEffect(() => {
-  
-    const listener = () => {
-      store.dispatch(fetchSubscriptionStatus());
-    };
-  
-    // 리스너 등록
-    Purchases.addCustomerInfoUpdateListener(listener);
-  
-    return () => {
-      // 등록한 리스너를 전달해서 제거
-      Purchases.removeCustomerInfoUpdateListener(listener);
-    };
-  }, []);
-  
   //firebase 애널리틱스
   useLifecycleTracking(); 
 
   //영상광고 로드
   useEffect(() => {
-    if (!rewardedAd) return;
-  
-    // 앱 실행 시 광고 로드
+    console.log('[App.js] 광고 초기 로딩 시도');
     rewardedAd.load();
   
-    // 이벤트 리스너 등록
-    const unsubscribeLoaded = rewardedAd.addAdEventListener(
-      RewardedAdEventType.LOADED,
-      () => {
-        // console.log('📢 RewardedAd Loaded in App.js');
-      }
-    );
+    const unsubscribeLoaded = rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
+      console.log('[App.js] 보상형 광고 로딩 완료');
+    });
   
-    const unsubscribeClosed = rewardedAd.addAdEventListener(
-      AdEventType.CLOSED,
-      () => {
-        if (!rewardedAd.loaded) {  
-          rewardedAd.load();
-        }
-      }
-    );
+    const unsubscribeClosed = rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('[App.js] 광고 닫힘 → 재로드 시도');
+      rewardedAd.load();
+    });
   
-    // 언마운트 시 리스너 정리
     return () => {
       unsubscribeLoaded?.();
       unsubscribeClosed?.();
@@ -165,32 +107,50 @@ function MainApp() {
   
   
   useEffect(() => {
-    if (!interstitialAd) return;
-
-    // 전면 광고 로드
     interstitialAd.load();
-
-    const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(
-      AdEventType.LOADED,
-      () => {}
-    );
-
-    const unsubscribeInterstitialClosed = interstitialAd.addAdEventListener(
-      AdEventType.CLOSED,
-      () => {
-        if (!interstitialAd.loaded) {
-          interstitialAd.load();
-        }
-      }
-    );
-
+  
+    const unsubscribeLoaded = interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
+      console.log('[App.js] 전면 광고 로딩 완료');
+    });
+  
+    const unsubscribeClosed = interstitialAd.addAdEventListener(AdEventType.CLOSED, async () => {
+      const adCloseTime = new Date().getTime();
+      const adDuration = (adCloseTime - (global.__interstitialAdStart || adCloseTime)) / 1000;
+  
+      const userRetention = await checkUserRetention();
+  
+      await analytics().logEvent("ad_interstitial_closed", {
+        ad_type: "interstitial",
+        duration: adDuration,
+        user_retention: userRetention,
+      });
+  
+      interstitialAd.load();
+    });
+  
+    const unsubscribeClicked = interstitialAd.addAdEventListener(AdEventType.CLICKED, async () => {
+      await analytics().logEvent("ad_interstitial_clicked", {
+        ad_type: "interstitial",
+      });
+    });
+  
     return () => {
-      unsubscribeInterstitialLoaded?.();
-      unsubscribeInterstitialClosed?.();
+      unsubscribeLoaded();
+      unsubscribeClosed();
+      unsubscribeClicked();
     };
   }, []);
 
-
+      // 광고 후 유저가 앱에 머무르는지 체크 (5초 후 앱 상태 확인)
+      const checkUserRetention = (): Promise<"retained" | "exited"> => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const isAppStillOpen = AppState.currentState === "active";
+            resolve(isAppStillOpen ? "retained" : "exited");
+          }, 5000);
+        });
+      };
+      
 
   const handleRetry = () => {
     setErrorMessage(null);

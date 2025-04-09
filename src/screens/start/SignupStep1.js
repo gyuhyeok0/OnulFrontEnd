@@ -66,6 +66,17 @@ function SignupStep1({ navigation, route }) {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
+    function toCamelCase(snakeCaseStr) {
+            return snakeCaseStr
+            .toLowerCase()
+            .split('_')
+            .map((word, index) =>
+                index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+            )
+            .join('');
+        }
+
+    
     const handleNext = async () => {
         const isValid = phoneInput.current?.isValidNumber(formattedValue);
 
@@ -92,7 +103,7 @@ function SignupStep1({ navigation, route }) {
                 setTimeLeft(300);
                 setIsTimerRunning(true);
             } else {
-                Alert.alert(t('signupStep1.error'), t(`signupStep1.${data.status}`) || t('signupStep1.error'));
+                Alert.alert(t('signupStep1.error'), t(`signupStep1.${toCamelCase(data.status)}`) || t('signupStep1.error'));
             }
         } catch (error) {
             Alert.alert(t('signupStep1.error'), "server error.");

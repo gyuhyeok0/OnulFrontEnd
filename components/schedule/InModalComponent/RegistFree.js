@@ -330,7 +330,11 @@ const RegistFree = () => {
                                                 return (
                                                     <View key={exerciseId} style={styles.exerciseItemBox}>
                                                         <View style={styles.scheduleItem}>
-                                                        <Text style={styles.exerciseNameOnly}>{t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}</Text>
+                                                        {exercise?.exerciseName && (
+                                                        <Text style={styles.exerciseNameOnly}>
+                                                            {t(`exerciseNames.${exercise.exerciseName}.name`, exercise.exerciseName)}
+                                                        </Text>
+                                                        )}
                                                         <TouchableOpacity onPress={() => handleDelete(exerciseId)}>
                                                                 <Ionicons name="close" size={24} color="white" />
                                                             </TouchableOpacity>

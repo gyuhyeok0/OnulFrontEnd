@@ -17,7 +17,7 @@ const getStoredAPIURL = async () => {
 };
 
 // ExerciseAPICalls.js
-export const analysisUpdateAPI = async (memberId, accessToken = null) => {
+export const lastLoginRunDateAPI = async (memberId, accessToken = null) => {
     try {
 
         const API_URL = await getStoredAPIURL(); // 동적으로 API URL을 가져옵니다.
@@ -31,7 +31,7 @@ export const analysisUpdateAPI = async (memberId, accessToken = null) => {
         const date = getCurrentDate();
 
         let accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
-        const response = await fetch(`${API_URL}/analysis/update?memberId=${memberId}&date=${date}`, {
+        const response = await fetch(`${API_URL}/analysis/lastLoginRunDate?memberId=${memberId}&date=${date}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export const analysisUpdateAPI = async (memberId, accessToken = null) => {
                 const newAccessToken = await refreshAccessToken();
                 if (newAccessToken) {
                     // 새 토큰으로 다시 시도
-                    return await analysisUpdateAPI(memberId, newAccessToken);
+                    return await lastLoginRunDateAPI(memberId, newAccessToken);
                 } else {
                     throw new Error('새로운 토큰을 가져오지 못했습니다.');
                 }

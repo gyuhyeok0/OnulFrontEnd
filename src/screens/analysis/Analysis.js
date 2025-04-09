@@ -1,194 +1,164 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Image, ImageBackground } from 'react-native';
 import Footer from '../common/Footer';
 import Header from '../common/Header';
-import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import analytics from '@react-native-firebase/analytics';
-
 import {
-    RewardedAd,
-    TestIds,
-    RewardedAdEventType,
-    AdEventType
+  RewardedAdEventType,
+  AdEventType
 } from 'react-native-google-mobile-ads';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
-import SubscriptionModal from '../modal/SubscriptionModal';
 import { useTranslation } from 'react-i18next';
-
-const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
+import rewardedAd from '../../ads/rewardedAdInstance'; // ✅ 전역 인스턴스 사용
 
 const MAX_ADS_PER_DAY = 5;
 const STORAGE_KEY = 'adDisplayCount';
 const DATE_KEY = 'lastAdDate';
 
 const Analysis = ({ navigation }) => {
-    const { t } = useTranslation();
-    const isPremium = useSelector(state => state.subscription.isPremium);
-    const [showAd, setShowAd] = useState(false);
-    const [adCount, setAdCount] = useState(0);
-    const [isAdLoaded, setIsAdLoaded] = useState(false);
+  const { t } = useTranslation();
+  const rewardedAdRef = useRef(rewardedAd);
 
-    const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false); // 결제 모달 상태
+  const [showAd, setShowAd] = useState(false);
+  const [adCount, setAdCount] = useState(0);
+  const [isAdLoaded, setIsAdLoaded] = useState(false);
 
+  useEffect(() => {
+    analytics().logEvent('screen_view', {
+      screen_name: 'Analysis',
+      screen_class: 'Analysis'
+    });
+  }, []);
 
-    useEffect(() => {
-        analytics().logEvent('screen_view', {
-            screen_name: 'Analysis',
-            screen_class: 'Analysis'
+  useEffect(() => {
+    setShowAd(true);
+    const checkAdLimit = async () => {
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const lastAdDate = await AsyncStorage.getItem(DATE_KEY);
+      let count = 0;
+
+      if (lastAdDate === todayStr) {
+        count = parseInt(await AsyncStorage.getItem(STORAGE_KEY)) || 0;
+      } else {
+        await AsyncStorage.setItem(DATE_KEY, todayStr);
+        await AsyncStorage.setItem(STORAGE_KEY, '0');
+      }
+
+      setAdCount(count);
+      console.log(`[광고] 오늘 날짜: ${todayStr}, 오늘의 광고 횟수: ${count}`);
+    };
+    checkAdLimit();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!showAd || adCount >= MAX_ADS_PER_DAY) {
+        console.log('[광고] 광고 조건 불충분 - showAd:', showAd, 'adCount:', adCount);
+        return;
+      }
+
+      const ad = rewardedAdRef.current;
+
+      // ✅ 광고가 이미 로드된 경우 수동으로 반영
+      if (ad.loaded) {
+        console.log('[광고] 이미 로딩된 상태 → isAdLoaded 수동 true');
+        setIsAdLoaded(true);
+      }
+
+      const unsubscribeLoaded = ad.addAdEventListener(RewardedAdEventType.LOADED, () => {
+        console.log('[광고] LOADED 이벤트 발생 → 상태 true');
+        setIsAdLoaded(true);
+      });
+
+      const unsubscribeClosed = ad.addAdEventListener(AdEventType.CLOSED, async () => {
+        console.log('[광고] 닫힘 → 재로드 시도');
+        setIsAdLoaded(false);
+        ad.load();
+        await analytics().logEvent('ad_skipped', { ad_type: 'rewarded' });
+      });
+
+      const unsubscribeRewarded = ad.addAdEventListener(RewardedAdEventType.EARNED_REWARD, async (reward) => {
+        console.log('[광고] 보상 획득:', reward);
+        await analytics().logEvent('ad_rewarded', {
+          ad_type: 'rewarded',
+          reward: reward.type,
+          reward_amount: reward.amount,
         });
-    }, []);
+      });
 
-    useEffect(() => {
+      const unsubscribeError = ad.addAdEventListener(AdEventType.ERROR, async (error) => {
+        console.warn('[광고] 로딩 실패:', error.message);
+        setIsAdLoaded(false);
+        await analytics().logEvent('ad_load_failed', {
+          ad_type: 'rewarded',
+          error_code: error.code,
+          error_message: error.message,
+        });
 
+        setTimeout(() => {
+          console.log('[광고] 에러 후 재로드 시도');
+          ad.load();
+        }, 3000);
+      });
 
-            setShowAd(true);
-            const checkAdLimit = async () => {
-                const today = new Date(); 
-                const todayStr = today.toISOString().split('T')[0];
-                const lastAdDate = await AsyncStorage.getItem(DATE_KEY);
-                let count = 0;
+      console.log('[광고] 로딩 시작');
+      ad.load();
 
-                if (lastAdDate === todayStr) {
-                    count = parseInt(await AsyncStorage.getItem(STORAGE_KEY)) || 0;
-                } else {
-                    await AsyncStorage.setItem(DATE_KEY, todayStr);
-                    await AsyncStorage.setItem(STORAGE_KEY, '0');
-                }
+      return () => {
+        unsubscribeLoaded();
+        unsubscribeClosed();
+        unsubscribeRewarded();
+        unsubscribeError();
+      };
+    }, [showAd, adCount])
+  );
 
-                setAdCount(count);
-            };
-            checkAdLimit();
-    }, []);
+  const showRewardedAd = async () => {
+    const ad = rewardedAdRef.current;
 
+    if (isAdLoaded) {
+      console.log('[광고] 광고 시청 시작');
+      await ad.show();
+      const newCount = adCount + 1;
+      setAdCount(newCount);
+      await AsyncStorage.setItem(STORAGE_KEY, newCount.toString());
+      setIsAdLoaded(false);
+    } else {
+      console.log('[광고] 광고 아직 준비 안됨');
+      Alert.alert(t('analysis.adNotReadyTitle'), t('analysis.adNotReadyMessage'));
+      ad.load();
+    }
+  };
 
-    useFocusEffect(
-        useCallback(() => {
-
-            if (!showAd || adCount >= MAX_ADS_PER_DAY) {
-                return;
+  const handlePress = (targetScreen) => {
+    Alert.alert(
+      t('analysis.chooseMethod'),
+      `${t('analysis.adMessage')}\n\n${t('analysis.dailyLimitNotice')}`,
+      [
+        {
+          text: t('analysis.watchAd'),
+          onPress: async () => {
+            if (adCount >= MAX_ADS_PER_DAY) {
+              Alert.alert(t('analysis.limitReachedTitle'), t('analysis.limitReachedMessage'));
+              return;
             }
-    
-            
-            if (!rewardedAd) {
-                rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
-            } else {
-                // console.log('✅ rewardedAd 객체가 이미 생성됨.');
+
+            if (!isAdLoaded) {
+              Alert.alert(t('analysis.adNotReadyTitle'), t('analysis.adNotReadyMessage'));
+              return;
             }
-    
-    
-            const unsubscribeLoaded = rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
-                setIsAdLoaded(true);
-            });
-    
-            const unsubscribeClosed = rewardedAd.addAdEventListener(AdEventType.CLOSED, async () => {
-    
-                // 광고가 닫히면 다시 로드하기 전에 isLoaded 체크
-                if (!rewardedAd.isLoaded) {
-                    rewardedAd.load();
-                } else {
-                    // console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
-                }
-    
-                await analytics().logEvent('ad_skipped', {
-                    ad_type: 'rewarded',
-                });
-            });
-    
-            const unsubscribeRewarded = rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, async (reward) => {
-                
-                await analytics().logEvent('ad_rewarded', {
-                    ad_type: 'rewarded',
-                    reward: reward.type,
-                    reward_amount: reward.amount,
-                });
-            });
-    
-            const unsubscribeError = rewardedAd.addAdEventListener(AdEventType.ERROR, async (error) => {
-            
-                await analytics().logEvent('ad_load_failed', {
-                    ad_type: 'rewarded',
-                    error_code: error.code,
-                    error_message: error.message,
-                });
-            
-                setTimeout(() => {
-                    if (!rewardedAd.isLoaded) {
-                        rewardedAd.load();
-                    } else {
-                        // console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
-                    }
-                }, 3000);
-            });
-    
-            // ✅ 이미 광고가 로드되었으면 다시 로드하지 않도록 방지
-            if (!rewardedAd.isLoaded) {
-                rewardedAd.load();
-            } else {
-                // console.log('⚠️ 광고가 이미 로드된 상태 → load() 실행하지 않음');
-            }
-    
-            setTimeout(() => {
-                if (!isAdLoaded) {
-                    // console.log('⚠️ 5초가 지났지만 광고 LOADED 이벤트 발생 안함 → 광고 상태 확인 필요');
-                }
-            }, 5000);
-    
-            return () => {
-                unsubscribeLoaded();
-                unsubscribeClosed();
-                unsubscribeRewarded();
-                unsubscribeError();
-            };
-        }, [showAd, adCount])
-    );
-    
 
-    const showRewardedAd = async () => {
-
-        if (isAdLoaded && adCount < MAX_ADS_PER_DAY) {
-            await rewardedAd.show();
-            const newCount = adCount + 1;
-            setAdCount(newCount);
-            await AsyncStorage.setItem(STORAGE_KEY, newCount.toString());
-            setIsAdLoaded(false); // 광고가 재로드될 수 있도록 상태 초기화
-        } else {
-            // console.log('⚠️ 하루 광고 한도를 초과했거나 광고가 아직 로드되지 않았습니다.');
-        }
-    };
-
-    const handlePress = async (targetScreen) => {
-
-        if (isPremium) {
+            await showRewardedAd();
             navigation.navigate(targetScreen);
-            return;
-        }
-
-        Alert.alert(
-            t('analysis.chooseMethod'),
-            t('analysis.adMessage'),
-            [
-                {
-                    text: t('analysis.watchAd'),
-                    onPress: async () => {
-                        if (isAdLoaded && adCount < MAX_ADS_PER_DAY) {
-                            await showRewardedAd();
-                        }
-                        navigation.navigate(targetScreen);
-                    },
-                },
-                {
-                    text: t('analysis.subscribe'),
-                    onPress: async () => {
-                        setIsPaymentModalVisible(true);
-                    },
-                },
-                { text: t('analysis.cancel'), style: "cancel" },
-            ]
-        );
-        
-    };
+          },
+        },
+        { text: t('analysis.cancel'), style: 'cancel' },
+      ]
+    );
+  };
 
     return (
         <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: '#1A1C22' }}>
@@ -267,10 +237,7 @@ const Analysis = ({ navigation }) => {
             </ScrollView>
             <Footer navigation={navigation} />
 
-            <SubscriptionModal
-                visible={isPaymentModalVisible}
-                onClose={() => setIsPaymentModalVisible(false)}
-            />
+
         </View>
     );
 };

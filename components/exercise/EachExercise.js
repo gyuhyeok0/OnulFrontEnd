@@ -25,21 +25,16 @@ import { selectLatestPreVolume, updateExerciseVolume } from '../../src/modules/V
 import Icon from 'react-native-vector-icons/Feather'; // Feather 아이콘 사용
 import { Alert } from 'react-native'; // 예제에서는 Alert로 광고 표시 (광고 SDK로 변경 가능)
 import analytics from '@react-native-firebase/analytics';
-import { AppState } from 'react-native';
 
-import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
 import { useTranslation } from 'react-i18next';
 import exerciseSVGs from './settings-components/ExerciseSVGs'; 
 
-
-const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
+import interstitialAd from '../../src/ads/interstitialAdInstance';
 
 const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit, setWeightUnit, kmUnit, setKmUnit, onPress }) => {
     const { t } = useTranslation();
-    const isPremium = useSelector(state => state.subscription.isPremium);
 
     const memberId = useSelector((state) => state.member?.userInfo?.memberId);
-    const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate);
 
     const [volume, setVolume] = useState(0); // volume을 상태로 관리
     // const [preVolume, setPreVolume] = useState(0); // volume을 상태로 관리
@@ -83,76 +78,29 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     const MAX_ADS_PER_DAY = 5;
 
-    const today = new Date();
-    const signupDate = new Date(memberSignupDate);
-    const diffTime = today.getTime() - signupDate.getTime();
-
-    // 광고 표시 함수 (하루 5번 제한)
+    // ✅ 광고 표시 함수 (EachExercise.js 안에 그대로 둬도 됨)
     const showAd = async () => {
-
         let adCount = await AsyncStorage.getItem('adCount');
         adCount = adCount ? parseInt(adCount) : 0;
-
-        // 하루 5번 카운트
-        if (adCount >= MAX_ADS_PER_DAY ) {
-            return; // 광고 실행 안 함
-        }
-
-        // 광고 시작 시간 저장 (닫는 속도 분석)
+    
+        if (adCount >= MAX_ADS_PER_DAY) return;
+    
         const adStartTime = new Date().getTime();
-
+    
         if (interstitialAd.loaded) {
-            // 광고 실행
-            interstitialAd.show();
-            
-            // 기존 리스너 제거 (중복 실행 방지)
-            interstitialAd.removeAllListeners();
-
-            // 광고 닫힌 후 이벤트 리스너
-            interstitialAd.addAdEventListener(AdEventType.CLOSED, async () => {
-                const adCloseTime = new Date().getTime();
-                const adDuration = (adCloseTime - adStartTime) / 1000; // 광고 시청 시간 (초)
-
-
-                // 유저 이탈 여부 체크 (비동기 처리)
-                const userRetention = await checkUserRetention();
-
-                await analytics().logEvent("ad_interstitial_closed", {
-                    ad_type: "interstitial",
-                    duration: adDuration, // 광고 본 시간 기록
-                    user_retention: userRetention, // 광고 후 앱 이탈 여부
-                });
-
-                interstitialAd.load(); // 광고 닫힌 후 다시 로드
-            });
-
+        interstitialAd.show();
     
-            // 광고 클릭 이벤트 리스너 (CTR 분석)
-            interstitialAd.addAdEventListener(AdEventType.CLICKED, async () => {
-
-                await analytics().logEvent("ad_interstitial_clicked", {
-                    ad_type: "interstitial",
-                });
-            });
-
-            // 광고 카운트 증가
-            await AsyncStorage.setItem('adCount', (adCount + 1).toString());
+        // ✅ App.js에서 이미 리스너 등록되었기 때문에 여기서 리스너 등록 생략
     
-            // 광고 본 후 exerciseSubmitCount 초기화
-            await AsyncStorage.setItem('exerciseSubmitCount', '0');
-        } else {            
-            // 광고가 로드되지 않았으면 다시 로드 시도
-            interstitialAd.load();
+        // 광고 카운트 증가
+        await AsyncStorage.setItem('adCount', (adCount + 1).toString());
+    
+        // 제출 카운트 초기화
+        await AsyncStorage.setItem('exerciseSubmitCount', '0');
+        } else {
+        console.log('[전면 광고] 로딩 안됨 → 재시도');
+        interstitialAd.load();
         }
-
-    };
-
-    // 광고 후 유저가 앱에 머무르는지 체크 (5초 후 앱 상태 확인)
-    const checkUserRetention = () => {
-        setTimeout(() => {
-            const isAppStillOpen = AppState.currentState === "active";
-            return isAppStillOpen ? "retained" : "exited"; // 앱에 머물렀는지 여부 반환
-        }, 5000);
     };
 
     useEffect(() => {
@@ -522,11 +470,10 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         count = count ? parseInt(count) + 1 : 1; // 기존 값이 있으면 +1, 없으면 1부터 시작
         await AsyncStorage.setItem('exerciseSubmitCount', count.toString());
     
-        // 15회마다 광고 표시
-        if (count >= 13) {
-            if(!isPremium){
+        // 10회마다 광고 표시
+        if (count >= 10) {
                 await showAd();
-            }
+            
         }
 
         setTimeout(async () => {

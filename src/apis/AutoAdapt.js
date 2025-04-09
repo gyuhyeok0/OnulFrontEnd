@@ -216,7 +216,6 @@ export const autoAdaptExercises = async (memberId, accessToken = null) => {
         });
         
 
-
         if (!response.ok) {
             if (response.status === 401) {
                 // 상태 코드가 401일 경우 액세스 토큰 갱신

@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBar from '../../common/ProgressBar';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { lastLoginRunDateAPI } from '../../../apis/AnalysisApi';
 
 
 const Onboarding = ({ navigation }) => {
     const [selectedWeightUnit, setSelectedWeightUnit] = useState(null);
     const [selectedHeightUnit, setSelectedHeightUnit] = useState(null);
     const { t } = useTranslation();
+    const memberId = useSelector((state) => state.member?.userInfo?.memberId);
 
+
+    useEffect(() => {
+        async function lastLoginDateForAnalysis() {
+            await lastLoginRunDateAPI(memberId)
+        }
+
+        lastLoginDateForAnalysis(); // useEffect 안에서 실행
+    }, [memberId]); 
+    
 
     // 단위를 선택할 때 로컬스토리지에 저장하는 함수
     const saveUnitSelection = async (key, value) => {

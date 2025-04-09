@@ -7,56 +7,49 @@ import { handlerLogOut } from '../../hooks/HandleLogout';
 import AutoAdapt from '../../../components/exercise/autoAdapt/AutoAdapt';
 import OnSchedule from '../../../components/exercise/OnSchedule';
 import Custom from '../../../components/exercise/Custom';
-import useCheckDateChange from '../../hooks/useCheckDateChange';
-import Icon from 'react-native-vector-icons/FontAwesome'; // FontAwesome에서 Lock 아이콘 가져오기
-import SubscriptionModal from '../modal/SubscriptionModal';
-import FreeTrialBanner from '../../../components/banner/FreeTrialBanner';
 import { useTranslation } from 'react-i18next';
 import { notice } from '../../apis/NoticeAPI';
 import NoticeModal from '../modal/NoticeModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const Exercise = ({ navigation }) => {
+    
     const userId = useSelector((state) => state.member.userInfo?.memberId); // Optional chaining 사용
     const accessToken = useSelector((state) => state.member.userInfo?.accessToken); // Optional chaining 사용
     const { t } = useTranslation();
 
     const [selectedOption, setSelectedOption] = useState('AutoAdapt');
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });
-
-    const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate); // Optional chaining 사용
-
-    const [ day, setDay] = useState(0);
-    const [isSubscribed, setIsSubscribed] = useState(false); // 구독 상태
-    const [hasSubscriptionAccess, setHasSubscriptionAccess] = useState(false); // 구독 후 5일 이상이면 true
-    
-    // 결제 모달
-    const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false); // 결제 모달 상태
-    const isPremium = useSelector(state => state.subscription.isPremium);
-    const { isDateChanged } = useCheckDateChange();
-
-    const [fourWeeksLater, setFourWeeksLater] = useState(null);
-
     const [noticeData, setNoticeData] = useState(null); // 공지 데이터를 관리
     const [modalVisible, setModalVisible] = useState(false); // 모달 상태
 
+    
     useEffect(() => {
+        let timer = null;  // 타이머를 저장할 변수 선언
+    
         const fetchNotice = async () => {
+            console.log("공지확인")
             if (userId && accessToken) {
                 const data = await notice(accessToken); // 공지 데이터 받아오기
                 if (data && data.active) {
                     setNoticeData(data);  // 공지 데이터를 상태로 저장
-
-                    setModalVisible(true)
+                    setModalVisible(true);
                 }
             } else {
                 handlerLogOut(navigation); // 유저 로그아웃 처리
             }
         };
-
-        fetchNotice(); // 컴포넌트가 렌더링되면 즉시 공지 확인
-    }, [userId, accessToken]);
+    
+        // 5초 지연 후 함수 실행
+        timer = setTimeout(fetchNotice, 5000);
+    
+        return () => {
+            if (timer) {
+                clearTimeout(timer);  // 컴포넌트 언마운트 시 타이머 정리
+            }
+        };
+    }, [userId, accessToken]);  // useEffect 의존성 배열에 userId, accessToken 포함
+    
 
     const closeModal = () => {
         setModalVisible(false); // 모달 닫기
@@ -64,42 +57,11 @@ const Exercise = ({ navigation }) => {
     
 
     useEffect(() => {
-        if (memberSignupDate) {
-            const signupDateObj = new Date(memberSignupDate); // 문자열을 Date 객체로 변환
-            signupDateObj.setDate(signupDateObj.getDate() + 28); // 28일 후 계산
-            setFourWeeksLater(signupDateObj.toISOString().split("T")[0]); // YYYY-MM-DD 형식으로 저장
-        }
-    }, [memberSignupDate]);
-
-    useEffect(() => {
+        let timer = null;  // 타이머를 저장할 변수 선언
     
-        if (memberSignupDate) {
-            const signupDate = new Date(memberSignupDate);
-            const currentDate = new Date();
-            const diffTime = Math.abs(currentDate - signupDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-            setDay(diffDays);
-    
-            if (diffDays >= 125) {
-                if (isSubscribed) {
-                    setHasSubscriptionAccess(true); 
-                    setSelectedOption('AutoAdapt');
-                } else {
-                    setHasSubscriptionAccess(false); 
-                    setSelectedOption('OnSchedule');
-                }
-            } else {
-                setHasSubscriptionAccess(true); 
-                setSelectedOption('AutoAdapt');
-            }
-
-        }
-    }, [memberSignupDate, isSubscribed]); // isSubscribed 추가
-
-
-    useEffect(() => {
         const checkOnboarding = async () => {
+            console.log("온보딩 확인")
+
             if (!userId || !accessToken) {
                 handlerLogOut(navigation);
                 return;
@@ -119,18 +81,19 @@ const Exercise = ({ navigation }) => {
             }
         };
     
-        checkOnboarding();
-    }, [userId, accessToken]);
+        // 10초 지연 후 함수 실행
+        timer = setTimeout(checkOnboarding, 10000);
+    
+        return () => {
+            if (timer) {
+                clearTimeout(timer);  // 컴포넌트 언마운트 시 타이머 정리
+            }
+        };
+    }, [userId, accessToken]);  // useEffect 의존성 배열에 userId, accessToken 포함
+    
 
     // 운동 버튼 누를시 말풍선
     const handlePress = (option, message) => {
-
-        if(!isPremium) {
-            if (option === 'AutoAdapt' && !hasSubscriptionAccess) {
-                setIsPaymentModalVisible(true); // 여기서 모달을 띄우도록 변경
-                return;
-            }
-        }
         
         
         setSelectedOption(option);
@@ -164,7 +127,6 @@ const Exercise = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <FreeTrialBanner fourWeeksLater={fourWeeksLater} />
 
             <ScrollView  style={styles.scrollView}
                 keyboardShouldPersistTaps="handled" // 버튼 탭 시 키보드 유지
@@ -192,12 +154,6 @@ const Exercise = ({ navigation }) => {
                             }
                             style={styles.icon}
                         />
-                        {(!hasSubscriptionAccess && !isPremium) && (
-                            <View style={styles.blur}>
-                                <Icon name="lock" size={38} color="white" style={{ marginTop: 27 }} />
-                            </View>
-                        )}
-
 
                     </Pressable>
 
@@ -257,13 +213,10 @@ const Exercise = ({ navigation }) => {
             </ScrollView>
             <Footer navigation={navigation} />
 
-            <SubscriptionModal
-                visible={isPaymentModalVisible}
-                onClose={() => setIsPaymentModalVisible(false)}
-            />
 
-            {modalVisible && <NoticeModal noticeData={noticeData} closeModal={closeModal} />}
-
+            {modalVisible && noticeData && (
+            <NoticeModal noticeData={noticeData} closeModal={() => setModalVisible(false)} />
+            )}
 
         </View>
     );

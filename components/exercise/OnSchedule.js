@@ -30,9 +30,11 @@ import { addDefaultSetsToRedux, resetState } from '../../src/modules/StateExerci
 import _ from 'lodash';
 // import {callVolumeExerciseRecord} from '../../src/apis/ExerciseRecordAPI'
 import { useTranslation } from 'react-i18next';
-
+import useCheckDateChange from '../../src/hooks/useCheckDateChange';
 
 const OnSchedule = () => {
+    const { isDateChangedReducer } = useCheckDateChange();
+
     const { t } = useTranslation();
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -83,6 +85,12 @@ const OnSchedule = () => {
     const prevExercises = useRef(reorderedExercises);
 
     const [mostRecordExercise, setMostRecordExercise] = useState();
+
+    useFocusEffect(
+        useCallback(() => {
+            isDateChangedReducer;
+        }, [])
+    );
 
     useEffect(() => {
         let addedExercises = []; // 상위 스코프에 선언
@@ -356,15 +364,16 @@ const OnSchedule = () => {
     }, [kmUnit, weightUnit]);
     
 
-    //무게 단위 로드
-    useEffect(() => {
-        const fetchUnits = async () => {
-            try {
+            // 무게 단위 및 거리 단위 로드 (화면 진입 시마다 실행됨)
+        useFocusEffect(
+            useCallback(() => {
+            const fetchUnits = async () => {
+                try {
                 // 무게 단위 로드
                 const unitKg = await AsyncStorage.getItem('weightUnit');
                 setWeightUnit(unitKg || 'kg');
                 setIsReadyWeight(true); // 무게 단위 로딩 완료
-                
+        
                 // 거리 단위 로드
                 const unitKm = await AsyncStorage.getItem('heightUnit');
                 if (unitKm === 'feet') {
@@ -375,13 +384,14 @@ const OnSchedule = () => {
                     setKmUnit(unitKm || 'km');
                 }
                 setIsReadyKm(true); // 거리 단위 로딩 완료
-            } catch (error) {
+                } catch (error) {
                 console.error('Error fetching units:', error);
-            }
-        };
-    
-        fetchUnits();
-    }, []);
+                }
+            };
+        
+            fetchUnits();
+            }, [])
+        );
 
     const exerciseMap = {
         '가슴': chestExercises,

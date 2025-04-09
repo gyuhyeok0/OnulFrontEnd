@@ -16,9 +16,14 @@ import EachExercise from '../EachExercise.js';
 import AutoAdaptLoading from './AutoAdaptLoading.js';
 import { useTranslation } from 'react-i18next';
 
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+import useCheckDateChange from '../../../src/hooks/useCheckDateChange.js';
 
 // 운동 메뉴의 자동적응 코드
 const AutoAdapt = () => {
+    const { isDateChangedReducer } = useCheckDateChange();
+
     const dispatch = useDispatch();
     const [isVisible, setIsVisible] = useState(false);
     const [updateCount, setUpdateCount] = useState(0); 
@@ -37,6 +42,11 @@ const AutoAdapt = () => {
     const { t } = useTranslation();
     const isMounted = useRef(false); // 컴포넌트 마운트 상태 추적
 
+    useFocusEffect(
+        useCallback(() => {
+            isDateChangedReducer;
+        }, [])
+    );
 
     // ✅ 운동 세팅을 바꿨을 때 실행 (단, isDateChanged로 인해 실행된 경우 제외)
     useEffect(() => {
@@ -102,7 +112,10 @@ const AutoAdapt = () => {
     // -------------------------------------
 
     useEffect(() => {
+        let timer = null;  // 타이머를 저장할 변수 선언
+
         const fetchData = async () => {
+
             try {
                 const lastRun = await AsyncStorage.getItem('initialLastAiRequestTime');
                 const now = Date.now();
@@ -116,7 +129,7 @@ const AutoAdapt = () => {
 
 
                 const data = await autoAdaptExercises(memberId);
-                // console.log("자동 적응 운동 데이터:", data);
+                console.log("자동 적응 운동 데이터:", data);
                 setReorderedExercises(data);
 
                 if (!data || data.length === 0) {
@@ -124,17 +137,16 @@ const AutoAdapt = () => {
                     const checkDate = true;
                     const initialization = true;
             
-                    // 초기 로딩 디자인을 위해 2초지연
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-
-                    // AI 요청 실행
-                    await aiRequset(memberId, checkDate, initialization);
+                    // 초기 로딩 디자인을 위해 2초 지연
+                    timer = setTimeout(async () => {
+                        // AI 요청 실행
+                        await aiRequset(memberId, checkDate, initialization);
             
-                    // AI 요청 후 다시 데이터 가져오기
-                    const newData = await autoAdaptExercises(memberId);
-                    setReorderedExercises(newData);
-                    await AsyncStorage.setItem('initialLastAiRequestTime', now.toString());
-
+                        // AI 요청 후 다시 데이터 가져오기
+                        const newData = await autoAdaptExercises(memberId);
+                        setReorderedExercises(newData);
+                        await AsyncStorage.setItem('initialLastAiRequestTime', now.toString());
+                    }, 2000);
                 } else {
                     // console.log("✅ 자동 적응 운동 데이터:", data);
                     setReorderedExercises(data);
@@ -146,6 +158,12 @@ const AutoAdapt = () => {
         };
     
         fetchData();
+
+        return () => {
+            if (timer) {
+                clearTimeout(timer);  // 컴포넌트 언마운트 시 타이머 정리
+            }
+        };
     }, []);
 
     // reorderedExercises가 변경될 때 Redux에 기본 세트 추가
@@ -195,34 +213,34 @@ const AutoAdapt = () => {
         
         
 
-        //무게 단위 로드
-        useEffect(() => {
+        // 무게 단위 및 거리 단위 로드 (화면 진입 시마다 실행됨)
+        useFocusEffect(
+            useCallback(() => {
             const fetchUnits = async () => {
                 try {
-                    // 무게 단위 로드
-                    const unitKg = await AsyncStorage.getItem('weightUnit');
-                    setWeightUnit(unitKg || 'kg');
-                    setIsReadyWeight(true); // 무게 단위 로딩 완료
-                    
-                    // 거리 단위 로드
-                    const unitKm = await AsyncStorage.getItem('heightUnit');
-                    if (unitKm === 'feet') {
-                        setKmUnit('mi');
-                    } else if (unitKm === 'cm') {
-                        setKmUnit('km');
-                    } else {
-                        setKmUnit(unitKm || 'km');
-                    }
-                    setIsReadyKm(true); // 거리 단위 로딩 완료
+                // 무게 단위 로드
+                const unitKg = await AsyncStorage.getItem('weightUnit');
+                setWeightUnit(unitKg || 'kg');
+                setIsReadyWeight(true); // 무게 단위 로딩 완료
+        
+                // 거리 단위 로드
+                const unitKm = await AsyncStorage.getItem('heightUnit');
+                if (unitKm === 'feet') {
+                    setKmUnit('mi');
+                } else if (unitKm === 'cm') {
+                    setKmUnit('km');
+                } else {
+                    setKmUnit(unitKm || 'km');
+                }
+                setIsReadyKm(true); // 거리 단위 로딩 완료
                 } catch (error) {
-                    console.error('Error fetching units:', error);
+                console.error('Error fetching units:', error);
                 }
             };
         
             fetchUnits();
-        }, []);
-
-
+            }, [])
+        );
 
     return (
         <View style={{ width: '100%', backgroundColor: '#1A1C22', padding: 10 }}>

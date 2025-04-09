@@ -19,9 +19,13 @@ import DraggableItem from './settings-components/DraggableItem'; // 파일 경�
 import { useCurrentWeekAndDay } from '../../src/hooks/useCurrentWeekAndDay';
 import { useTranslation } from 'react-i18next';
 
+import { useFocusEffect } from '@react-navigation/native';
+import useCheckDateChange from '../../src/hooks/useCheckDateChange';
 
 // 운동 메뉴의 커스텀 코드
 const Custom = () => {
+    const { isDateChangedReducer } = useCheckDateChange();
+
     const { t } = useTranslation();
     const freeExercises = useSelector((state) => state.freeExercises?.myExercises || []);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -34,6 +38,12 @@ const Custom = () => {
     
     const [activeIndex, setActiveIndex] = useState(null); // 드래그 중 활성화된 아이템 인덱스
     const [minHeight, setMinHeight] = useState(0);
+
+    useFocusEffect(
+        useCallback(() => {
+            isDateChangedReducer;
+        }, [])
+    );
 
     // Update minHeight based on reorderedExercises length
     useEffect(() => {
@@ -152,32 +162,34 @@ const Custom = () => {
         
         
 
-        //무게 단위 로드
-        useEffect(() => {
+        // 무게 단위 및 거리 단위 로드 (화면 진입 시마다 실행됨)
+        useFocusEffect(
+            useCallback(() => {
             const fetchUnits = async () => {
                 try {
-                    // 무게 단위 로드
-                    const unitKg = await AsyncStorage.getItem('weightUnit');
-                    setWeightUnit(unitKg || 'kg');
-                    setIsReadyWeight(true); // 무게 단위 로딩 완료
-                    
-                    // 거리 단위 로드
-                    const unitKm = await AsyncStorage.getItem('heightUnit');
-                    if (unitKm === 'feet') {
-                        setKmUnit('mi');
-                    } else if (unitKm === 'cm') {
-                        setKmUnit('km');
-                    } else {
-                        setKmUnit(unitKm || 'km');
-                    }
-                    setIsReadyKm(true); // 거리 단위 로딩 완료
+                // 무게 단위 로드
+                const unitKg = await AsyncStorage.getItem('weightUnit');
+                setWeightUnit(unitKg || 'kg');
+                setIsReadyWeight(true); // 무게 단위 로딩 완료
+        
+                // 거리 단위 로드
+                const unitKm = await AsyncStorage.getItem('heightUnit');
+                if (unitKm === 'feet') {
+                    setKmUnit('mi');
+                } else if (unitKm === 'cm') {
+                    setKmUnit('km');
+                } else {
+                    setKmUnit(unitKm || 'km');
+                }
+                setIsReadyKm(true); // 거리 단위 로딩 완료
                 } catch (error) {
-                    console.error('Error fetching units:', error);
+                console.error('Error fetching units:', error);
                 }
             };
         
             fetchUnits();
-        }, []);
+            }, [])
+        );
         
     // ============
 

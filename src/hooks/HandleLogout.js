@@ -1,20 +1,25 @@
 // hooks/Logout.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { persistor, store} from '../store';
+import { RESET_ALL_STATE } from '../modules/resetActions'; 
 
 export const handlerLogOut = async (navigation) => {
     try {
+
+        await AsyncStorage.clear();
+
+        // ✅ 리덕스 상태 초기화
+        store.dispatch({ type: RESET_ALL_STATE });
+
+        await persistor.purge(); 
+
         
         if (!navigation) {
             console.error("navigation 객체가 존재하지 않습니다.");
             return;
         }
         
-
-        // 로컬 저장소 토큰 삭제
-        await AsyncStorage.removeItem('accessToken');
-
-        // 타이머 관련 데이터 삭제
-        await AsyncStorage.multiRemove(['timerTime', 'timerRunning', 'lastTime']);
+        await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'userInfo','timerTime', 'timerRunning', 'lastTime']);
 
         // 네비게이션 스택 리셋 후 로그인 페이지로 이동
         navigation.reset({

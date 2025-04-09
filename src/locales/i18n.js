@@ -7,12 +7,8 @@ import translationEN from './en/translation.json';
 import translationKO from './ko/translation.json';
 import translationJA from './ja/translation.json'; 
 
-import translationDE from './de/translation.json';
 import translationES from './es/translation.json';
-import translationFR from './fr/translation.json'; 
 
-import translationIT from './it/translation.json';
-import translationNL from './nl/translation.json';
 
 // 기기 언어를 감지합니다.
 const locales = Localization.getLocales();

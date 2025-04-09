@@ -14,6 +14,7 @@
 		16498B6B2D6692CB007A9941 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16498B6A2D6692CB007A9941 /* StoreKit.framework */; };
 		166D4B322D6833CE00808E2A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 166D4B312D6833CE00808E2A /* GoogleService-Info.plist */; };
 		166D4B382D6C820F00808E2A /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 166D4B372D6C820F00808E2A /* StoreKitTestCertificate.cer */; };
+		1688DFC12DA5569900805FBB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1688DFC02DA5569900805FBB /* Assets.xcassets */; };
 		16B7B46E2D654E4200BBE4AE /* libswiftCore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B7B46D2D654E4200BBE4AE /* libswiftCore.tbd */; };
 		16B7B4702D65533700BBE4AE /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B7B46F2D65533700BBE4AE /* libswiftWebKit.tbd */; };
 		36719CAB879F1DE808261EF0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A189D27CDD15DC59DD3C5352 /* PrivacyInfo.xcprivacy */; };
@@ -48,6 +49,7 @@
 		166D4B312D6833CE00808E2A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "OnulFrontEnd/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		166D4B362D6C5E6700808E2A /* onul.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = onul.storekit; sourceTree = "<group>"; };
 		166D4B372D6C820F00808E2A /* StoreKitTestCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = StoreKitTestCertificate.cer; path = ../../../StoreKitTestCertificate.cer; sourceTree = "<group>"; };
+		1688DFC02DA5569900805FBB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		16B7B46D2D654E4200BBE4AE /* libswiftCore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftCore.tbd; path = usr/lib/swift/libswiftCore.tbd; sourceTree = SDKROOT; };
 		16B7B46F2D65533700BBE4AE /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
 		16D247272C874037002ECBF4 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
@@ -128,7 +130,6 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				A189D27CDD15DC59DD3C5352 /* PrivacyInfo.xcprivacy */,
@@ -187,6 +188,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
+				1688DFC02DA5569900805FBB /* Assets.xcassets */,
 				13B07FAE1A68108700A75B9A /* OnulFrontEnd */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* OnulFrontEndTests */,
@@ -318,6 +321,7 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				166D4B322D6833CE00808E2A /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				1688DFC12DA5569900805FBB /* Assets.xcassets in Resources */,
 				36719CAB879F1DE808261EF0 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -569,6 +573,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QMV7ZULY37;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = OnulFrontEnd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -610,6 +615,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QMV7ZULY37;
 				INFOPLIST_FILE = OnulFrontEnd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -727,7 +733,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -813,7 +822,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;

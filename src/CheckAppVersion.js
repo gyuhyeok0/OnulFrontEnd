@@ -14,10 +14,6 @@ const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP"
 const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
 
 
-
-
-
-
 // 버전 문자열을 숫자로 변환하여 비교하는 함수
 const versionToNumber = (version) => {
     const parts = version.split('.').map(num => Number(num));
@@ -27,10 +23,10 @@ const versionToNumber = (version) => {
 };
 
 // ✅ 성공 시 true, 실패 시 false 반환
-export const checkAppVersion = async () => {
+export const checkAppVersion = async (memberId) => {
     try {
         const currentVersion = DeviceInfo.getVersion();
-        const response = await fetch(`${API_URL}/appVersion/version`);
+        const response = await fetch(`${API_URL}/appVersion/version?memberId=${memberId}`);
         
         if (!response.ok) {
             console.error(` checkAppVersion 서버 응답 오류: ${response.status}`);
