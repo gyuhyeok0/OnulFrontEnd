@@ -1,9 +1,13 @@
+// store/modules/index.js (현재 rootReducer 파일)
+
 import { combineReducers } from '@reduxjs/toolkit';
+import { RESET_ALL_STATE } from './resetActions'; // ✅ 아까 만든 액션 import
+
 import { memberReducer } from './MemberSlice';
 import { askReducer } from './AskSlice';
-import authReducer from './AuthSlice'; // authReducer 가져오기
-import exerciseReducer from './ExerciseSlice'; // exerciseReducer 가져오기
-import scheduleReducer from './ScheduleSlice'; // scheduleReducer 가져오기
+import authReducer from './AuthSlice';
+import exerciseReducer from './ExerciseSlice';
+import scheduleReducer from './ScheduleSlice';
 
 import {
   myChestReducer,
@@ -15,54 +19,47 @@ import {
   myLowerBodyReducer,
   myShouldersReducer,
   myFreeReducer,
-} from './MyExerciseSclice'; // 각각의 슬라이스 리듀서 가져오기
+} from './MyExerciseSclice';
 
 import schedulExerciseReducer from './ExerciseStateSlice/SchedulExerciseState';
-
-import stateExerciseReducer from './StateExerciseSlice'; // 리듀서 가져오기
-import weekReducer from './WeekReducer'; // weekReducer import
-// import apiReducer from './ApiSlice'; // 아래에서 생성할 API slice
-
-import intensityReducer from './IntensitySlice'; // 새로 만든 intensity 리듀서 가져오기
+import stateExerciseReducer from './StateExerciseSlice';
+import weekReducer from './WeekReducer';
+import intensityReducer from './IntensitySlice';
 import bodyReducer from './BodySlice';
-import totalFoodReducer from './TotalFoodSlice'; // 새로 만든 totalFood 리듀서 가져오기
-
+import totalFoodReducer from './TotalFoodSlice';
 import exerciseVolumeReducer from './VolumeSlice';
-import subscriptionReducer from './SubscriptionSlice';
 
-
-const rootReducer = combineReducers({
+// ✅ 기존 combineReducers 그대로 사용
+const appReducer = combineReducers({
   member: memberReducer,
   ask: askReducer,
-  auth: authReducer, // auth 리듀서 포함
-  exercises: exerciseReducer, // exercise 리듀서 포함
-  schedule: scheduleReducer, // schedule 리듀서 포함
-  chestExercises: myChestReducer, // 가슴 운동 리듀서
-  backExercises: myBackReducer, // 등 운동 리듀서
-  absExercises: myAbsReducer, // 복근 운동 리듀서
-  armsExercises: myArmsReducer, // 팔 운동 리듀서
-  customExercises: myCustomReducer, // 사용자 정의 운동 리듀서
-  etcExercises: myEtcReducer, // 기타 운동 리듀서
-  lowerBodyExercises: myLowerBodyReducer, // 하체 운동 리듀서
-  shouldersExercises: myShouldersReducer, // 어깨 운동 리듀서
-  schedulExerciseState: schedulExerciseReducer, // 이름 변경된 리듀서 등록
-  
+  auth: authReducer,
+  exercises: exerciseReducer,
+  schedule: scheduleReducer,
+  chestExercises: myChestReducer,
+  backExercises: myBackReducer,
+  absExercises: myAbsReducer,
+  armsExercises: myArmsReducer,
+  customExercises: myCustomReducer,
+  etcExercises: myEtcReducer,
+  lowerBodyExercises: myLowerBodyReducer,
+  shouldersExercises: myShouldersReducer,
+  schedulExerciseState: schedulExerciseReducer,
   freeExercises: myFreeReducer,
-
-
-  stateExercise: stateExerciseReducer, // reorderedExercises 리듀서 추가
-
-  week: weekReducer, // week 상태 관리
-  // api: apiReducer, // 전역 상태에 API slice 추가
-
-  intensity: intensityReducer, // 새로 추가한 intensity 리듀서
-  body: bodyReducer, // body 키에 bodyReducer를 연결
-  totalFood: totalFoodReducer, // totalFood 리듀서 추가
+  stateExercise: stateExerciseReducer,
+  week: weekReducer,
+  intensity: intensityReducer,
+  body: bodyReducer,
+  totalFood: totalFoodReducer,
   exerciseVolumeData: exerciseVolumeReducer,
-
-  subscription: subscriptionReducer,
-
 });
 
+// ✅ 여기서 액션 감지해서 상태 초기화
+const rootReducer = (state, action) => {
+  if (action.type === RESET_ALL_STATE) {
+    state = undefined; // 전체 리덕스 초기화
+  }
+  return appReducer(state, action);
+};
 
 export default rootReducer;

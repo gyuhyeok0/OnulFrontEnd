@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Animated, Image } from 'react-native';
-import useCheckDateChange from '../../../src/hooks/useCheckDateChange';
 import { useTranslation } from 'react-i18next';
 
 const AutoAdaptLoading = () => {
-    const { isDateChanged } = useCheckDateChange();
     const progress = useRef(new Animated.Value(0)).current;
     const fadeAnim = useRef(new Animated.Value(1)).current; // 투명도 조절을 위한 애니메이션 값
     const { t } = useTranslation();

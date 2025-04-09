@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Pressable, Button, Animated, Dimensions, Image 
 import DefaultHeader from '../common/DefaultHeader';
 import CustomModal from '../modal/ServiceAgree';
 import { useDispatch, useSelector } from 'react-redux';
-import SubscriptionModal from '../modal/SubscriptionModal';
 import { useTranslation } from 'react-i18next';
 
 const screenHeight = Dimensions.get('window').height;
@@ -13,21 +12,11 @@ const Menu = ({ navigation }) => {
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalY] = useState(new Animated.Value(screenHeight)); 
-    const memberSignupDate = useSelector((state) => state.member.userInfo.memberSignupDate); // Optional chaining 사용
 
-    const [fourWeeksLater, setFourWeeksLater] = useState(null);
-    const isPremium = useSelector(state => state.subscription.isPremium);
 
-    const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false); // 결제 모달 상태
     const [modalType, setModalType] = useState('');
 
-    useEffect(() => {
-    if (memberSignupDate) {
-        const signupDateObj = new Date(memberSignupDate); // 문자열을 Date 객체로 변환
-        signupDateObj.setDate(signupDateObj.getDate() + 28); // 28일 후 계산
-        setFourWeeksLater(signupDateObj.toISOString().split("T")[0]); // YYYY-MM-DD 형식으로 저장
-    }
-    }, [memberSignupDate]);
+
 
     const handleTranslation = () => {
         navigation.navigate('MenuTranslation');
@@ -93,29 +82,6 @@ const Menu = ({ navigation }) => {
                 left: 0,
                 right: 0
             }}>
-                <Image
-                    source={require('../../assets/WhiteLogo.png')}
-                    style={{width: 100, height: 70, marginLeft:-15, marginBottom:5}}
-                />
-
-
-                {!isPremium && new Date(fourWeeksLater) > new Date() && (
-                    <>
-                        <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.freeTrialActive')}</Text>
-                        <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.autoAdaptAfterSubscription')}</Text>
-                        <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginTop: 5, flexWrap: 'wrap' }}>
-                            <Text style={{ color: 'white', fontSize: 13 }}>{t('menu.freeTrialEnds')}: {fourWeeksLater}</Text>
-
-                            <Pressable 
-                                onPress={() => setIsPaymentModalVisible(true)} // 버튼 누르면 모달 표시
-                                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-                            >
-                                <Text style={{ color: '#007AFF', fontSize: 13, fontWeight: 'bold' }}>{t('menu.subscribeNow')}</Text>
-                            </Pressable>
-                        </View>
-                    </>
-                )}
-
                 
 
             </View>
@@ -128,10 +94,6 @@ const Menu = ({ navigation }) => {
                 type={modalType}  // 수정된 부분
             />
 
-            <SubscriptionModal
-                visible={isPaymentModalVisible}
-                onClose={() => setIsPaymentModalVisible(false)}
-            />
         </>
     );
 };

@@ -210,6 +210,9 @@
       "todayWorkout": "本日のAIワークアウト",
       "waitMessage": "しばらくお待ちください"
     },
+    "notice": {
+      "closeButton": "閉じる"  
+    },
   
     "defaultSetting": {
       "loading": "更新中",
@@ -538,7 +541,15 @@
           "muscleFatigueQuestion": "筋肉の疲労度はどのくらいですか？",
           "checkFatigue": "筋疲労を確認",
           "imageNote": "この画像はデザイン要素であり、実際のデータ可視化ではありません.",
-          "infoAnalysis": "今日のトレーニング記録、身体記録、食事記録を入力したら、明日から分析データを確認できます！"
+          "infoAnalysis": "今日のトレーニング記録、身体記録、食事記録を入力したら、明日から分析データを確認できます！",
+        "adNotReadyTitle": "広告を読み込み中です",
+        "adNotReadyMessage": "広告を読み込んでいます。しばらくしてからもう一度お試しください",
+        "dailyLimitNotice": "1日に最大5回まで広告を視聴してご利用いただけます。",
+"limitReachedTitle": "利用回数の上限に達しました",
+"limitReachedMessage": "本日の無料利用回数はすべて使い切りました。明日またご利用ください。"
+
+
+
         },
 
         "exerciseVolumeGraph": {

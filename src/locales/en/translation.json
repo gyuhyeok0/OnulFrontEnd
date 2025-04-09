@@ -273,6 +273,9 @@
   "keyboard": {
     "reps" : "reps"
   },
+  "notice": {
+      "closeButton": "Close"
+    },
   "onSchedule": {
     "customWorkout": "Planned Workout",
     "refreshHint": "If the workouts are not visible, refresh or press the body part button again.",
@@ -495,7 +498,14 @@
       "muscleFatigueQuestion": "How fatigued are my muscles?",
       "checkFatigue": "Check Muscle Fatigue",
       "imageNote": "This image is a design element and not actual data visualization.",
-      "infoAnalysis": "If you've logged your workout, body stats, and diet today, you can check your analysis data starting tomorrow!"
+      "infoAnalysis": "If you've logged your workout, body stats, and diet today, you can check your analysis data starting tomorrow!",
+      "adNotReadyTitle": "Loading Ad",
+"adNotReadyMessage": "The ad is still loading. Please try again shortly.",
+"dailyLimitNotice": "You can use this feature up to 5 times a day by watching ads.",
+"limitReachedTitle": "Usage Limit Reached",
+"limitReachedMessage": "You have used all of today’s free attempts. Please try again tomorrow."
+
+
     },
   "exerciseVolumeGraph": {
       "title": "Exercise Volume Graph",

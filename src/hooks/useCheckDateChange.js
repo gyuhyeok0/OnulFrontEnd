@@ -5,12 +5,12 @@ import { resetState } from '../modules/StateExerciseSlice';
 
 const useCheckDateChange = () => {
     const dispatch = useDispatch();
-    const [isDateChanged, setIsDateChanged] = useState(false);
+    const [isDateChangedReducer, setIsDateChangedReducer] = useState(false);
 
     useEffect(() => {
         const checkDateChange = async () => {
             try {
-                const todayDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
+                const todayDate = new Date().toLocaleDateString('sv-SE'); // 'YYYY-MM-DD' 형식
 
                 // ✅ "오늘 resetState()가 실행되었는지 확인"
                 const resetDoneDate = await AsyncStorage.getItem('resetDoneDate'); 
@@ -24,19 +24,26 @@ const useCheckDateChange = () => {
                     // ✅ reset 실행 날짜 저장 → 오늘 한 번만 실행됨
                     await AsyncStorage.setItem('resetDoneDate', todayDate);
 
-                    setIsDateChanged(true);
+                    setIsDateChangedReducer(true);
                 } else {
-                    setIsDateChanged(false);
+                    setIsDateChangedReducer(false);
                 }
+
+                console.log('📅 todayDate:', todayDate);
+                console.log('📦 resetDoneDate:', resetDoneDate);
+
+                
             } catch (error) {
                 console.error('❌ 날짜 변경 감지 실패:', error);
             }
         };
 
+
+
         checkDateChange();
     }, [dispatch]); // Redux 상태 업데이트가 필요할 때만 실행
 
-    return { isDateChanged };
+    return { isDateChangedReducer };
 };
 
 export default useCheckDateChange;

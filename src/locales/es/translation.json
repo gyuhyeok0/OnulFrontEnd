@@ -301,6 +301,9 @@
       "noRecord": "No hay registros de ejercicio disponibles.",
       "none": "ninguno"
     },
+    "notice": {
+      "closeButton": "Cerrar" 
+    },
     "weeklySchedule": {
       "thisWeek": "Esta semana",
       "nextWeek": "La próxima semana",
@@ -493,7 +496,14 @@
     "muscleFatigueQuestion": "¿Qué tan fatigados están mis músculos?",
     "checkFatigue": "Verifica la fatiga muscular",
     "imageNote": "Esta imagen es un elemento de diseño y no una visualización de datos real.",
-    "infoAnalysis": "Si has registrado tu entrenamiento, datos corporales y dieta hoy, podrás ver tu análisis a partir de mañana."
+    "infoAnalysis": "Si has registrado tu entrenamiento, datos corporales y dieta hoy, podrás ver tu análisis a partir de mañana.",
+    "adNotReadyTitle": "Cargando anuncio",
+"adNotReadyMessage": "El anuncio se está cargando. Por favor, inténtalo de nuevo en unos momentos.",
+"dailyLimitNotice": "Puedes usar esta función hasta 5 veces al día viendo anuncios.",
+"limitReachedTitle": "Límite diario alcanzado",
+"limitReachedMessage": "Has usado todos los intentos gratuitos de hoy. Vuelve a intentarlo mañana."
+
+
   },
   "exerciseVolumeGraph": {
     "title": "Gráfico de Volumen de Ejercicio",

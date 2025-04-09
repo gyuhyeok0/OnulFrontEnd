@@ -4,10 +4,25 @@ import { Modal, View, Text, Button, StyleSheet } from 'react-native'; // React N
 import { useTranslation } from 'react-i18next'; // 언어 관리
 
 const NoticeModal = ({ noticeData, closeModal }) => {
-    const { i18n } = useTranslation(); // 현재 언어 확인
-    const language = i18n.language.toLowerCase(); // 소문자 언어 코드
-    const titleKey = `title${language.charAt(0).toUpperCase() + language.slice(1)}`;
-    const contentKey = `content${language.charAt(0).toUpperCase() + language.slice(1)}`;
+    const { t, i18n } = useTranslation(); 
+    const rawLang = i18n.language.toLowerCase();
+
+    let lang = "En";
+    if (rawLang.includes("ko")) lang = "Ko";
+    else if (rawLang.includes("ja")) lang = "Ja";
+    else if (rawLang.includes("es")) lang = "Es";
+
+    const titleKey = `title${lang}`;
+    const contentKey = `content${lang}`;
+
+    // 🔥 여기서 키가 없을 경우 fallback
+    const title = noticeData?.[titleKey] || noticeData?.titleEn;
+    const content = noticeData?.[contentKey] || noticeData?.contentEn;
+
+    if (!noticeData || !title || !content) {
+        console.log("⛔️ 공지 데이터 없음 또는 키 매칭 실패");
+        return null;
+    }
 
     return (
         <Modal
@@ -18,18 +33,15 @@ const NoticeModal = ({ noticeData, closeModal }) => {
         >
             <View style={styles.modalBackground}>
                 <View style={styles.container}>
-                    <Text style={styles.title}>
-                        {noticeData[titleKey]} {/* 제목 출력 */}
-                    </Text>
-                    <Text style={styles.content}>
-                        {noticeData[contentKey]} {/* 내용 출력 */}
-                    </Text>
-                    <Button title="닫기" onPress={closeModal} /> 
+                    <Text style={styles.title}>{title}</Text>
+                    <Text style={styles.content}>{content}</Text>
+                    <Button title={t('notice.closeButton')} onPress={closeModal} /> 
                 </View>
             </View>
         </Modal>
     );
 };
+
 
 const styles = StyleSheet.create({
     modalBackground: {

@@ -6,7 +6,7 @@ import { setToken, setIsLoggedIn } from './modules/AuthSlice';
 import initializeI18n from './locales/i18n'; 
 import { deleteBodyData } from './modules/BodySlice'; 
 import { deleteFoodData } from './modules/TotalFoodSlice';
-import { analysisUpdateAPI } from './apis/AnalysisApi';
+import { lastLoginRunDateAPI } from './apis/AnalysisApi';
 import { inspection } from './apis/Inspection';
 import { Alert, BackHandler, Platform } from 'react-native';
 import { checkAppVersion } from './CheckAppVersion';
@@ -187,33 +187,29 @@ const InitializationWrapper = ({ onInitializationComplete, setTimerTime, setIsTi
 
             const storedAPI = await AsyncStorage.getItem('API_URL'); 
 
-            async function updateAnalysisIfAPIExists() {
+            async function lastLoginDateForAnalysis() {
+                try {
+                    const lastRunDate = await AsyncStorage.getItem('lastLoginRunDate');
+                    const currentDate = new Date().toISOString().split('T')[0];
+            
 
-                // 스토리지에서 마지막 실행 날짜를 가져옴
-                const lastRunDate = await AsyncStorage.getItem('lastAnalysisRunDate');
-                const currentDate = new Date().toISOString().split('T')[0]; 
-
-                // 마지막 실행 날짜가 없거나, 24시간이 지났으면 실행
-                if (!lastRunDate || lastRunDate !== currentDate) {
-                    // 스토리지에 날짜 저장
-                    await AsyncStorage.setItem('lastAnalysisRunDate', currentDate);
-
-                    // 스토리지에 API_URL이 없으면 실행하지 않음
-                    if (storedAPI !== null && storedAPI !== undefined) {
-                        // 분석 요청
-                        if (memberId !== null && memberId !== undefined) {
-                            await analysisUpdateAPI(memberId); // ✅ 응답이 올 때까지 기다림
+                    if (lastRunDate !== currentDate) {
+                        if (storedAPI && memberId) {
+                            await lastLoginRunDateAPI(memberId); // 분석을 위한 로그인 체크 요청
+                            await AsyncStorage.setItem('lastLoginRunDate', currentDate); // 날짜 저장
+                        } else {
+                            console.log("Missing storedAPI or memberId. Skipping analysis update.");
                         }
                     } else {
-                        console.log("No API_URL found in AsyncStorage. Skipping analysis update.");
+                        console.log("하루에 한 번만 실행됩니다. 이번에는 실행하지 않습니다.");
                     }
-                } else {
-                    console.log("하루에 한 번만 실행됩니다. 이번에는 실행하지 않습니다.");
+                } catch (error) {
+                    console.error("분석 업데이트 중 에러 발생:", error);
                 }
             }
+            
+            await lastLoginDateForAnalysis();
 
-            // 실행
-            await updateAnalysisIfAPIExists();
 
     
             setIsInitialized(true);

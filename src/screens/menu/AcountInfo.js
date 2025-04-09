@@ -6,6 +6,7 @@ import { deleteAccount } from '../../apis/MemberAPICalls';
 import { useSelector } from 'react-redux'; // useDispatch 가져오기
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const MenuAccountInfo = ({ navigation }) => {
@@ -23,7 +24,10 @@ const MenuAccountInfo = ({ navigation }) => {
                     onPress: async () => {
                         try {
                             await deleteAccount(memberId);
+
+
                             handlerLogOut(navigation);
+                            
                         } catch (error) {
                             Alert.alert(
                                 t("accountInfo.errorTitle"),
@@ -58,11 +62,11 @@ const MenuAccountInfo = ({ navigation }) => {
 
                 <View style={{marginBottom: 40}}>
 
-                    <View style={{backgroundColor:'#3A3D44', padding: 15, borderRadius: 10, marginBottom: 10 }}>
+                    {/* <View style={{backgroundColor:'#3A3D44', padding: 15, borderRadius: 10, marginBottom: 10 }}>
                         <Text style={{ color: 'white', fontSize: 16, marginBottom: 10 }}>
                             {t("accountInfo.subscriptionNotice")}
                         </Text>
-                    </View>
+                    </View> */}
 
                     <View style={{backgroundColor:'#3A3D44', padding: 15, borderRadius: 10, marginBottom: 10 }}>
                         <Text style={{ color: 'white', fontSize: 16, marginBottom: 10 }}>

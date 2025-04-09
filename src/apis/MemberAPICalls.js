@@ -1,6 +1,7 @@
 import { postLogin } from '../modules/MemberSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 가져오기
 import * as RNLocalize from 'react-native-localize';
+import { persistor } from '../store';
 
 import { API_URL_JP, API_URL_US } from '@env';
 
