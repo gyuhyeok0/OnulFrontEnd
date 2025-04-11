@@ -17,7 +17,7 @@ const Footer = ({ navigation }) => {
                         <Icon 
                             name="home" 
                             style={FooterStyles.exerciseButton}
-                            size={33} 
+                            size={31} 
                             color={currentRoute === 'Exercise' ? '#fff' : '#888888'} // 현재 페이지면 흰색, 아니면 회색
                         />
                         <Text 
@@ -38,7 +38,7 @@ const Footer = ({ navigation }) => {
                         <Icon 
                             name="calendar-today" 
                             style={FooterStyles.scheduleButton}
-                            size={27} 
+                            size={25} 
                             color={currentRoute === 'Schedule' ? '#fff' : '#888888'} // 현재 페이지면 흰색, 아니면 회색
                         />
                         <Text 
@@ -59,7 +59,7 @@ const Footer = ({ navigation }) => {
                         <Icon 
                             name="fastfood" 
                             style={FooterStyles.managementButton}
-                            size={29} 
+                            size={27} 
                             color={currentRoute === 'Management' ? '#fff' : '#888888'} // 현재 페이지면 흰색, 아니면 회색
                         />
                         <Text 
@@ -79,7 +79,7 @@ const Footer = ({ navigation }) => {
                         <Icon 
                             style={FooterStyles.recordButton}
                             name="history" 
-                            size={32} 
+                            size={30} 
                             color={currentRoute === 'Record' ? '#fff' : '#888888'} // 현재 페이지면 흰색, 아니면 회색
                         />
                         <Text 
@@ -99,7 +99,7 @@ const Footer = ({ navigation }) => {
                         <Icon 
                             style={FooterStyles.analysisButton}
                             name="bar-chart" 
-                            size={37} 
+                            size={35} 
                             color={currentRoute === 'Analysis' ? '#fff' : '#888888'} // 현재 페이지면 흰색, 아니면 회색
                         />
                         <Text 

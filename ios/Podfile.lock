@@ -1730,6 +1730,8 @@ PODS:
   - RNPurchases (8.6.1):
     - PurchasesHybridCommon (= 13.18.1)
     - React-Core
+  - RNRate (1.2.12):
+    - React-Core
   - RNReanimated (3.16.7):
     - DoubleConversion
     - glog
@@ -1949,6 +1951,7 @@ DEPENDENCIES:
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNPurchases (from `../node_modules/react-native-purchases`)
+  - RNRate (from `../node_modules/react-native-rate`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -2138,6 +2141,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-localize"
   RNPurchases:
     :path: "../node_modules/react-native-purchases"
+  RNRate:
+    :path: "../node_modules/react-native-rate"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2248,6 +2253,7 @@ SPEC CHECKSUMS:
   RNGoogleSignin: ee2938633d996756819e3212c8e0f7f696b380d0
   RNLocalize: 06991b9c31e7a898a9fa6ddb204ce0f53a967248
   RNPurchases: 38c70c8cfd52dd3a6f54ea99ca0f5ded3b8f89e5
+  RNRate: ef3bcff84f39bb1d1e41c5593d3eea4aab2bd73a
   RNReanimated: d1e1069c64b84cc1dc91c73d59a2106c139ed7a1
   RNScreens: c7ceced6a8384cb9be5e7a5e88e9e714401fd958
   RNSVG: 8b18fe2c2884a86e5e2e008acee0f3503dc19ff2

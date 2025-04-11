@@ -61,6 +61,7 @@ const ExerciseVolumeGraph = ({ navigation }) => {
         const fetchData = async () => {
             try {
                 const response = await analysisExerciseVolume(memberId);
+                console.log(response)
                 const records = response.records;
                 const dates = response.dates;
 
@@ -85,7 +86,7 @@ const ExerciseVolumeGraph = ({ navigation }) => {
 
     // kg에서 lbs로 변환하는 함수
     const convertToLbs = (kg) => {
-        return kg * 2.20462; // kg -> lbs 변환
+        return !isNaN(kg) ? kg * 2.20462 : 0;
     };
 
     const filteredData = sampleData.filter(item => item.main === selectedMain && last7Days.includes(item.date));
@@ -99,12 +100,14 @@ const ExerciseVolumeGraph = ({ navigation }) => {
             const entry = filteredData.find(item => item.date === date && item.detail === detail);
             if (entry) {
                 if (lastKnownValue !== null) {
-                    volumeChange = entry.volume - lastKnownValue; // 운동량 변화 계산
+                    volumeChange = entry.volume - lastKnownValue;
                 }
                 lastKnownValue = entry.volume;
                 hasValidData = true;
             }
-            return hasValidData ? (lastKnownValue !== null ? lastKnownValue : 0) : undefined;
+            return hasValidData
+                ? (lastKnownValue !== null && !isNaN(lastKnownValue) ? lastKnownValue : 0)
+                : 0;
         });
 
         // weightUnit이 'lbs'이면 데이터를 변환

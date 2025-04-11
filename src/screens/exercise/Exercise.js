@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Image, Text, StyleSheet, Pressable } from 'react-native';
 import { useSelector } from 'react-redux';
 import Footer from '../common/Footer';
@@ -13,111 +13,74 @@ import NoticeModal from '../modal/NoticeModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Exercise = ({ navigation }) => {
-    
-    const userId = useSelector((state) => state.member.userInfo?.memberId); // Optional chaining 사용
-    const accessToken = useSelector((state) => state.member.userInfo?.accessToken); // Optional chaining 사용
+    const userId = useSelector((state) => state.member.userInfo?.memberId);
+    const accessToken = useSelector((state) => state.member.userInfo?.accessToken);
     const { t } = useTranslation();
 
     const [selectedOption, setSelectedOption] = useState('AutoAdapt');
     const [showTooltip, setShowTooltip] = useState({ visible: false, message: '' });
-    const [noticeData, setNoticeData] = useState(null); // 공지 데이터를 관리
-    const [modalVisible, setModalVisible] = useState(false); // 모달 상태
+    const [noticeData, setNoticeData] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    
     useEffect(() => {
-        let timer = null;  // 타이머를 저장할 변수 선언
-    
-        const fetchNotice = async () => {
-            console.log("공지확인")
+        const timer = setTimeout(async () => {
             if (userId && accessToken) {
-                const data = await notice(accessToken); // 공지 데이터 받아오기
+                const data = await notice(accessToken);
                 if (data && data.active) {
-                    setNoticeData(data);  // 공지 데이터를 상태로 저장
+                    setNoticeData(data);
                     setModalVisible(true);
                 }
             } else {
-                handlerLogOut(navigation); // 유저 로그아웃 처리
+                handlerLogOut(navigation);
             }
-        };
-    
-        // 5초 지연 후 함수 실행
-        timer = setTimeout(fetchNotice, 5000);
-    
-        return () => {
-            if (timer) {
-                clearTimeout(timer);  // 컴포넌트 언마운트 시 타이머 정리
-            }
-        };
-    }, [userId, accessToken]);  // useEffect 의존성 배열에 userId, accessToken 포함
-    
+        }, 5000);
 
-    const closeModal = () => {
-        setModalVisible(false); // 모달 닫기
-    };
-    
+        return () => clearTimeout(timer);
+    }, [userId, accessToken]);
+
+    const closeModal = () => setModalVisible(false);
 
     useEffect(() => {
-        let timer = null;  // 타이머를 저장할 변수 선언
-    
-        const checkOnboarding = async () => {
-            console.log("온보딩 확인")
-
+        const timer = setTimeout(async () => {
             if (!userId || !accessToken) {
                 handlerLogOut(navigation);
                 return;
             }
-    
+
             try {
                 const onboardingChecked = await AsyncStorage.getItem(`onboarding_checked_${userId}`);
-                
                 if (!onboardingChecked) {
-                    // ✅ 온보딩 상태 체크 실행
                     await checkOnboardingStatus(userId, accessToken, navigation);
-                    // ✅ 온보딩 체크 완료 상태를 스토리지에 저장
                     await AsyncStorage.setItem(`onboarding_checked_${userId}`, 'true');
                 }
             } catch (error) {
                 console.error('Error checking onboarding status:', error);
             }
-        };
-    
-        // 10초 지연 후 함수 실행
-        timer = setTimeout(checkOnboarding, 10000);
-    
-        return () => {
-            if (timer) {
-                clearTimeout(timer);  // 컴포넌트 언마운트 시 타이머 정리
-            }
-        };
-    }, [userId, accessToken]);  // useEffect 의존성 배열에 userId, accessToken 포함
-    
+        }, 10000);
 
-    // 운동 버튼 누를시 말풍선
+        return () => clearTimeout(timer);
+    }, [userId, accessToken]);
+
     const handlePress = (option, message) => {
-        
-        
         setSelectedOption(option);
         setShowTooltip({ visible: true, message });
     };
 
-    // 말풍선 유지시간
     useEffect(() => {
         if (showTooltip.visible) {
             const timer = setTimeout(() => {
                 setShowTooltip({ visible: false, message: '' });
             }, 5000);
-
             return () => clearTimeout(timer);
         }
     }, [showTooltip.visible]);
 
-    // 선택한 옵션을 기반으로 화면 렌더링
     const renderSelectedComponent = () => {
         switch (selectedOption) {
             case 'AutoAdapt':
-                return <AutoAdapt/>;
+                return <AutoAdapt />;
             case 'OnSchedule':
-                return <OnSchedule/>;
+                return <OnSchedule />;
             case 'Custom':
                 return <Custom />;
             default:
@@ -127,25 +90,21 @@ const Exercise = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-
-            <ScrollView  style={styles.scrollView}
-                keyboardShouldPersistTaps="handled" // 버튼 탭 시 키보드 유지
-            >
+            <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
                 <View style={styles.selectionContainer}>
-
                     <Pressable
-                        style={styles.option}
+                        style={[
+                            styles.option,
+                            selectedOption === 'AutoAdapt' && styles.selectedShadow
+                        ]}
                         onPress={() => handlePress('AutoAdapt', t('exercise.autoAdaptDescription'))}
                     >
-                        <Text
-                            style={[
-                                styles.optionText,
-                                selectedOption === 'AutoAdapt' && styles.selectedTextColor
-                            ]}
-                        >
+                        <Text style={[
+                            styles.optionText,
+                            selectedOption === 'AutoAdapt' && styles.selectedTextColor
+                        ]}>
                             {t('exercise.autoAdapt')}
                         </Text>
-                        
                         <Image
                             source={
                                 selectedOption === 'AutoAdapt'
@@ -154,19 +113,19 @@ const Exercise = ({ navigation }) => {
                             }
                             style={styles.icon}
                         />
-
                     </Pressable>
 
                     <Pressable
-                        style={styles.option}
+                        style={[
+                            styles.option,
+                            selectedOption === 'OnSchedule' && styles.selectedShadow
+                        ]}
                         onPress={() => handlePress('OnSchedule', t('exercise.onScheduleDescription'))}
                     >
-                        <Text
-                            style={[
-                                styles.optionText,
-                                selectedOption === 'OnSchedule' && styles.selectedTextColor
-                            ]}
-                        >
+                        <Text style={[
+                            styles.optionText,
+                            selectedOption === 'OnSchedule' && styles.selectedTextColor
+                        ]}>
                             {t('exercise.onSchedule')}
                         </Text>
                         <Image
@@ -180,15 +139,16 @@ const Exercise = ({ navigation }) => {
                     </Pressable>
 
                     <Pressable
-                        style={styles.option}
+                        style={[
+                            styles.option,
+                            selectedOption === 'Custom' && styles.selectedShadow
+                        ]}
                         onPress={() => handlePress('Custom', t('exercise.customDescription'))}
                     >
-                        <Text
-                            style={[
-                                styles.optionText,
-                                selectedOption === 'Custom' && styles.selectedTextColor
-                            ]}
-                        >
+                        <Text style={[
+                            styles.optionText,
+                            selectedOption === 'Custom' && styles.selectedTextColor
+                        ]}>
                             {t('exercise.custom')}
                         </Text>
                         <Image
@@ -201,7 +161,9 @@ const Exercise = ({ navigation }) => {
                         />
                     </Pressable>
                 </View>
-                
+
+                <View style={styles.wrap} />
+
                 {renderSelectedComponent()}
 
                 {showTooltip.visible && (
@@ -209,15 +171,13 @@ const Exercise = ({ navigation }) => {
                         <Text style={styles.tooltipText}>{showTooltip.message}</Text>
                     </View>
                 )}
-
             </ScrollView>
+
             <Footer navigation={navigation} />
 
-
             {modalVisible && noticeData && (
-            <NoticeModal noticeData={noticeData} closeModal={() => setModalVisible(false)} />
+                <NoticeModal noticeData={noticeData} closeModal={closeModal} />
             )}
-
         </View>
     );
 };
@@ -227,50 +187,64 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         backgroundColor: '#1A1C22',
-        
     },
     scrollView: {
         backgroundColor: '#1A1C22',
     },
-    
     selectionContainer: {
-        marginTop: 20,
-        borderWidth: 1,
-        borderColor: 'white',
-        borderRadius: 20,
-        // margin: 10,
-        marginLeft: 10,
-        marginRight: 10,
-        marginBottom: 5,
-
+        paddingBottom: 10,
+        paddingTop: 10,
         flexDirection: 'row',
-        backgroundColor: '#15181C',
         justifyContent: 'space-around',
         alignItems: 'center',
-        padding: 20,
-        // backgroundColor:'white'
     },
+
     option: {
+        width: 120,
         alignItems: 'center',
-        position:'relative',
-        width: 100,
+        position: 'relative',
+        padding: 12,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderRadius: 10,
+        backgroundColor: '#15181C',
+        shadowColor: 'white',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
+    },
+
+    selectedShadow: {
+        shadowColor: '#3F97EF',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 2,
+    },
+    wrap: {
+        height: 3,
+        backgroundColor: '#0F1216',
+        shadowColor: 'white',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
     },
     optionText: {
         color: '#9E9E9E',
         fontSize: 13,
         fontWeight: 'bold',
-        marginBottom: 9,
+        marginBottom: 6,
+        textAlign:'center'
     },
-
     selectedTextColor: {
         color: '#3F97EF',
     },
-
     icon: {
-        width: 33,
-        height: 33,
+        width: 28,
+        height: 28,
     },
-
     tooltip: {
         position: 'absolute',
         maxWidth: 300,
@@ -280,7 +254,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignSelf: 'center',
     },
-    
     tooltipText: {
         textAlign: 'center',
         color: '#fff',
@@ -288,17 +261,16 @@ const styles = StyleSheet.create({
         lineHeight: 18,
         fontWeight: 'bold',
     },
-
-    blur:{
-        backgroundColor: 'rgba(21, 24, 28, 0.55)',  // 반투명한 #15181C
+    blur: {
+        backgroundColor: 'rgba(21, 24, 28, 0.55)',
         width: 65,
         height: 65,
         top: -5,
         position: 'absolute',
-        borderRadius: 10,  // 부드러운 느낌 추가
+        borderRadius: 10,
         overflow: 'hidden',
-        justifyContent:'center',
-        alignItems:'center',
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 });
 

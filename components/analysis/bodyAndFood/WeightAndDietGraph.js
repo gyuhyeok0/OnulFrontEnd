@@ -39,6 +39,8 @@ const WeightAndDietGraph = ({ navigation }) => {
         const fetchData = async () => {
             try {
                 const response = await MonthlyWeightAndDiet(memberId);
+
+                console.log(response)
                 
                 const body = {};
                 const food = {};
@@ -88,10 +90,18 @@ const WeightAndDietGraph = ({ navigation }) => {
         const dataKeys = Object.keys(bodyData).length > 0 ? Object.keys(Object.values(bodyData)[0]) : [];
     
         const datasets = dataKeys.map((key, index) => {
-            let data = labels.map((month) => {
-                const dateKey = Object.keys(bodyData).find(date => date.includes(month.replace(t('weightAndDietGraph.month'), "").padStart(2, '0')));
-                return bodyData[dateKey]?.[key] ?? 0;  // Default to 0 instead of null
+            
+            let data = labels.map((monthLabel) => {
+                const monthNumber = parseInt(monthLabel.replace(t('weightAndDietGraph.month'), ""));
+                const currentYear = new Date().getFullYear();
+            
+                const dateKey = Object.keys(bodyData).find(date =>
+                    date.startsWith(`${currentYear}-${String(monthNumber).padStart(2, '0')}`)
+                );
+            
+                return bodyData[dateKey]?.[key] ?? 0;
             });
+            
     
             const validData = data.filter(value => value !== null && value !== 0);
             const volumeChange = validData.length > 1 ? validData[validData.length - 1] - validData[0] : 0; 

@@ -124,7 +124,7 @@ const ScheduleSelection = ({ selectedWeekType, selectedDay, weekInfo }) => {
     const aerobicExercises = useSelector((state) => state.etcExercises.myExercises || []);
     const customExercises = useSelector((state) => state.customExercises.myExercises || []);
 
-    const bodyParts = ['가슴', '등', '하체', '어깨', '복근', '팔', '기타', '커스텀'];
+    const bodyParts = ['가슴', '등', '하체', '어깨', '복근', '팔', '커스텀','기타'];
 
 
     // 운동 제거시 reorderedExercises

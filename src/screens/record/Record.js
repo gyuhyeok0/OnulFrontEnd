@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet, Text, Platform } from 'react-native';
 import Footer from '../common/Footer'; 
 import Header from '../common/Header';
 import { Calendar } from 'react-native-calendars';
@@ -11,6 +11,12 @@ import FoodRecord from './FoodRecord';
 import BodyRecord from './BodyRecord';
 import { useTranslation } from 'react-i18next';
 
+import Rate from 'react-native-rate';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const REVIEW_KEY = 'last_review_shown_date';
+const REVIEW_THRESHOLD_COUNT = 5;
+const REVIEW_DAYS_INTERVAL = 14;
 
 const Record = ({ navigation }) => {
     const { t, i18n } = useTranslation();
@@ -27,48 +33,106 @@ const Record = ({ navigation }) => {
         bodyExists: undefined,
     });
 
-    // useFocusEffect에서 호출
+    const showReviewPopup = () => {
+        console.log('[리뷰팝업] 2.5초 뒤 팝업 실행');
+    
+        if (!Rate || typeof Rate.rate !== 'function') {
+            console.warn('[리뷰팝업] Rate 모듈이 제대로 연결되지 않았습니다.');
+            return;
+        }
+    
+        const options = {
+            AppleAppID: '1234567890', // 앱스토어 등록 후 교체
+            preferInApp: true,
+        };
+    
+        if (Platform.OS === 'ios') {
+            console.log('[리뷰팝업] iOS - 리뷰 요청 실행');
+            Rate.rate(options, (success) => {
+                if (success) {
+                    AsyncStorage.setItem(REVIEW_KEY, new Date().toISOString());
+                    console.log('[리뷰팝업] 사용자가 리뷰 전송 완료');
+                } else {
+                    console.log('[리뷰팝업] 리뷰 요청 취소 또는 실패');
+                }
+            });
+        } else {
+            console.log('[리뷰팝업] Android - 리뷰 요청 생략됨');
+        }
+    };
+    
+    const checkAndShowReview = async (recordCount) => {
+        console.log(`[리뷰체크] 이번 달 기록 횟수: ${recordCount}`);
+    
+        if (recordCount < REVIEW_THRESHOLD_COUNT) {
+            console.log('[리뷰체크] 기록 횟수 부족으로 리뷰 팝업 생략');
+            return;
+        }
+    
+        const lastShown = await AsyncStorage.getItem(REVIEW_KEY);
+        const today = new Date();
+    
+        if (!lastShown) {
+            console.log('[리뷰체크] 리뷰 팝업 최초 실행 조건 만족 → 8.5초 후 실행');
+            setTimeout(showReviewPopup, 8500);
+            return;
+        }
+    
+        const lastDate = new Date(lastShown);
+        const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+    
+        console.log(`[리뷰체크] 마지막 리뷰 요청일: ${lastDate.toISOString()} → ${daysDiff}일 경과`);
+    
+        if (daysDiff >= REVIEW_DAYS_INTERVAL) {
+            console.log('[리뷰체크] 날짜 조건 만족 → 8.5초 후 실행');
+            setTimeout(showReviewPopup, 8500);
+        } else {
+            console.log('[리뷰체크] 날짜 조건 미달 → 리뷰 팝업 생략');
+        }
+    };
+
     useFocusEffect(
         React.useCallback(() => {
             const fetchData = async () => {
                 if (mountMonth === undefined) {
-
-                    
                     const today = new Date();
                     const currentMonth = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-01`;
-                    
-                    
                     setMountMonth(currentMonth);
                 }
-    
+
                 if (mountMonth !== undefined) {
                     const responseData = await isMonthDataExist(memberId, mountMonth);
                     const updatedMarkedDates = {};
-    
+
                     responseData.dayDataExists.forEach((day) => {
                         const date = day.date;
                         const dots = [];
-    
+
                         if (day.exerciseDataExists) {
                             dots.push({ key: 'exercise', color: '#00adf5' });
                         }
-    
                         if (day.foodDataExists) {
                             dots.push({ key: 'food', color: '#FF76CF' });
                         }
-    
                         if (day.bodyDataExists) {
                             dots.push({ key: 'body', color: '#FAF335' });
                         }
-    
+
                         if (dots.length > 0) {
                             updatedMarkedDates[date] = { dots };
                         }
                     });
-    
+
                     setMarkedDates(updatedMarkedDates);
+
+                    const recordCount = responseData.dayDataExists.filter(d =>
+                        d.exerciseDataExists || d.foodDataExists || d.bodyDataExists
+                    ).length;
+
+                    checkAndShowReview(recordCount);
                 }
             };
+
             fetchData();
         }, [mountMonth])
     );
@@ -95,19 +159,16 @@ const Record = ({ navigation }) => {
         setMarkedDates(newMarkedDates);
         setSelectDates(day.dateString);
 
-        // 선택한 날짜에 대한 운동기록, 식단기록, 신체기록의 존재 여부 확인
         const selectedDay = markedDates[day.dateString];
         const exerciseExists = selectedDay?.dots?.some(dot => dot.key === 'exercise');
         const foodExists = selectedDay?.dots?.some(dot => dot.key === 'food');
         const bodyExists = selectedDay?.dots?.some(dot => dot.key === 'body');
 
-        // 상태 업데이트
         setSelectedDateData({
             exerciseExists,
             foodExists,
             bodyExists,
         });
-
     };
 
     const handleMonthChange = (month) => {
@@ -140,7 +201,7 @@ const Record = ({ navigation }) => {
                         textDayHeaderFontWeight: 'bold',
                     }}
                     markingType="multi-dot"
-                    monthFormat={i18n.language === 'en' ? 'MMMM yyyy' : 'yyyy-MM'} // 영어면 "January 2024", 한국어면 "2024-01"
+                    monthFormat={i18n.language === 'en' ? 'MMMM yyyy' : 'yyyy-MM'}
                 />
 
                 <View style={styles.explanation}>
@@ -176,9 +237,7 @@ const Record = ({ navigation }) => {
                     )}
                 </View>
 
-                <View style={{height: 50}}>
-                                
-                </View>
+                <View style={{height: 50}} />
             </ScrollView>
 
             <Footer navigation={navigation} />

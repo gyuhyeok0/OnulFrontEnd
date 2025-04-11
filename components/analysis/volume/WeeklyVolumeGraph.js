@@ -25,6 +25,7 @@ const WeeklyVolumeGraph = ({ memberId, weightUnit }) => {
         const fetchData = async () => {
             try {
                 const response = await WeeklyAndMonthlyExerciseVolume(memberId);
+                console.log(response)
                 setWeeklyVolume(response.weeklyVolume);
                 setMonthlyVolume(response.monthlyVolume);
             } catch (error) {

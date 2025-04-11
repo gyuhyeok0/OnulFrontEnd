@@ -176,7 +176,7 @@
       "next": "Siguiente"
     },
     "exercise": {
-      "autoAdapt": "Auto Adaptar",
+      "autoAdapt": "Auto Adapt",
       "autoAdaptDescription": "Genera automáticamente un horario de entrenamiento. Evoluciona gradualmente según tu rendimiento.",
       "onSchedule": "Programado",
       "onScheduleDescription": "Sigue tu horario de entrenamiento preestablecido.",
@@ -227,6 +227,20 @@
       "커스텀": "Personalizado",
       "자유": "Libre"
     },
+
+    "bodyPartsSmall": {
+      "자동": "Auto",
+      "등": "Esp.",
+      "가슴": "Pec.",
+      "하체": "Pie.",
+      "어깨": "Hom.",
+      "팔": "Bra.",
+      "복근": "Abd.",
+      "기타": "Etc.",
+      "커스텀": "Per.",
+      "자유": "Lib."
+    },
+    
     "AiSettingsModal": {
       "advancedSettings": "Ajustes avanzados",
       "difficulty": "Dificultad del ejercicio",

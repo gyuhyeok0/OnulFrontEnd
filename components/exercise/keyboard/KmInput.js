@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 5,
-        backgroundColor: '#CCCFD4',
+        backgroundColor: '#131418',
     },
     timeButton: {
         flex: 1,
@@ -165,11 +165,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 6,
-        backgroundColor: '#fff',
+        backgroundColor: '#3A4357',
         height: 35,
     },
     buttonText: {
-        color: 'black',
+        color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
     },

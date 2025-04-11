@@ -4,11 +4,14 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         padding: 10,
+        backgroundColor:'#15181C',
     },
     customContainer: {
         paddingVertical: 10,
         borderRadius: 10,
         flexGrow: 1,
+
+        
     },
     noSchedule: {
         width: '100%',

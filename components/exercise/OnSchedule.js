@@ -512,7 +512,7 @@ const OnSchedule = () => {
     return (
         
         
-        <View style={[styles.container, { minHeight: scheduleHeight + 250 }]}>
+        <View style={[styles.container, { minHeight: scheduleHeight + 600 }]}>
             <View style={styles.header}>
                 <View style={styles.headerContent}>
                     <View style={styles.refreshButton}>

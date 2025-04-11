@@ -12,6 +12,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		16498B6B2D6692CB007A9941 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16498B6A2D6692CB007A9941 /* StoreKit.framework */; };
+		1662BCD32DA7B8C400162B71 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 1662BCD22DA7B8C400162B71 /* main.jsbundle */; };
+		1662BCE02DA8096000162B71 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1662BCDF2DA8096000162B71 /* Launch Screen.storyboard */; };
 		166D4B322D6833CE00808E2A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 166D4B312D6833CE00808E2A /* GoogleService-Info.plist */; };
 		166D4B382D6C820F00808E2A /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 166D4B372D6C820F00808E2A /* StoreKitTestCertificate.cer */; };
 		1688DFC12DA5569900805FBB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1688DFC02DA5569900805FBB /* Assets.xcassets */; };
@@ -19,7 +21,6 @@
 		16B7B4702D65533700BBE4AE /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B7B46F2D65533700BBE4AE /* libswiftWebKit.tbd */; };
 		36719CAB879F1DE808261EF0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A189D27CDD15DC59DD3C5352 /* PrivacyInfo.xcprivacy */; };
 		7D05A2CC2A7878B966E46F5E /* libPods-OnulFrontEnd-OnulFrontEndTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0BB426252CFEE88C365BB41 /* libPods-OnulFrontEnd-OnulFrontEndTests.a */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		D126F11F312DD8074945FC87 /* libPods-OnulFrontEnd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B00177820EDEFAC2FA34E62 /* libPods-OnulFrontEnd.a */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +47,8 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = OnulFrontEnd/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = OnulFrontEnd/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		16498B6A2D6692CB007A9941 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		1662BCD22DA7B8C400162B71 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		1662BCDF2DA8096000162B71 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		166D4B312D6833CE00808E2A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "OnulFrontEnd/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		166D4B362D6C5E6700808E2A /* onul.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = onul.storekit; sourceTree = "<group>"; };
 		166D4B372D6C820F00808E2A /* StoreKitTestCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = StoreKitTestCertificate.cer; path = ../../../StoreKitTestCertificate.cer; sourceTree = "<group>"; };
@@ -73,7 +76,6 @@
 		16D247392C874038002ECBF4 /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		4B00177820EDEFAC2FA34E62 /* libPods-OnulFrontEnd.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OnulFrontEnd.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CD47CBE9D6BF86CD3A149D1 /* Pods-OnulFrontEnd-OnulFrontEndTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OnulFrontEnd-OnulFrontEndTests.release.xcconfig"; path = "Target Support Files/Pods-OnulFrontEnd-OnulFrontEndTests/Pods-OnulFrontEnd-OnulFrontEndTests.release.xcconfig"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = OnulFrontEnd/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A189D27CDD15DC59DD3C5352 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = OnulFrontEnd/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A5D6A0935031BF5A8B742AFC /* Pods-OnulFrontEnd-OnulFrontEndTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OnulFrontEnd-OnulFrontEndTests.debug.xcconfig"; path = "Target Support Files/Pods-OnulFrontEnd-OnulFrontEndTests/Pods-OnulFrontEnd-OnulFrontEndTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A9C846A2218E336DA3AF4AFA /* Pods-OnulFrontEnd.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OnulFrontEnd.debug.xcconfig"; path = "Target Support Files/Pods-OnulFrontEnd/Pods-OnulFrontEnd.debug.xcconfig"; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				A189D27CDD15DC59DD3C5352 /* PrivacyInfo.xcprivacy */,
 				166D4B362D6C5E6700808E2A /* onul.storekit */,
 				166D4B372D6C820F00808E2A /* StoreKitTestCertificate.cer */,
+				1662BCDF2DA8096000162B71 /* Launch Screen.storyboard */,
 			);
 			name = OnulFrontEnd;
 			sourceTree = "<group>";
@@ -188,7 +191,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
+				1662BCD22DA7B8C400162B71 /* main.jsbundle */,
 				1688DFC02DA5569900805FBB /* Assets.xcassets */,
 				13B07FAE1A68108700A75B9A /* OnulFrontEnd */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -318,11 +321,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				166D4B382D6C820F00808E2A /* StoreKitTestCertificate.cer in Resources */,
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				166D4B322D6833CE00808E2A /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				1688DFC12DA5569900805FBB /* Assets.xcassets in Resources */,
+				1662BCD32DA7B8C400162B71 /* main.jsbundle in Resources */,
 				36719CAB879F1DE808261EF0 /* PrivacyInfo.xcprivacy in Resources */,
+				1662BCE02DA8096000162B71 /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -733,10 +737,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -822,10 +823,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;

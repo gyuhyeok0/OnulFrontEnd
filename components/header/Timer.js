@@ -93,28 +93,31 @@ function Timer({ timerTime, isTimerRunning, setTimerTime, setIsTimerRunning }) {
 
     return (
         <View style={styles.timer}>
-            <View style={{ flexDirection: 'row' }}>
-                <IconTimer name="clock" size={21} color="white" />
-                <Text style={{ color: 'white', fontSize: 18, marginHorizontal: 10, fontWeight: 'bold' }}>
-                    {displayTime(timerTime)}
-                </Text>
-            </View>
+            <View style={styles.circle}>
+                <View style={{ flexDirection: 'row' }}>
+                    <IconTimer name="clock" size={21} color="white" />
+                    <Text style={{ color: 'white', fontSize: 18, marginHorizontal: 10, fontWeight: 'bold' }}>
+                        {displayTime(timerTime)}
+                    </Text>
+                </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity onPress={resetTimer} style={{ marginRight: 35 }}>
-                    <IconStop name="stop" size={20} color={isTimerRunning || timerTime > 0 ? 'white' : 'gray'} />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={resetTimer} style={{ marginRight: 35 }}>
+                        <IconStop name="stop" size={20} color={isTimerRunning || timerTime > 0 ? 'white' : 'gray'} />
+                    </TouchableOpacity>
 
-                <TouchableOpacity 
-                    onPress={() => setIsTimerRunning(!isTimerRunning)} 
-                    style={{ marginRight: 5 }}
-                >
-                    {isTimerRunning ? (
-                        <IconPause name="pause" size={20} color="white" />
-                    ) : (
-                        <IconPlay name="play" size={20} color={timerTime > 0 ? "white" : "gray"} />
-                    )}
-                </TouchableOpacity>
+                    <TouchableOpacity 
+                        onPress={() => setIsTimerRunning(!isTimerRunning)} 
+                        style={{ marginRight: 5 }}
+                    >
+                        {isTimerRunning ? (
+                            <IconPause name="pause" size={20} color="white" />
+                        ) : (
+                            <IconPlay name="play" size={20} color={timerTime > 0 ? "white" : "gray"} />
+                        )}
+                    </TouchableOpacity>
+                </View>
+
             </View>
         </View>
     );
@@ -122,17 +125,21 @@ function Timer({ timerTime, isTimerRunning, setTimerTime, setIsTimerRunning }) {
 
 const styles = StyleSheet.create({
     timer: {
-        backgroundColor: '#1A1C22',
-        height: 53,
-        padding: 15,
+        paddingLeft:10,
+        paddingRight:10,
+        backgroundColor:'#1A1C22'
+    },
+
+    circle:{
+        height: 38,
+        paddingLeft: 15,
+        paddingRight: 15,
+        backgroundColor: '#222732',
         flexDirection: 'row', 
         alignItems: 'center', 
         justifyContent: 'space-between',
-        borderTopWidth: 0.5,
-        borderBottomWidth: 0.5,
-        borderTopColor: '#FFFFFF',
-        borderBottomColor: '#FFFFFF',
-    },
+        borderRadius:10
+    }
 });
 
 export default Timer;

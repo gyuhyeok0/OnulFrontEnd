@@ -227,6 +227,20 @@
     "커스텀": "Custom",
     "자유": "Free"
   },
+
+  "bodyPartsSmall": {
+    "자동": "Auto",
+    "등": "Back",
+    "가슴": "Che.",
+    "하체": "Legs",
+    "어깨": "Sho.",
+    "팔": "Arms",
+    "복근": "Abs",
+    "기타": "Etc",
+    "커스텀": "Cus.",
+    "자유": "Free"
+  },
+
   "AiSettingsModal": {
     "advancedSettings": "Advanced Settings",
     "difficulty": "Exercise Difficulty",
@@ -256,7 +270,7 @@
   },
   "EachExercise": {
     "exerciseInfo": "Info",
-    "previousRecord": "Past Record",
+    "previousRecord": "History",
     "volume": "Volume",
     "up": "Up",
     "record": "Record",
@@ -392,9 +406,9 @@
       "title": "Body",
       "description": "Please record today's body data.",
       "weight": "Weight",
-      "skeletalMuscleMass": "Skeletal Muscle Mass",
-      "bodyFatPercentage": "Body Fat Percentage",
-      "bodyFatMass": "Body Fat Mass",
+      "skeletalMuscleMass": "Muscle Mass",
+      "bodyFatPercentage": "Body Fat %",
+      "bodyFatMass": "Fat Mass",
       "complete": "Complete",
       "placeholder": "00.0"
   },
@@ -422,7 +436,7 @@
       "complete": "Complete"
     },
     "foodModal": {
-      "title": "Meal Plan",
+      "title": "meal plan",
       "selectRecipe": "Select a recipe and press the complete button.",
       "edit": "Edit",
       "delete": "Delete",
@@ -452,7 +466,7 @@
     "recipeEditModalTitle": "Recipe Registration",
     "record": {
       "title": "Record",
-      "exercise": "Exercise Record",
+      "exercise": "Workout Record",
       "food": "Food Record",
       "body": "Body Record",
       "selectDate": "Please select a date to check the record."
