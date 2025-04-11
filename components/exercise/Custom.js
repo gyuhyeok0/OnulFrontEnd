@@ -248,7 +248,7 @@ const Custom = () => {
     // =================
 
     return (
-        <View style={[styles.container ,{ minHeight: scheduleHeight + 250 }]}>
+        <View style={[styles.container ,{ minHeight: scheduleHeight + 600 }]}>
 
             <View contentContainerStyle={styles.customContainer}>
 
@@ -270,21 +270,21 @@ const Custom = () => {
                                 <Text style={{color:'white', fontWeight:'bold', fontSize: 12, marginBottom: 5, zIndex:10}}>{t('customWorkout.changeOrder')}</Text>
 
                                 {reorderedExercises.map((item, index) => (
-    <View 
-        key={item.id || index} 
-        onLayout={(event) => handleItemLayout(index, event.nativeEvent.layout.height)} 
-    >
-        <DraggableItem
-            item={item}
-            index={index}
-            activeIndex={activeIndex}
-            translateY={translateYs[index]}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            styles={styles}
-        />
-    </View>
-))}
+                            <View 
+                                key={item.id || index} 
+                                onLayout={(event) => handleItemLayout(index, event.nativeEvent.layout.height)} 
+                            >
+                                <DraggableItem
+                                    item={item}
+                                    index={index}
+                                    activeIndex={activeIndex}
+                                    translateY={translateYs[index]}
+                                    onDragStart={handleDragStart}
+                                    onDragEnd={handleDragEnd}
+                                    styles={styles}
+                                />
+                            </View>
+                        ))}
 
                             </View>
                         )}

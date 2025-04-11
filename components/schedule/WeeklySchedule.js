@@ -127,7 +127,7 @@ const WeeklySchedule = () => {
                                     style={{ backgroundColor: '#CBD9FD', width: '85%', marginTop: 2, borderRadius: 11, padding: 3, justifyContent: 'center' }}
                                 >
                                     <Text style={{ color: '#1A1C22', textAlign: 'center', fontSize: 12, fontWeight: 'bold' }}>
-                                        {t(`bodyParts.${part}`)}
+                                        {t(`bodyPartsSmall.${part}`)}
                                     </Text>
                                 </View>
                             ))}

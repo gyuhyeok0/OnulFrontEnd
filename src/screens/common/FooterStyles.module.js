@@ -2,13 +2,11 @@ import { StyleSheet } from 'react-native';
 
 const FooterStyles = StyleSheet.create({
     footer: {
-        height: 85,
+        height: 75,
         backgroundColor: '#1A1C22',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        // borderTopWidth: 1,
-        // borderTopColor: '#FFFFFF',
     },
     safeArea: {
         backgroundColor: '#000000',

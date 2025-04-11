@@ -243,7 +243,7 @@ const AutoAdapt = () => {
         );
 
     return (
-        <View style={{ width: '100%', backgroundColor: '#1A1C22', padding: 10 }}>
+        <View style={{ width: '100%', backgroundColor: '#15181C', padding: 10 }}>
             
             {/* 헤더 - 클릭하면 애니메이션 실행 */}
             <Pressable 
@@ -299,6 +299,8 @@ const AutoAdapt = () => {
             ) : (
                 <AutoAdaptLoading/>
             )}
+
+            <View style={{height: 300}}></View>
 
 
         </View>

@@ -22,7 +22,9 @@ export const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap', // 여러 줄로 버튼을 정렬
-        maxWidth: 300,
+        maxWidth: 310,
+        justifyContent:'center',
+
     },
 
     button: {
@@ -30,8 +32,8 @@ export const styles = StyleSheet.create({
         paddingBottom: 4,
         paddingLeft: 10,
         paddingRight: 10,
-
-        margin: 4,
+        marginBottom:5,
+        margin: 3,
         borderWidth: 0.5,
         borderRadius: 10,
         borderColor: '#fff',

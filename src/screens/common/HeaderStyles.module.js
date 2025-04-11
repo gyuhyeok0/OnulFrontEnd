@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 
 export const headerStyles = {
     headerStyle: {
-        height: 55,
+        height: 22,
         backgroundColor: '#1A1C22',
         
         // borderBottomWidth: 0.5,
