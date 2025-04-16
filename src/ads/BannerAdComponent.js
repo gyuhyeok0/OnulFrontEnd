@@ -8,6 +8,9 @@ const BannerAdComponent = () => (
     unitId={bannerAdConfig.unitId}
     size={bannerAdConfig.size}
     requestOptions={bannerAdConfig.requestOptions}
+    onAdFailedToLoad={(error) => {
+      console.log('[BannerAdComponent] 배너 광고 로드 실패:', error);
+    }}
   />
 );
 

@@ -161,6 +161,7 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                         <TextInput
                             style={styles.input}
                             placeholder={t('FreeFoodModal.quantity')}
+                            placeholderTextColor="#B0B0B0"
                             value={quantity}
                             onChangeText={(text) => setQuantity(handleNumericInput(text))}
                             keyboardType="numeric"
@@ -168,6 +169,7 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                         <TextInput
                             style={styles.input}
                             placeholder={t('FreeFoodModal.calories')}
+                            placeholderTextColor="#B0B0B0"
                             value={calories}
                             onChangeText={(text) => setCalories(handleNumericInput(text))}
                             keyboardType="numeric"
@@ -175,6 +177,7 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                         <TextInput
                             style={styles.input}
                             placeholder={t('FreeFoodModal.carbs')}
+                            placeholderTextColor="#B0B0B0"
                             value={carbs}
                             onChangeText={(text) => setCarbs(handleNumericInput(text))}
                             keyboardType="numeric"
@@ -182,6 +185,8 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                         <TextInput
                             style={styles.input}
                             placeholder={t('FreeFoodModal.protein')}
+                            placeholderTextColor="#B0B0B0"
+
                             value={protein}
                             onChangeText={(text) => setProtein(handleNumericInput(text))}
                             keyboardType="numeric"
@@ -189,6 +194,7 @@ const FreeFoodModal = ({ isVisible, onClose, setFreeOnclose, memberId, mealType 
                         <TextInput
                             style={styles.input}
                             placeholder={t('FreeFoodModal.fat')}
+                            placeholderTextColor="#B0B0B0"
                             value={fat}
                             onChangeText={(text) => setFat(handleNumericInput(text))}
                             keyboardType="numeric"

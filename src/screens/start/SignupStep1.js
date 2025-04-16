@@ -12,12 +12,15 @@ import { useTranslation } from 'react-i18next';
 import * as RNLocalize from 'react-native-localize';
 import { API_URL_JP, API_URL_US } from '@env';
 
-const locales = RNLocalize.getLocales();
-const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
-
-// 🇯🇵 일본이거나 🇰🇷 한국이면 일본 서버 사용, 그 외에는 미국 서버 사용
-const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
-const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+    const locales = RNLocalize.getLocales();
+    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US";
+    
+    const isAsiaPacific = ["JP", "KR", "HK", "NZ", "AU"].some(region =>
+        userLocale.toUpperCase().includes(region)
+    );
+    const userRegion = isAsiaPacific ? "JP" : "US";
+    const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+    
 
 
 

@@ -1,9 +1,7 @@
-// ads/rewardedAdInstance.js
-import { RewardedAd, TestIds } from 'react-native-google-mobile-ads';
+import { RewardedAd } from 'react-native-google-mobile-ads';
+import { REWARDED_AD_UNIT_ID } from '@env';
 
-// ⚠️ 실제 광고 ID로 교체 필요
-const adUnitId = TestIds.REWARDED; 
 
-const rewardedAd = RewardedAd.createForAdRequest(adUnitId);
+const rewardedAd = RewardedAd.createForAdRequest(REWARDED_AD_UNIT_ID);
 
 export default rewardedAd;

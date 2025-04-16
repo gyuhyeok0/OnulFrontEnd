@@ -78,30 +78,33 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
 
     const MAX_ADS_PER_DAY = 5;
 
-    // ✅ 광고 표시 함수 (EachExercise.js 안에 그대로 둬도 됨)
     const showAd = async () => {
-        let adCount = await AsyncStorage.getItem('adCount');
-        adCount = adCount ? parseInt(adCount) : 0;
-    
-        if (adCount >= MAX_ADS_PER_DAY) return;
-    
-        const adStartTime = new Date().getTime();
-    
-        if (interstitialAd.loaded) {
-        interstitialAd.show();
-    
-        // ✅ App.js에서 이미 리스너 등록되었기 때문에 여기서 리스너 등록 생략
-    
-        // 광고 카운트 증가
-        await AsyncStorage.setItem('adCount', (adCount + 1).toString());
-    
-        // 제출 카운트 초기화
-        await AsyncStorage.setItem('exerciseSubmitCount', '0');
-        } else {
-        console.log('[전면 광고] 로딩 안됨 → 재시도');
-        interstitialAd.load();
-        }
+            let adCount = await AsyncStorage.getItem('adCount');
+            adCount = adCount ? parseInt(adCount) : 0;
+        
+            if (adCount >= MAX_ADS_PER_DAY) return;
+        
+            const adStartTime = new Date().getTime();
+        
+            if (interstitialAd.loaded) {
+            try {
+                global.__interstitialAdStart = adStartTime;
+                await interstitialAd.show();
+                console.log('[전면 광고] 광고 정상 표시됨');
+        
+                await AsyncStorage.setItem('adCount', (adCount + 1).toString());
+                await AsyncStorage.setItem('exerciseSubmitCount', '0');
+            } catch (error) {
+                console.log('[전면 광고] 광고 표시 중 오류:', error);
+                // 혹시 모를 에러 대응용 재로드
+                interstitialAd.load();
+            }
+            } else {
+            console.log('[전면 광고] 로딩 안됨 → 재시도');
+            interstitialAd.load();
+            }
     };
+      
 
     useEffect(() => {
         // 초기 상태는 volumeDifference를 0으로 설정
@@ -470,6 +473,7 @@ const EachExercise = ({ exercise, isSelected, exerciseServiceNumber, weightUnit,
         count = count ? parseInt(count) + 1 : 1; // 기존 값이 있으면 +1, 없으면 1부터 시작
         await AsyncStorage.setItem('exerciseSubmitCount', count.toString());
     
+        {/* 다음버전에서는 주석 해제 */}
         // 10회마다 광고 표시
         if (count >= 10) {
                 await showAd();

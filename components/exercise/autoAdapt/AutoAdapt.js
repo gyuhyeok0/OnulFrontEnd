@@ -31,6 +31,8 @@ const AutoAdapt = () => {
     const isDateTriggered = useRef(false); // ✅ 날짜 변경으로 실행되었는지 여부 저장
     const [isLoading, setIsLoading] = useState(false);
     const [reorderedExercises, setReorderedExercises] = useState([]);
+    const [renderReady, setRenderReady] = useState(false);
+
 
     const [weightUnit, setWeightUnit] = useState(null); 
     const [kmUnit, setKmUnit] = useState(null); 
@@ -145,6 +147,8 @@ const AutoAdapt = () => {
                         // AI 요청 후 다시 데이터 가져오기
                         const newData = await autoAdaptExercises(memberId);
                         setReorderedExercises(newData);
+                        setLocalData(newData); 
+
                         await AsyncStorage.setItem('initialLastAiRequestTime', now.toString());
                     }, 2000);
                 } else {
@@ -165,6 +169,12 @@ const AutoAdapt = () => {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if (reorderedExercises.length > 0) {
+            setRenderReady(true);
+        }
+    }, [reorderedExercises]);
 
     // reorderedExercises가 변경될 때 Redux에 기본 세트 추가
     useEffect(() => {
@@ -277,7 +287,7 @@ const AutoAdapt = () => {
 
             <View style={{height:15}}></View>
 
-            {reorderedExercises.length > 0 ? (
+            {renderReady ? (
                 <View style={styles.schedule}>
                     {reorderedExercises.map((exercise, index) => (
                         <View style={{ position: 'relative' }} key={`${exercise.id}-${index}`}>

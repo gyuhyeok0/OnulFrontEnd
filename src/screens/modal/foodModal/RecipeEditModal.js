@@ -243,6 +243,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                     <TextInput
                                         style={styles.inputDetail}
                                         placeholder={t('recipeEditModal.foodPlaceholder')}
+                                        placeholderTextColor="#B0B0B0"
                                         maxLength={maxLength}
                                         value={row.foodName} // 개별 row 상태와 연동
                                         onChangeText={(text) => {
@@ -256,6 +257,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                         style={styles.inputDetail}
                                         value={row.quantity}
                                         placeholder="00.0"
+                                        placeholderTextColor="#B0B0B0"
                                         keyboardType="numeric"
                                         maxLength={6}
                                         onChangeText={(text) => {
@@ -275,6 +277,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                                 style={styles.inputDetail}
                                                 value={row.calories}
                                                 placeholder="00.0"
+                                                placeholderTextColor="#B0B0B0"
                                                 keyboardType="numeric"
                                                 maxLength={6}
                                                 onChangeText={(text) => {
@@ -289,6 +292,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                                 style={styles.inputDetail}
                                                 value={row.protein}
                                                 placeholder="00.0"
+                                                placeholderTextColor="#B0B0B0"
                                                 keyboardType="numeric"
                                                 maxLength={6}
                                                 onChangeText={(text) => {
@@ -306,6 +310,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                                 style={styles.inputDetail}
                                                 value={row.carbs}
                                                 placeholder="00.0"
+                                                placeholderTextColor="#B0B0B0"
                                                 keyboardType="numeric"
                                                 maxLength={6}
                                                 onChangeText={(text) => {
@@ -321,6 +326,7 @@ const RecipeEditModal = ({ isVisible, onClose, id, foodItems = [], initialRecipe
                                                 style={styles.inputDetail}
                                                 value={row.fat}
                                                 placeholder="00.0"
+                                                placeholderTextColor="#B0B0B0"
                                                 keyboardType="numeric"
                                                 maxLength={6}
                                                 onChangeText={(text) => {

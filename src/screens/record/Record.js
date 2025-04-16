@@ -32,6 +32,7 @@ const Record = ({ navigation }) => {
         foodExists: undefined,
         bodyExists: undefined,
     });
+    const [dayPressed, setDayPressed] = useState(false);
 
     const showReviewPopup = () => {
         console.log('[리뷰팝업] 2.5초 뒤 팝업 실행');
@@ -42,7 +43,7 @@ const Record = ({ navigation }) => {
         }
     
         const options = {
-            AppleAppID: '1234567890', // 앱스토어 등록 후 교체
+            AppleAppID: '6742204496', 
             preferInApp: true,
         };
     
@@ -84,60 +85,74 @@ const Record = ({ navigation }) => {
         console.log(`[리뷰체크] 마지막 리뷰 요청일: ${lastDate.toISOString()} → ${daysDiff}일 경과`);
     
         if (daysDiff >= REVIEW_DAYS_INTERVAL) {
-            console.log('[리뷰체크] 날짜 조건 만족 → 8.5초 후 실행');
-            setTimeout(showReviewPopup, 8500);
+            console.log('[리뷰체크] 날짜 조건 만족 → 5.5초 후 실행');
+            setTimeout(showReviewPopup, 5500);
         } else {
             console.log('[리뷰체크] 날짜 조건 미달 → 리뷰 팝업 생략');
         }
     };
 
-    useFocusEffect(
-        React.useCallback(() => {
+    useEffect(() => {
+        const fetchReviewData = async () => {
+          if (!dayPressed) return;
+      
+          const today = new Date();
+          const currentMonth = `${today.getFullYear()}-${(today.getMonth() + 1)
+            .toString()
+            .padStart(2, '0')}-01`;
+      
+          const responseData = await isMonthDataExist(memberId, currentMonth);
+      
+          const recordCount = responseData.dayDataExists.filter(d =>
+            d.exerciseDataExists || d.foodDataExists || d.bodyDataExists
+          ).length;
+      
+          checkAndShowReview(recordCount);
+        };
+      
+        fetchReviewData();
+      }, [dayPressed]);
+      
+
+      useFocusEffect(
+            React.useCallback(() => {
             const fetchData = async () => {
                 if (mountMonth === undefined) {
-                    const today = new Date();
-                    const currentMonth = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-01`;
-                    setMountMonth(currentMonth);
+                const today = new Date();
+                const currentMonth = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-01`;
+                setMountMonth(currentMonth);
                 }
-
+        
                 if (mountMonth !== undefined) {
-                    const responseData = await isMonthDataExist(memberId, mountMonth);
-                    const updatedMarkedDates = {};
-
-                    responseData.dayDataExists.forEach((day) => {
-                        const date = day.date;
-                        const dots = [];
-
-                        if (day.exerciseDataExists) {
-                            dots.push({ key: 'exercise', color: '#00adf5' });
-                        }
-                        if (day.foodDataExists) {
-                            dots.push({ key: 'food', color: '#FF76CF' });
-                        }
-                        if (day.bodyDataExists) {
-                            dots.push({ key: 'body', color: '#FAF335' });
-                        }
-
-                        if (dots.length > 0) {
-                            updatedMarkedDates[date] = { dots };
-                        }
-                    });
-
-                    setMarkedDates(updatedMarkedDates);
-
-                    const recordCount = responseData.dayDataExists.filter(d =>
-                        d.exerciseDataExists || d.foodDataExists || d.bodyDataExists
-                    ).length;
-
-                    checkAndShowReview(recordCount);
+                const responseData = await isMonthDataExist(memberId, mountMonth);
+                const updatedMarkedDates = {};
+        
+                responseData.dayDataExists.forEach((day) => {
+                    const date = day.date;
+                    const dots = [];
+        
+                    if (day.exerciseDataExists) dots.push({ key: 'exercise', color: '#00adf5' });
+                    if (day.foodDataExists) dots.push({ key: 'food', color: '#FF76CF' });
+                    if (day.bodyDataExists) dots.push({ key: 'body', color: '#FAF335' });
+        
+                    if (dots.length > 0) {
+                    updatedMarkedDates[date] = { dots };
+                    }
+                });
+        
+                setMarkedDates(updatedMarkedDates);
                 }
             };
-
+        
             fetchData();
-        }, [mountMonth])
-    );
+            }, [mountMonth])
+      );
+      
 
     const handleDayPress = (day) => {
+        console.log('[디버그] 날짜 선택됨');
+        setDayPressed(true);
+
         const newMarkedDates = {
             ...markedDates,
             [day.dateString]: {

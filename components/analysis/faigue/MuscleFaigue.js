@@ -20,17 +20,25 @@ const MuscleFatigue = ({ navigation }) => {
                 const response = await getMuscleFaigue(memberId);
                 
                 if (response && Object.keys(response).length > 0) {
+                    
+                    const filteredEntries = Object.entries(response).filter(
+                        ([_, fatigueArray]) => fatigueArray.length > 0 && fatigueArray[0].fatigueScore >= 0.5
+                    );
+                
                     const chartData = {
-                        labels: Object.keys(response).map(muscle => t(`muscleGroups.${muscle}`)), // 🔥 X축 라벨 번역
+                        labels: filteredEntries.map(([muscle]) => t(`muscleGroups.${muscle}`)),
                         datasets: [
                             {
-                                data: Object.values(response).map(
-                                    (item) => Math.round(item[0]?.fatigueScore || 0)
+                                data: filteredEntries.map(
+                                    ([_, fatigueArray]) => Math.round(fatigueArray[0]?.fatigueScore || 0)
                                 ),
                             },
                         ],
                     };
-                    setData({ chartData, rawData: response });
+                
+                    const filteredRawData = Object.fromEntries(filteredEntries);
+                
+                    setData({ chartData, rawData: filteredRawData });
                 } else {
                     setData(null);
                 }
@@ -63,7 +71,10 @@ const MuscleFatigue = ({ navigation }) => {
                             <ScrollView horizontal={true} style={styles.chartScrollView}>
                                 <BarChart
                                     data={data.chartData}
-                                    width={Math.max(Object.keys(data.rawData).length * 60, screenWidth - 40)}  // 최소 너비 300
+                                    width={Math.max(
+                                        Object.keys(data.rawData).length * 100,
+                                        screenWidth - 40
+                                      )}
                                     height={220}
                                     yAxisLabel=""
                                     chartConfig={chartConfig}
@@ -83,21 +94,26 @@ const MuscleFatigue = ({ navigation }) => {
                             </View>
                             <View style={styles.legendContainer}>
                                 {Object.entries(data.rawData).map(([muscle, fatigueArray]) => (
-                                    fatigueArray.length > 0 ? (
-                                        <View key={muscle} style={styles.legendItem}>
-                                
-                                            <Text style={styles.legendText}>{t(`muscleGroups.${muscle}`)} :</Text>
-
-                                            <Text style={[styles.legendText2, 
-                                                fatigueArray[0].fatigueScore >= 5 ? styles.highFatigue :
-                                                fatigueArray[0].fatigueScore >= 3 ? styles.mediumFatigue :
-                                                styles.lowFatigue]}>
-                                                {getRecoveryStatus(fatigueArray[0].fatigueScore)}
-                                            </Text>
-                                        </View>
+                                    fatigueArray.length > 0 && fatigueArray[0].fatigueScore >= 0.5 ? (
+                                    <View key={muscle} style={styles.legendItem}>
+                                        <Text style={styles.legendText}>{t(`muscleGroups.${muscle}`)} :</Text>
+                                        <Text
+                                        style={[
+                                            styles.legendText2,
+                                            fatigueArray[0].fatigueScore >= 5
+                                            ? styles.highFatigue
+                                            : fatigueArray[0].fatigueScore >= 3
+                                            ? styles.mediumFatigue
+                                            : styles.lowFatigue,
+                                        ]}
+                                        >
+                                        {getRecoveryStatus(fatigueArray[0].fatigueScore)}
+                                        </Text>
+                                    </View>
                                     ) : null
                                 ))}
-                            </View>
+                                </View>
+
                         </>
                     ) : (
                         <Text style={styles.noDataText}>{t('muscleFatigue.noData')}</Text>

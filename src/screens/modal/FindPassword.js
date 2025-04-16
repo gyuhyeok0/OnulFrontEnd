@@ -17,12 +17,17 @@ import { API_URL_JP, API_URL_US } from '@env';
 const screenHeight = Dimensions.get('window').height;
 
 const FindPassword = ({ isVisible, onClose }) => {
-    const locales = RNLocalize.getLocales();
-    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
 
-    const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
-    const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
-
+        const locales = RNLocalize.getLocales();
+        const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US";
+        
+        const isAsiaPacific = ["JP", "KR", "HK", "NZ", "AU"].some(region =>
+            userLocale.toUpperCase().includes(region)
+        );
+        const userRegion = isAsiaPacific ? "JP" : "US";
+        const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+        
+    
     const [modalY] = useState(new Animated.Value(screenHeight));
     const [overlayOpacity] = useState(new Animated.Value(0));
     const [userId, setUserId] = useState('');
