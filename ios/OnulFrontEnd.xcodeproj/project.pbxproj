@@ -19,6 +19,7 @@
 		1688DFC12DA5569900805FBB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1688DFC02DA5569900805FBB /* Assets.xcassets */; };
 		16B7B46E2D654E4200BBE4AE /* libswiftCore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B7B46D2D654E4200BBE4AE /* libswiftCore.tbd */; };
 		16B7B4702D65533700BBE4AE /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B7B46F2D65533700BBE4AE /* libswiftWebKit.tbd */; };
+		16B8164C2DB0103200ECC0F5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 16B8164A2DB0103200ECC0F5 /* Localizable.strings */; };
 		36719CAB879F1DE808261EF0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A189D27CDD15DC59DD3C5352 /* PrivacyInfo.xcprivacy */; };
 		7D05A2CC2A7878B966E46F5E /* libPods-OnulFrontEnd-OnulFrontEndTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0BB426252CFEE88C365BB41 /* libPods-OnulFrontEnd-OnulFrontEndTests.a */; };
 		D126F11F312DD8074945FC87 /* libPods-OnulFrontEnd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B00177820EDEFAC2FA34E62 /* libPods-OnulFrontEnd.a */; };
@@ -55,6 +56,9 @@
 		1688DFC02DA5569900805FBB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		16B7B46D2D654E4200BBE4AE /* libswiftCore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftCore.tbd; path = usr/lib/swift/libswiftCore.tbd; sourceTree = SDKROOT; };
 		16B7B46F2D65533700BBE4AE /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
+		16B8164B2DB0103200ECC0F5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		16B8164D2DB0103700ECC0F5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		16B8164E2DB0103D00ECC0F5 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		16D247272C874037002ECBF4 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		16D247282C874037002ECBF4 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		16D247292C874037002ECBF4 /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
@@ -138,6 +142,7 @@
 				166D4B362D6C5E6700808E2A /* onul.storekit */,
 				166D4B372D6C820F00808E2A /* StoreKitTestCertificate.cer */,
 				1662BCDF2DA8096000162B71 /* Launch Screen.storyboard */,
+				16B8164A2DB0103200ECC0F5 /* Localizable.strings */,
 			);
 			name = OnulFrontEnd;
 			sourceTree = "<group>";
@@ -296,6 +301,8 @@
 			knownRegions = (
 				en,
 				Base,
+				ko,
+				ja,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -325,6 +332,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				1688DFC12DA5569900805FBB /* Assets.xcassets in Resources */,
 				1662BCD32DA7B8C400162B71 /* main.jsbundle in Resources */,
+				16B8164C2DB0103200ECC0F5 /* Localizable.strings in Resources */,
 				36719CAB879F1DE808261EF0 /* PrivacyInfo.xcprivacy in Resources */,
 				1662BCE02DA8096000162B71 /* Launch Screen.storyboard in Resources */,
 			);
@@ -517,6 +525,19 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		16B8164A2DB0103200ECC0F5 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				16B8164B2DB0103200ECC0F5 /* en */,
+				16B8164D2DB0103700ECC0F5 /* ja */,
+				16B8164E2DB0103D00ECC0F5 /* ko */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -576,7 +597,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = QMV7ZULY37;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = OnulFrontEnd/Info.plist;
@@ -588,7 +609,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -618,7 +639,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = QMV7ZULY37;
 				INFOPLIST_FILE = OnulFrontEnd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -629,7 +650,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -737,7 +758,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -823,7 +847,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;

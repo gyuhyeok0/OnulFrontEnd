@@ -111,7 +111,7 @@
       "success": "Éxito",
       "successMessage": "Por favor, ingrese el código de verificación.",
       "error": "Error",
-      "alreadyPhoneNumber": "Un número de teléfono solo se puede usar una vez por cuenta.",
+      "alreadyPhonenumber": "Un número de teléfono solo se puede usar una vez por cuenta.",
       "limitExceeded": "Se excedió el límite de solicitudes. Por favor, inténtelo más tarde.",
       "dailyLimitExceeded": "Se excedió el límite diario de solicitudes. Por favor, inténtelo mañana.",
       "verificationSuccess": "Verificación completada.",
@@ -2399,6 +2399,18 @@
 "Precauciones": ["No uses un peso excesivo que comprometa la forma del ejercicio"]
 }
 },
+"바벨 숄더 프레스": {
+  "name": "Barbell Shoulder Press",
+  "details": {
+    "Zonas Principales Trabajadas": ["Hombros", "Tríceps", "Pectoral superior"],
+    "Postura": ["Colócate de pie con los pies al ancho de los hombros y sujeta la barra a la altura de las clavículas con un agarre ligeramente más ancho que los hombros."],
+    "Movimiento": ["Empuja la barra hacia arriba en línea recta por encima de la cabeza hasta casi extender completamente los brazos, luego bájala de forma controlada a la posición inicial."],
+    "Técnica de Respiración": ["Exhala al empujar la barra hacia arriba, inhala al bajarla."],
+    "Consejos": ["Activa el core para evitar arquear la espalda en exceso y mantén los codos ligeramente hacia adelante bajo la barra."],
+    "Precauciones": ["Evita arquear demasiado la espalda baja y utiliza un peso que puedas controlar sin comprometer la técnica."]
+  }
+}
+,
 "머신 숄더 프레스": {
 "name": "Press de hombros en máquina",
 "details": {

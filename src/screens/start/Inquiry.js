@@ -14,11 +14,16 @@ const Inquiry = ({ navigation }) => {
     const [content, setContent] = useState('');
     const { t } = useTranslation();
     
-    const locales = RNLocalize.getLocales();
-    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US"; // 예: "ja-JP", "ko-KR", "en-US"
 
-    const userRegion = userLocale.includes("JP") || userLocale.includes("KR") ? "JP" : "US";
+    const locales = RNLocalize.getLocales();
+    const userLocale = locales.length > 0 ? locales[0].languageTag : "en-US";
+    
+    const isAsiaPacific = ["JP", "KR", "HK", "NZ", "AU"].some(region =>
+        userLocale.toUpperCase().includes(region)
+    );
+    const userRegion = isAsiaPacific ? "JP" : "US";
     const API_URL = userRegion === "JP" ? API_URL_JP : API_URL_US;
+    
 
 
     const handleSubmit = async () => {

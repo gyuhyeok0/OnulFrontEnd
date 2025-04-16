@@ -57,24 +57,30 @@ const FoodGraph = ({ foodData = {} }) => {
             const labels = Array.from({ length: 10 }, (_, i) => ((currentMonth - i + 11) % 12) + 1 + t('foodGraph.month')).reverse();
             
             const processData = (key) => {
-                let data = labels.map(month => {
-                    const dateKey = Object.keys(foodData).find(date => date.includes(month.replace(t('foodGraph.month'), "").padStart(2, '0')));
-
-                    return foodData[dateKey]?.[key] ?? 0; // null을 0으로 변환
-
+                const data = labels.map(label => {
+                    const targetMonth = label.replace(t('foodGraph.month'), "").padStart(2, '0');
+                    const matchingDates = Object.keys(foodData).filter(date => date.slice(5, 7) === targetMonth);
+            
+                    if (matchingDates.length === 0) return null;
+            
+                    // 최신 날짜 기준 정렬
+                    const recentDate = matchingDates.sort((a, b) => new Date(b) - new Date(a))[0];
+                    return foodData[recentDate]?.[key] ?? null;
                 });
-                
+            
+                // 보간 처리
                 for (let i = 1; i < data.length; i++) {
                     if (data[i] === null) {
-                        data[i] = data[i - 1] !== null ? data[i - 1] : 0;
+                        data[i] = data[i - 1] ?? 0;
                     }
                 }
-                
+            
                 const validData = data.filter(value => value !== null && value !== 0);
                 const volumeChange = validData.length > 1 ? validData[validData.length - 1] - validData[0] : null;
-                
+            
                 return { data, volumeChange };
             };
+            
 
             if (selectedPeriod === 'calories') {
                 const { data, volumeChange } = processData('averageCalories');

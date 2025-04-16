@@ -39,8 +39,6 @@ const WeightAndDietGraph = ({ navigation }) => {
         const fetchData = async () => {
             try {
                 const response = await MonthlyWeightAndDiet(memberId);
-
-                console.log(response)
                 
                 const body = {};
                 const food = {};

@@ -63,11 +63,10 @@ import rewardedAd from './ads/rewardedAdInstance';
 import interstitialAd from './ads/interstitialAdInstance'; 
 import analytics from '@react-native-firebase/analytics';
 import { AppState } from 'react-native';
+import mobileAds from 'react-native-google-mobile-ads';
 
 // QueryClient 생성
 const queryClient = new QueryClient();
-
-
 
 const Stack = createNativeStackNavigator();
 
@@ -80,15 +79,30 @@ function MainApp() {
   const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
   const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
 
-  console.log("실행은해?")
-
   //firebase 애널리틱스
   useLifecycleTracking(); 
 
-  //영상광고 로드
+  useEffect(() => {
+    console.log('[App.js] AdMob SDK 초기화');
+    const initializeAds = async () => {
+      try {
+        await mobileAds().initialize();
+        console.log('[App.js] AdMob 초기화 완료');
+      } catch (error) {
+        console.log('[App.js] AdMob 초기화 실패:', error);
+      }
+    };
+    initializeAds();
+  }, []);
+
+
   useEffect(() => {
     console.log('[App.js] 광고 초기 로딩 시도');
-    rewardedAd.load();
+    try {
+      rewardedAd.load();
+    } catch (error) {
+      console.log('[App.js] 보상형 광고 로드 실패:', error);
+    }
   
     const unsubscribeLoaded = rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
       console.log('[App.js] 보상형 광고 로딩 완료');
@@ -96,7 +110,11 @@ function MainApp() {
   
     const unsubscribeClosed = rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
       console.log('[App.js] 광고 닫힘 → 재로드 시도');
-      rewardedAd.load();
+      try {
+        rewardedAd.load();
+      } catch (error) {
+        console.log('[App.js] 보상형 광고 재로드 실패:', error);
+      }
     });
   
     return () => {
@@ -107,7 +125,11 @@ function MainApp() {
   
   
   useEffect(() => {
-    interstitialAd.load();
+    try {
+      interstitialAd.load();
+    } catch (error) {
+      console.log('[App.js] 전면 광고 로드 실패:', error);
+    }
   
     const unsubscribeLoaded = interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
       console.log('[App.js] 전면 광고 로딩 완료');
@@ -125,7 +147,11 @@ function MainApp() {
         user_retention: userRetention,
       });
   
-      interstitialAd.load();
+      try {
+        interstitialAd.load();
+      } catch (error) {
+        console.log('[App.js] 전면 광고 재로드 실패:', error);
+      }
     });
   
     const unsubscribeClicked = interstitialAd.addAdEventListener(AdEventType.CLICKED, async () => {
@@ -140,6 +166,7 @@ function MainApp() {
       unsubscribeClicked();
     };
   }, []);
+  
 
       // 광고 후 유저가 앱에 머무르는지 체크 (5초 후 앱 상태 확인)
       const checkUserRetention = (): Promise<"retained" | "exited"> => {

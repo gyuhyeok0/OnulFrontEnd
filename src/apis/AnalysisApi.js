@@ -181,44 +181,60 @@ export const MonthlyWeightAndDiet = async (memberId, accessToken = null) => {
 
 export const getMuscleFaigue = async (memberId, accessToken = null) => {
     try {
+        const API_URL = await getStoredAPIURL();
 
-        const API_URL = await getStoredAPIURL(); // 동적으로 API URL을 가져옵니다.
+        const now = new Date();
+        const getDateString = (date) => date.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
+        const today = getDateString(now);
 
-        const getCurrentDate = () => {
-            const now = new Date();
-            return now.toLocaleDateString('en-CA'); // "YYYY-MM-DD" 형식 반환
+        const getYesterdayString = () => {
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            return getDateString(yesterday);
         };
-        
-        const date = getCurrentDate();
 
-        let accessToken = await AsyncStorage.getItem('accessToken'); // 액세스 토큰 가져오기
-        const response = await fetch(`${API_URL}/analysis/getMuscleFaigue?memberId=${memberId}&date=${date}`, {
-            method: 'GET', // POST 요청
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`, // 액세스 토큰을 헤더에 포함
-            },
-        });
+        let token = accessToken || await AsyncStorage.getItem('accessToken');
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                // 상태 코드가 401일 경우 액세스 토큰 갱신
-                const newAccessToken = await refreshAccessToken();
-                if (newAccessToken) {
-                    // 새 토큰으로 다시 시도
-                    return await getMuscleFaigue(memberId, newAccessToken);
+        // 🎯 공통 fetch 함수 (401 처리 로직은 그대로 유지)
+        const fetchData = async (dateToTry) => {
+            const response = await fetch(`${API_URL}/analysis/getMuscleFaigue?memberId=${memberId}&date=${dateToTry}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    const newAccessToken = await refreshAccessToken();
+                    if (newAccessToken) {
+                        return await getMuscleFaigue(memberId, newAccessToken); // ✅ 재귀 호출
+                    } else {
+                        throw new Error('새로운 토큰을 가져오지 못했습니다.');
+                    }
                 } else {
-                    throw new Error('새로운 토큰을 가져오지 못했습니다.');
+                    throw new Error('네트워크 오류');
                 }
-            } else {
-                throw new Error('네트워크 오류');
             }
-        }
 
-        return response.json(); // 정상적인 응답이면 JSON으로 반환
+            const data = await response.json();
+            return data && Object.keys(data).length > 0 ? data : null; // 빈 데이터 무시
+        };
+
+        // ✅ 오늘 시도
+        const todayData = await fetchData(today);
+        if (todayData) return todayData;
+
+        // ✅ 오늘 없으면 어제 시도
+        const yesterdayData = await fetchData(getYesterdayString());
+        if (yesterdayData) return yesterdayData;
+
+        // 모두 실패
+        throw new Error('오늘과 어제 모두 데이터가 없습니다.');
 
     } catch (error) {
-        console.error('Error toggling like:', error);
+        console.error('getMuscleFaigue Error:', error);
         throw error;
     }
 };

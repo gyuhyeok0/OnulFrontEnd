@@ -140,24 +140,39 @@ const Analysis = ({ navigation }) => {
       [
         {
           text: t('analysis.watchAd'),
+          
           onPress: async () => {
             if (adCount >= MAX_ADS_PER_DAY) {
               Alert.alert(t('analysis.limitReachedTitle'), t('analysis.limitReachedMessage'));
               return;
             }
-
+          
+            // ✅ AppTrackingTransparency 요청 추가
+            if (Platform.OS === 'ios') {
+              try {
+                const { requestTrackingPermission } = await import('react-native-tracking-transparency');
+                const status = await requestTrackingPermission();
+                console.log('[광고] 추적 권한 상태:', status); // authorized / denied / not-determined
+              } catch (e) {
+                console.warn('[광고] 추적 권한 요청 실패:', e);
+              }
+            }
+          
             if (!isAdLoaded) {
               Alert.alert(t('analysis.adNotReadyTitle'), t('analysis.adNotReadyMessage'));
               return;
             }
-
+          
             await showRewardedAd();
             navigation.navigate(targetScreen);
           },
+
+          
         },
         { text: t('analysis.cancel'), style: 'cancel' },
       ]
     );
+
   };
 
     return (

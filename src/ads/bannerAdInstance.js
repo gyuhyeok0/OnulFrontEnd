@@ -1,10 +1,8 @@
-// ads/bannerAdInstance.js
-import { BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
-
-const adUnitId = TestIds.BANNER; // 실제 배포 시 광고 ID로 변경
+import { BannerAdSize } from 'react-native-google-mobile-ads';
+import { BANNER_AD_UNIT_ID } from '@env';
 
 const bannerAdConfig = {
-  unitId: adUnitId,
+  unitId: BANNER_AD_UNIT_ID,
   size: BannerAdSize.ANCHORED_ADAPTIVE_BANNER,
   requestOptions: {
     requestNonPersonalizedAdsOnly: true,

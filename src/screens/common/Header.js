@@ -29,6 +29,7 @@ const Header = ({ title, navigation }) => {
                             <Icon name="settings" size={25} color="gray" />
                     </TouchableOpacity>
                 </View>
+
                 <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginTop: 5 }} />
                 <BannerAdComponent />
                 <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginTop: 5 }} />

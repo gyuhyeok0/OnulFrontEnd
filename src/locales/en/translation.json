@@ -102,8 +102,8 @@
     "phoneNumber": "Phone Number",
     "description": "For seamless use of the onul service, one-time verification is required.",
     "note": "Only one account can be linked to a single phone number.",
-    "requestCode": "Request Code",
-    "enterCode": "Enter Verification Code",
+    "requestCode": "Send Code",
+    "enterCode": "Enter Code",
     "timeOver": "Time Over",
     "timeOverMessage": "Verification time has expired. Please request again.",
     "invalidPhoneNumber": "Invalid Phone Number",
@@ -111,7 +111,7 @@
     "success": "Success",
     "successMessage": "Please enter the verification code.",
     "error": "Error",
-    "alreadyPhoneNumber": "A phone number can only be used once per account.",
+    "alreadyPhonenumber": "A phone number can only be used once per account.",
     "limitExceeded": "Request limit exceeded. Please try again later.",
     "dailyLimitExceeded": "Daily request limit exceeded. Please try again tomorrow.",
     "verificationSuccess": "Verification completed.",
@@ -2392,6 +2392,18 @@
         "Precautions": ["Avoid arching your lower back during the press."]
     }
 },
+"바벨 숄더 프레스": {
+  "name": "Barbell Shoulder Press",
+  "details": {
+    "Primary Target Areas": ["Shoulders", "Triceps", "Upper Chest"],
+    "Posture": ["Stand with your feet shoulder-width apart and hold the barbell at collarbone level with a slightly wider than shoulder-width grip."],
+    "Movement": ["Press the barbell straight overhead until your arms are almost fully extended, then lower it back to the starting position in a controlled motion."],
+    "Breathing Technique": ["Exhale as you press the bar up, inhale as you lower it."],
+    "Tips": ["Engage your core to prevent excessive back arching and keep your elbows slightly forward under the bar."],
+    "Precautions": ["Avoid overarching your lower back and use a weight you can control without compromising form."]
+  }
+}
+,
 "머신 숄더 프레스": {
     "name": "Machine Shoulder Press",
     "details": {
