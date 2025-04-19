@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { notice } from '../../apis/NoticeAPI';
 import NoticeModal from '../modal/NoticeModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Agree from '../../../components/signup/Agree';
 
 const Exercise = ({ navigation }) => {
     const userId = useSelector((state) => state.member.userInfo?.memberId);
@@ -22,21 +23,30 @@ const Exercise = ({ navigation }) => {
     const [noticeData, setNoticeData] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
 
+    const [isAllAgreed, setIsAllAgreed] = useState(false);
+    const [shouldShowAgree, setShouldShowAgree] = useState(false);
+
     useEffect(() => {
         const timer = setTimeout(async () => {
-            if (userId && accessToken) {
+            if (!userId || !accessToken) {
+                handlerLogOut(navigation);
+                return;
+            }
+    
+            const onboardingChecked =await AsyncStorage.getItem('onboarding_checked');
+    
+            if (onboardingChecked === 'true') {
                 const data = await notice(accessToken);
                 if (data && data.active) {
                     setNoticeData(data);
                     setModalVisible(true);
                 }
-            } else {
-                handlerLogOut(navigation);
             }
         }, 5000);
-
+    
         return () => clearTimeout(timer);
     }, [userId, accessToken]);
+    
 
     const closeModal = () => setModalVisible(false);
 
@@ -48,18 +58,33 @@ const Exercise = ({ navigation }) => {
             }
 
             try {
-                const onboardingChecked = await AsyncStorage.getItem(`onboarding_checked_${userId}`);
+                const onboardingChecked = await AsyncStorage.getItem('onboarding_checked');
+
+                console.log("온보딩"+ onboardingChecked)
                 if (!onboardingChecked) {
-                    await checkOnboardingStatus(userId, accessToken, navigation);
-                    await AsyncStorage.setItem(`onboarding_checked_${userId}`, 'true');
+
+                    console.log("실행")
+                    setShouldShowAgree(true); 
                 }
             } catch (error) {
                 console.error('Error checking onboarding status:', error);
             }
-        }, 10000);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, [userId, accessToken]);
+
+    useEffect(() => {
+        const doOnboarding = async () => {
+
+            if (isAllAgreed && shouldShowAgree) {
+                await checkOnboardingStatus(userId, accessToken, navigation);
+                await AsyncStorage.setItem('onboarding_checked', 'true');
+                setShouldShowAgree(false); 
+            }
+        };
+        doOnboarding();
+    }, [isAllAgreed, shouldShowAgree]);
 
     const handlePress = (option, message) => {
         setSelectedOption(option);
@@ -178,6 +203,12 @@ const Exercise = ({ navigation }) => {
             {modalVisible && noticeData && (
                 <NoticeModal noticeData={noticeData} closeModal={closeModal} />
             )}
+
+            {shouldShowAgree && (
+                <View style={styles.agreeOverlay}>
+                    <Agree setIsAllAgreed={setIsAllAgreed} />
+                </View>
+            )}
         </View>
     );
 };
@@ -271,7 +302,21 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+
+    agreeOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        zIndex: 999,
+    },
+    
 });
 
 export default Exercise;

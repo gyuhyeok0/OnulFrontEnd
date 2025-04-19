@@ -1,16 +1,45 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions, Image, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { AppleButton, appleAuth } from '@invertase/react-native-apple-authentication';
+import { callAppleLoginAPI } from '../../apis/AppleAPICalls';
+import { ActivityIndicator } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { Alert } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+
 
 function LoginScreen({ navigation }) {
-
-
+  const dispatch = useDispatch();
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handlePressSignIn = async () => {
-    // 로그인 페이지로 이동
-    navigation.navigate('Signin');
+    // try {
+    //   const appleAuthRequestResponse = await appleAuth.performRequest({
+    //     requestedOperation: appleAuth.Operation.LOGIN, // ✅ 로그인 요청
+    //     requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+    //   });
+  
+    //   const { identityToken } = appleAuthRequestResponse;
+  
+    //   if (identityToken) {
+    //     Clipboard.setString(identityToken); // ✅ 클립보드에 복사
+    //     Alert.alert(
+    //       '✅ 복사 완료',
+    //       '토큰이 클립보드에 복사되었습니다.\nSafari나 메모 앱에 붙여넣어 확인하세요!'
+    //     );
+    //   } else {
+    //     Alert.alert('Apple Login Failed', 'identityToken 없음');
+    //   }
+    // } catch (error) {
+    //   Alert.alert('Apple Login 실패', error?.message || '알 수 없는 오류');
+    // }
+  
+    navigation.navigate('Signin'); // 이후 토큰 전달 구조로 수정 가능
   };
+  
 
   const handlePressSignUp = async () => {
 
@@ -44,6 +73,47 @@ function LoginScreen({ navigation }) {
           <TouchableOpacity style={styles.LoginBox} onPress={handlePressSignIn}>
             <Text style={styles.ButtonText}>{t('continue_with_account')}</Text>
           </TouchableOpacity>
+
+      
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#ffffff" style={{ marginVertical: 10 }} />
+          ) : (
+            appleAuth.isSupported && (
+              <AppleButton
+                buttonType={AppleButton.Type.SIGN_IN}
+                buttonStyle={AppleButton.Style.BLACK}
+                cornerRadius={22}
+                style={styles.appleButton}
+                onPress={async () => {
+                  try {
+                    setIsLoading(true); // 로딩 시작
+
+                    const appleAuthRequestResponse = await appleAuth.performRequest({
+                      requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+                    });
+
+                    const { identityToken } = appleAuthRequestResponse;
+
+                    if (identityToken) {
+                      const result = await callAppleLoginAPI({ identityToken, dispatch });
+
+                      if (result.status === 200) {
+                        navigation.navigate('Exercise');
+                      } else {
+                        console.warn('Apple 로그인 실패:', result.errorMessage);
+                      }
+                    } else {
+                      console.warn('identityToken 없음');
+                    }
+                  } catch (e) {
+                    console.warn('Apple 로그인 실패', e);
+                  } finally {
+                    setIsLoading(false); // 로딩 종료
+                  }
+                }}
+              />
+            )
+          )}
           
           <TouchableOpacity>
             <Text style={styles.inquiry} onPress={handleInquiry}>{t('inquiry.title_page')}</Text>
@@ -124,6 +194,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 10,  // 버튼 간 간격 추가
   },
 
   ButtonText: {
@@ -137,6 +208,12 @@ const styles = StyleSheet.create({
     color: 'gray',
     // textDecorationLine: 'underline',
   },
+
+  appleButton: {
+    width: 260,
+    height: 45,
+    marginBottom: 10,
+  }
 
 });
 
