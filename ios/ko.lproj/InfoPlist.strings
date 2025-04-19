@@ -1,0 +1,8 @@
+/* 
+  InfoPlist.strings
+  OnulFrontEnd
+
+  Created by 최규혁 on 4/17/25.
+  
+*/
+NSUserTrackingUsageDescription = "개인 맞춤형 광고를 제공하기 위해 광고 식별자를 사용합니다.";

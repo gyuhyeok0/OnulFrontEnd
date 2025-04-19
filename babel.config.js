@@ -1,15 +1,15 @@
 module.exports = {
   presets: ['module:@react-native/babel-preset'],
   plugins: [
+    process.env.NODE_ENV === 'production' && 'transform-remove-console',
     'react-native-reanimated/plugin', // 기존 플러그인 유지
-    'transform-remove-console', 
     ['module:react-native-dotenv', {
-      moduleName: '@env', // @env로 환경 변수를 가져옴
-      path: '.env',       // .env 파일 경로
-      blocklist: null,    // (옵션) 특정 환경 변수 제외
-      allowlist: null,    // (옵션) 허용된 환경 변수만 사용
-      safe: false,        // (옵션) .env.example로 안전성 검증 여부
-      allowUndefined: true // (옵션) undefined 변수를 허용할지 여부
+      moduleName: '@env',
+      path: '.env',
+      blocklist: null,
+      allowlist: null,
+      safe: false,
+      allowUndefined: true
     }]
-  ],
+  ].filter(Boolean), // falsy 값 제거 (예: false일 땐 적용 안 함)
 };

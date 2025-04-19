@@ -1,8 +1,8 @@
 import { refreshAccessToken } from '../apis/Token'; // 올바른 경로로 가져오기
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import axios from 'axios';
 
-import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 가져오기
 import { API_URL_JP, API_URL_US } from '@env'; // 환경변수에서 실제 URL 가져오기
 
 // 로컬 스토리지에서 저장된 API_URL을 가져와 실제 API URL을 반환하는 함수
@@ -136,6 +136,7 @@ export const registrationOnboarding = async (onboardingData, navigation) => {
             },
         });
 
+        await AsyncStorage.setItem('onboarding_checked', 'true');
         navigation.navigate('Exercise');
 
     } catch (error) {

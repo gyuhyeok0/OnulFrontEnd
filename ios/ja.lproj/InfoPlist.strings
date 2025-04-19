@@ -1,0 +1,8 @@
+/* 
+  InfoPlist.strings
+  OnulFrontEnd
+
+  Created by 최규혁 on 4/17/25.
+  
+*/
+NSUserTrackingUsageDescription = "パーソナライズされた広告を表示するために、広告IDを使用します。";

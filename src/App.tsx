@@ -58,12 +58,16 @@ import {
   InterstitialAd, 
 } from 'react-native-google-mobile-ads';
 
-import useLifecycleTracking from './TrackAppLifecycle';
+import { initLifecycleTracking } from './TrackAppLifecycle';
 import rewardedAd from './ads/rewardedAdInstance';
 import interstitialAd from './ads/interstitialAdInstance'; 
 import analytics from '@react-native-firebase/analytics';
 import { AppState } from 'react-native';
 import mobileAds from 'react-native-google-mobile-ads';
+
+import { Platform } from 'react-native';
+import { requestTrackingPermission } from 'react-native-tracking-transparency';
+
 
 // QueryClient 생성
 const queryClient = new QueryClient();
@@ -78,21 +82,41 @@ function MainApp() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isConnected, setIsConnected] = useState(true); // 네트워크 상태 관리
   const [fadeAnim] = useState(new Animated.Value(0)); // 애니메이션 값
-
-  //firebase 애널리틱스
-  useLifecycleTracking(); 
-
+  
+  // ✅ ATT → 광고 초기화 → 추적 조건부 초기화
   useEffect(() => {
-    console.log('[App.js] AdMob SDK 초기화');
-    const initializeAds = async () => {
+    let cleanup: () => void;
+
+    const requestATTAndInit = async () => {
+      let status = 'not-determined';
+
+      if (Platform.OS === 'ios') {
+        try {
+          status = await requestTrackingPermission();
+          console.log('[ATT] 추적 권한 상태:', status);
+        } catch (e) {
+          console.warn('[ATT] 요청 실패:', e);
+        }
+      }
+
       try {
         await mobileAds().initialize();
-        console.log('[App.js] AdMob 초기화 완료');
-      } catch (error) {
-        console.log('[App.js] AdMob 초기화 실패:', error);
+        console.log('[AdMob] 초기화 완료');
+      } catch (e) {
+        console.warn('[AdMob] 초기화 실패:', e);
+      }
+
+      // ✅ 오직 허용했을 때만 Firebase 추적 초기화
+      if (typeof status === 'string' && (status === 'authorized' || status === 'unavailable')) {
+        cleanup = initLifecycleTracking();
       }
     };
-    initializeAds();
+
+    requestATTAndInit();
+
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, []);
 
 
